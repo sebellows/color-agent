@@ -1,0 +1,12 @@
+{
+  "name": "@color-agent/api",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "uvicorn src.main:app --reload",
+    "build": "echo 'No build step for Python API'",
+    "lint": "black src tests && isort src tests && mypy src",
+    "test": "pytest",
+    "clean": "rm -rf .pytest_cache .coverage htmlcov"
+  }
+}
