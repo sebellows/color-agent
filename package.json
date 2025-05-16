@@ -1,4 +1,6 @@
 {
+  "name": "color-agent",
+  "packageManager": "pnpm@8.6.0",
   "private": true,
   "scripts": {
     "dev": "turbo run dev",
@@ -12,7 +14,5 @@
   },
   "engines": {
     "node": ">=18"
-  },
-  "name": "color-agent",
-  "packageManager": "pnpm@8.6.0"
+  }
 }

@@ -1,37 +1,48 @@
-import * as React from "react";
+import * as React from 'react'
+import { Pressable, PressableProps, TouchableOpacity } from 'react-native'
 import {
-  StyleSheet,
-  GestureResponderEvent,
-  Text,
-  Pressable,
-} from "react-native";
+    backgroundColor,
+    BackgroundColorProps,
+    border,
+    BorderProps,
+    createRestyleComponent,
+    createVariant,
+    layout,
+    LayoutProps,
+    spacing,
+    SpacingProps,
+    typography,
+    TypographyProps,
+    VariantProps,
+} from '@shopify/restyle'
+import { Theme } from './theme'
 
-export interface ButtonProps {
-  text: string;
-  onClick?: (event: GestureResponderEvent) => void;
-}
+type RestyleProps = SpacingProps<Theme> &
+    BorderProps<Theme> &
+    BackgroundColorProps<Theme> &
+    LayoutProps<Theme> &
+    TypographyProps<Theme>
 
-export function Button({ text, onClick }: ButtonProps) {
-  return (
-    <Pressable style={styles.button} onPress={onClick}>
-      <Text style={styles.text}>{text}</Text>
-    </Pressable>
-  );
-}
+export type ButtonProps = RestyleProps &
+    PressableProps & {
+        children?: React.ReactNode
+    }
 
-const styles = StyleSheet.create({
-  button: {
-    maxWidth: 200,
-    textAlign: "center",
-    borderRadius: 10,
-    paddingTop: 14,
-    paddingBottom: 14,
-    paddingLeft: 30,
-    paddingRight: 30,
-    fontSize: 15,
-    backgroundColor: "#2f80ed",
-  },
-  text: {
-    color: "white",
-  },
-});
+export const Button = createRestyleComponent<
+    VariantProps<Theme, 'buttonVariants'> &
+        ButtonProps &
+        React.ComponentProps<typeof TouchableOpacity>,
+    Theme
+>(
+    [
+        createVariant({ themeKey: 'buttonVariants' }),
+        spacing,
+        border,
+        backgroundColor,
+        layout,
+        typography,
+    ],
+    ({ disabled, style, ...props }) => (
+        <Pressable disabled={disabled} style={[style, disabled && { opacity: 0.5 }]} {...props} />
+    ),
+)

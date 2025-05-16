@@ -1,6 +1,8 @@
 # ColorAgent
 
-A monorepo for the ColorAgent application with React Native Web frontend and FastAPI backend.
+**ColorAgent**, a paint comparison tool for hobbyists powered by Ambivalent Intelligence.
+
+ColorAgent is built with React Native Web for the frontend with a Python/FastAPI backend.
 
 ## Project Structure
 
