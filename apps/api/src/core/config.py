@@ -15,7 +15,7 @@ class Settings(BaseSettings):
 
     # Database settings
     DATABASE_URL: str = Field(
-        default="postgresql+psycopg://postgres:postgres@localhost:5432/coloragent"
+        default="postgresql+asyncpg://postgres:postgres@localhost:5432/coloragent"
     )
 
     # Redis settings

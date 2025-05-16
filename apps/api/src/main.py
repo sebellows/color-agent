@@ -4,9 +4,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from src.api.router import router as api_router
-from src.core.config import settings
-from src.utils.logging import get_logger, log_request_middleware, setup_logging
+from .api.router import api_router
+from .core.config import settings
+from .utils.logging import get_logger, log_request_middleware, setup_logging
 
 # Configure logging
 setup_logging()

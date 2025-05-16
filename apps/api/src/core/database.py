@@ -1,10 +1,9 @@
 """Database module."""
 
-from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.orm import declarative_base
 
-from src.core.config import settings
+from .config import settings
+from ..models.base import Base
 
 # Create async engine
 async_engine = create_async_engine(
@@ -15,9 +14,6 @@ async_engine = create_async_engine(
 async_session_factory = async_sessionmaker(
     async_engine, expire_on_commit=False, class_=AsyncSession
 )
-
-# Create Base class for models
-Base = declarative_base()
 
 
 async def get_db() -> AsyncSession:

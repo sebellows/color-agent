@@ -1,73 +1,148 @@
 # ColorAgent API
 
-Backend API for the ColorAgent application built with FastAPI.
+This is the backend API for the ColorAgent application, which provides data on vendors of acrylic paint products.
 
 ## Features
 
-- Async-first development
-- Type safety with Pydantic
-- Dependency injection
-- SOLID principles
-- Structured logging with structlog
-- PostgreSQL database with SQLAlchemy
-- Redis for caching and task queues
-- Celery for background tasks
-
-## Development
-
-### Setup
-
-1. Create a virtual environment:
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-   ```
-
-2. Install dependencies:
-   ```bash
-   uv sync
-   ```
-
-3. Run the development server:
-   ```bash
-   uvicorn src.main:app --reload
-   ```
-
-4. Access the API documentation:
-   - Swagger UI: http://localhost:8000/docs
-   - ReDoc: http://localhost:8000/redoc
+-   RESTful API built with FastAPI
+-   PostgreSQL database with SQLAlchemy ORM
+-   Async database operations with asyncpg
+-   Pydantic for data validation
+-   Structured logging with structlog
+-   Redis for caching and task queues
+-   Celery for background tasks
 
 ## Project Structure
 
 ```
 apps/api/
-├── src/                # Source code
-│   ├── __init__.py     # Package initialization
-│   ├── main.py         # FastAPI application
-│   ├── models/         # Database models
-│   ├── schemas/        # Pydantic schemas
-│   ├── services/       # Business logic
-│   ├── api/            # API routes
-│   ├── core/           # Core functionality
-│   └── utils/          # Utility functions
-├── tests/              # Tests
-├── pyproject.toml      # Project configuration
-└── README.md           # This file
+├── src/
+│   ├── api/
+│   │   ├── routes/
+│   │   │   ├── __init__.py
+│   │   │   ├── vendor.py
+│   │   │   ├── product_line.py
+│   │   │   ├── product.py
+│   │   │   ├── product_swatch.py
+│   │   │   ├── product_variant.py
+│   │   │   ├── locale.py
+│   │   │   └── supporting.py
+│   │   └── router.py
+│   ├── core/
+│   │   ├── __init__.py
+│   │   ├── config.py
+│   │   ├── database.py
+│   │   └── security.py
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── base.py
+│   │   ├── associations.py
+│   │   ├── vendor.py
+│   │   ├── product_line.py
+│   │   ├── product.py
+│   │   ├── product_swatch.py
+│   │   ├── product_variant.py
+│   │   ├── locale.py
+│   │   └── supporting.py
+│   ├── schemas/
+│   │   ├── __init__.py
+│   │   ├── base.py
+│   │   ├── vendor.py
+│   │   ├── product_line.py
+│   │   ├── product.py
+│   │   ├── product_swatch.py
+│   │   ├── product_variant.py
+│   │   ├── locale.py
+│   │   └── supporting.py
+│   ├── scripts/
+│   │   ├── create_tables.py
+│   │   ├── import_data.py
+│   │   └── run_app.py
+│   ├── services/
+│   │   └── __init__.py
+│   ├── utils/
+│   │   ├── __init__.py
+│   │   └── logging.py
+│   └── main.py
+├── tests/
+│   ├── __init__.py
+│   └── test_main.py
+├── pyproject.toml
+└── README.md
 ```
 
-## Testing
+## Getting Started
 
-Run tests with pytest:
+### Prerequisites
+
+-   Python 3.13+
+-   PostgreSQL
+-   Redis (optional, for caching and task queues)
+
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
+
+```bash
+cd apps/api
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+pip install -e .
+```
+
+### Database Setup
+
+1. Create a PostgreSQL database:
+
+```bash
+createdb coloragent
+```
+
+2. Create database tables:
+
+```bash
+python -m src.scripts.create_tables
+```
+
+3. Import sample data:
+
+```bash
+python -m src.scripts.import_data
+```
+
+### Running the API
+
+```bash
+python -m src.scripts.run_app
+```
+
+The API will be available at http://localhost:8000.
+
+## API Documentation
+
+Once the API is running, you can access the interactive API documentation at:
+
+-   Swagger UI: http://localhost:8000/docs
+-   ReDoc: http://localhost:8000/redoc
+
+## Development
+
+### Running Tests
 
 ```bash
 pytest
 ```
 
-## Logging
+### Code Formatting
 
-This project uses structlog for structured logging. Log levels:
+```bash
+black .
+isort .
+```
 
-- DEBUG: Diagnostic information
-- INFO: Standard log level for normal operations
-- WARN: Unexpected events that don't prevent functionality
-- ERROR: Issues preventing functionality
+### Type Checking
+
+```bash
+mypy .
+```
