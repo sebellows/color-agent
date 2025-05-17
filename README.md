@@ -23,9 +23,9 @@ color-agent/
 
 ### Prerequisites
 
-- Node.js (v18 or later)
-- pnpm (v8.6.0 or later)
-- Python (v3.13 or later)
+-   Node.js (v18 or later)
+-   pnpm (v8.6.0 or later)
+-   Python (v3.13 or later)
 
 ### Installation
 
@@ -68,13 +68,30 @@ pnpm build
 pnpm --filter @color-agent/web build
 ```
 
+### Docker Development
+
+You can also use Docker for development:
+
+```bash
+# Start all services with Docker Compose
+docker compose up
+
+# Start specific service
+docker compose up api
+docker compose up web
+```
+
+For more details on Docker setup, see [DOCKER.md](./DOCKER.md).
+
 ## Features
 
-- **Monorepo Structure**: Using Turborepo for build orchestration and caching
-- **Frontend**: React Native Web for cross-platform UI
-- **Backend**: FastAPI for high-performance API
-- **Shared UI**: Common UI components shared between web and mobile
-- **Type Safety**: TypeScript and Pydantic for type safety
+-   **Monorepo Structure**: Using Turborepo for build orchestration and caching
+-   **Frontend**: React Native Web for cross-platform UI
+-   **Backend**: FastAPI for high-performance API
+-   **Shared UI**: Common UI components shared between web and mobile
+-   **Type Safety**: TypeScript and Pydantic for type safety
+-   **Docker Support**: Containerized development and deployment
+-   **CI/CD Integration**: GitHub Actions workflow for Docker builds
 
 ## Documentation
 

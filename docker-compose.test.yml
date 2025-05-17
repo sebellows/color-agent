@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  # PostgreSQL database for testing
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: coloragent_test
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching and task queues
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Backend API for testing
+  api:
+    image: ${REGISTRY:-ghcr.io}/${API_IMAGE_NAME:-coloragent-api}:${TAG:-latest}
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/coloragent_test
+      - REDIS_URL=redis://redis:6379/0
+      - DEBUG=true
+      - JWT_SECRET=test_secret_key
+      - LOG_LEVEL=DEBUG
+      - TESTING=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: >
+      sh -c "
+        python -m src.scripts.create_tables &&
+        uvicorn src.main:app --host 0.0.0.0 --port 8000
+      "
+
+  # Web application for testing
+  web:
+    image: ${REGISTRY:-ghcr.io}/${WEB_IMAGE_NAME:-coloragent-web}:${TAG:-latest}
+    environment:
+      - NODE_ENV=test
+      - APP_BASE_URL=http://localhost:3000
+      - API_URL=http://api:8000
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - api
+    command: pnpm --filter web start
+
+  # Integration tests
+  integration-tests:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: test
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/coloragent_test
+      - REDIS_URL=redis://redis:6379/0
+      - API_URL=http://api:8000
+      - TESTING=true
+    depends_on:
+      - api
+      - web
+    volumes:
+      - ./apps/api/tests:/app/apps/api/tests
+      - ./test-results:/app/test-results
+    command: >
+      sh -c "
+        echo 'Waiting for API to be ready...' &&
+        sleep 10 &&
+        pytest -xvs apps/api/tests/integration
+      "
+
+volumes:
+  postgres_data:
+  redis_data:
