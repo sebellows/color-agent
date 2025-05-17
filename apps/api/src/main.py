@@ -1,7 +1,7 @@
 """Main FastAPI application module."""
 
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI
+import fastapi.middleware.cors as CORSMiddleware
 from pydantic import BaseModel
 
 from .api.router import api_router

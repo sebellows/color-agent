@@ -1,5 +1,7 @@
 """Application configuration module."""
 
+import os
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -15,14 +17,18 @@ class Settings(BaseSettings):
 
     # Database settings
     DATABASE_URL: str = Field(
-        default="postgresql+asyncpg://postgres:postgres@localhost:5432/coloragent"
+        default=os.getenv(
+            "DB_URL", "postgresql+asyncpg://postgres:postgres@localhost:5432/coloragent"
+        )
     )
 
     # Redis settings
-    REDIS_URL: str = Field(default="redis://localhost:6379/0")
+    REDIS_URL: str = Field(default=os.getenv("REDIS_URL", "redis://localhost:6379/0"))
 
     # CORS settings
-    CORS_ORIGINS: list[str] = Field(default=["http://localhost:3000"])
+    CORS_ORIGINS: list[str] = Field(
+        default=[os.getenv("APP_BASE_URL", "http://localhost:3000")]
+    )
 
     # JWT settings
     JWT_SECRET: str = Field(default="supersecret")

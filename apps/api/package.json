@@ -7,6 +7,14 @@
     "build": "echo 'No build step for Python API'",
     "lint": "black src tests && isort src tests && mypy src",
     "test": "pytest",
-    "clean": "rm -rf .pytest_cache .coverage htmlcov"
+    "clean": "rm -rf .pytest_cache .coverage htmlcov",
+    "setup": "bash setup.sh",
+    "setup:dev": "bash setup-dev.sh",
+    "setup:win": "setup.bat",
+    "setup:dev:win": "setup-dev.bat",
+    "deps:sync": "uv pip sync requirements.txt",
+    "deps:sync:dev": "uv pip sync requirements.txt requirements-dev.txt",
+    "deps:add": "uv add",
+    "deps:add:dev": "uv add --dev"
   }
 }

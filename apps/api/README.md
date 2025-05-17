@@ -82,13 +82,38 @@ apps/api/
 ### Installation
 
 1. Clone the repository
-2. Install dependencies:
+2. Install dependencies using uv:
+
+#### Using npm/pnpm scripts:
 
 ```bash
 cd apps/api
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-pip install -e .
+# On Unix-like systems:
+npm run setup       # Create venv and install dependencies
+npm run setup:dev   # Install development dependencies
+
+# On Windows:
+npm run setup:win       # Create venv and install dependencies
+npm run setup:dev:win   # Install development dependencies
+```
+
+#### Or manually:
+
+```bash
+cd apps/api
+# Create a Python 3.13 virtual environment using uv
+uv venv -p python3.13 .venv
+
+# Activate the virtual environment
+# On Unix-like systems:
+source .venv/bin/activate
+# On Windows:
+# .venv\Scripts\activate
+
+# Install dependencies using uv
+uv pip sync requirements.txt
+# For development dependencies:
+# uv pip sync requirements.txt requirements-dev.txt
 ```
 
 ### Database Setup
@@ -145,4 +170,58 @@ isort .
 
 ```bash
 mypy .
+```
+
+## Package Management with uv
+
+This project uses [uv](https://github.com/astral-sh/uv) for Python package management, which offers faster dependency resolution and installation compared to pip.
+
+### Adding Dependencies
+
+To add a new dependency:
+
+```bash
+# Add a production dependency
+npm run deps:add -- package-name
+
+# Add a development dependency
+npm run deps:add:dev -- package-name
+```
+
+Or manually:
+
+```bash
+# Activate your virtual environment first
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Add a production dependency
+uv add package-name
+
+# Add a development dependency
+uv add --dev package-name
+```
+
+### Syncing Dependencies
+
+To sync dependencies based on requirements files:
+
+```bash
+# Sync production dependencies
+npm run deps:sync
+
+# Sync both production and development dependencies
+npm run deps:sync:dev
+```
+
+Or manually:
+
+```bash
+# Activate your virtual environment first
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Sync production dependencies
+uv pip sync requirements.txt
+
+# Sync both production and development dependencies
+uv pip sync requirements.txt requirements-dev.txt
 ```

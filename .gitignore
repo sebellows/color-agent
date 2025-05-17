@@ -46,6 +46,7 @@ pnpm-debug.log*
 .env
 .env.*
 env/
+env*
 venv.*
 .venv/
 venv/
@@ -155,3 +156,8 @@ dmypy.json
 
 # PyPI configuration file
 .pypirc
+
+.env*
+.flaskenv*
+!.env.project
+!.env.vault
