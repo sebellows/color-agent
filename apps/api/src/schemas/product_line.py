@@ -1,5 +1,7 @@
 from typing import Optional, List, Annotated
+from datetime import datetime
 from pydantic import BaseModel, Field, ConfigDict
+from ..core.enums import ProductLineTypeEnum
 
 
 class ProductLineBase(BaseModel):
@@ -11,7 +13,9 @@ class ProductLineBase(BaseModel):
     vendor_slug: Annotated[Optional[str], Field(description="Vendor-specific slug")] = (
         None
     )
-    product_line_type: Annotated[str, Field(description="Type of product line")]
+    product_line_type: Annotated[
+        ProductLineTypeEnum, Field(description="Type of product line")
+    ]
     description: Annotated[
         Optional[str], Field(description="Product line description")
     ] = None
@@ -29,7 +33,7 @@ class ProductLineUpdate(BaseModel):
         None
     )
     product_line_type: Annotated[
-        Optional[str], Field(description="Type of product line")
+        Optional[ProductLineTypeEnum], Field(description="Type of product line")
     ] = None
     description: Annotated[
         Optional[str], Field(description="Product line description")
@@ -42,11 +46,13 @@ class ProductLine(ProductLineBase):
 
     id: Annotated[int, Field(description="Unique identifier")]
     vendor_id: Annotated[int, Field(description="ID of the vendor")]
+    created_at: Annotated[datetime, Field(description="Creation timestamp")]
+    updated_at: Annotated[datetime, Field(description="Last update timestamp")]
 
 
 class ProductLineFilterParams(BaseModel):
     name: Annotated[Optional[str], Field(description="Filter by name")] = None
-    product_line_type: Annotated[Optional[str], Field(description="Filter by type")] = (
-        None
-    )
+    product_line_type: Annotated[
+        Optional[ProductLineTypeEnum], Field(description="Filter by type")
+    ] = None
     vendor_id: Annotated[Optional[int], Field(description="Filter by vendor ID")] = None

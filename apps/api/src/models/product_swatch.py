@@ -1,5 +1,6 @@
 from typing import Optional, List, TYPE_CHECKING
-from sqlalchemy import String, ForeignKey, ARRAY, Float
+from sqlalchemy import String, ForeignKey, ARRAY, Float, Enum
+from ..core.enums import OverlayEnum
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base import Base
@@ -20,7 +21,7 @@ class ProductSwatch(Base):
     oklch_color: Mapped[List[float]] = mapped_column(ARRAY(Float))
     gradient_start: Mapped[List[float]] = mapped_column(ARRAY(Float))
     gradient_end: Mapped[List[float]] = mapped_column(ARRAY(Float))
-    overlay: Mapped[Optional[str]] = mapped_column(String(50))
+    overlay: Mapped[Optional[str]] = mapped_column(Enum(OverlayEnum))
 
     # Relationships
     product: Mapped["Product"] = relationship("Product", back_populates="swatch")

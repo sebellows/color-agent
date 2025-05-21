@@ -1,5 +1,12 @@
 from typing import Optional, List, Annotated
+from datetime import datetime
 from pydantic import BaseModel, Field, ConfigDict
+from ..core.enums import (
+    OpacityEnum,
+    ViscosityEnum,
+    ApplicationMethodEnum,
+    PackagingTypeEnum,
+)
 
 
 class ProductVariantBase(BaseModel):
@@ -10,7 +17,7 @@ class ProductVariantBase(BaseModel):
         Optional[bool], Field(description="Whether the variant is discontinued")
     ] = False
     image_url: Annotated[str, Field(description="Image URL")]
-    packaging: Annotated[str, Field(description="Packaging type")]
+    packaging: Annotated[PackagingTypeEnum, Field(description="Packaging type")]
     volume_ml: Annotated[
         Optional[float], Field(description="Volume in milliliters")
     ] = None
@@ -19,10 +26,12 @@ class ProductVariantBase(BaseModel):
     ] = None
     price: Annotated[int, Field(description="Price in cents")]
     product_url: Annotated[str, Field(description="Product URL")]
-    opacity: Annotated[Optional[str], Field(description="Opacity level")] = None
-    viscosity: Annotated[Optional[str], Field(description="Viscosity level")] = None
+    opacity: Annotated[Optional[OpacityEnum], Field(description="Opacity level")] = None
+    viscosity: Annotated[
+        Optional[ViscosityEnum], Field(description="Viscosity level")
+    ] = None
     application_method: Annotated[
-        Optional[str], Field(description="Application method")
+        Optional[ApplicationMethodEnum], Field(description="Application method")
     ] = None
     vendor_product_id: Annotated[
         Optional[str], Field(description="Vendor's product ID")
@@ -48,7 +57,9 @@ class ProductVariantUpdate(BaseModel):
         Optional[bool], Field(description="Whether the variant is discontinued")
     ] = None
     image_url: Annotated[Optional[str], Field(description="Image URL")] = None
-    packaging: Annotated[Optional[str], Field(description="Packaging type")] = None
+    packaging: Annotated[
+        Optional[PackagingTypeEnum], Field(description="Packaging type")
+    ] = None
     volume_ml: Annotated[
         Optional[float], Field(description="Volume in milliliters")
     ] = None
@@ -57,10 +68,12 @@ class ProductVariantUpdate(BaseModel):
     ] = None
     price: Annotated[Optional[int], Field(description="Price in cents")] = None
     product_url: Annotated[Optional[str], Field(description="Product URL")] = None
-    opacity: Annotated[Optional[str], Field(description="Opacity level")] = None
-    viscosity: Annotated[Optional[str], Field(description="Viscosity level")] = None
+    opacity: Annotated[Optional[OpacityEnum], Field(description="Opacity level")] = None
+    viscosity: Annotated[
+        Optional[ViscosityEnum], Field(description="Viscosity level")
+    ] = None
     application_method: Annotated[
-        Optional[str], Field(description="Application method")
+        Optional[ApplicationMethodEnum], Field(description="Application method")
     ] = None
     vendor_product_id: Annotated[
         Optional[str], Field(description="Vendor's product ID")
@@ -87,6 +100,8 @@ class ProductVariant(ProductVariantBase):
     vendor_product_types: Annotated[
         List["VendorProductTypeInfo"], Field(description="Vendor product types")
     ]
+    created_at: Annotated[datetime, Field(description="Creation timestamp")]
+    updated_at: Annotated[datetime, Field(description="Last update timestamp")]
 
 
 class VendorColorRangeInfo(BaseModel):

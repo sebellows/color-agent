@@ -1,5 +1,6 @@
 from typing import List, TYPE_CHECKING
-from sqlalchemy import String
+from sqlalchemy import String, Enum
+from ..core.enums import ProductTypeEnum, ColorRangeEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base import Base
 from .associations import (
@@ -20,7 +21,7 @@ class ProductType(Base):
     __tablename__ = "product_types"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(50), unique=True)
+    name: Mapped[str] = mapped_column(Enum(ProductTypeEnum), unique=True)
 
     # Relationships
     products: Mapped[List["Product"]] = relationship(
@@ -32,7 +33,7 @@ class ColorRange(Base):
     __tablename__ = "color_ranges"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(50), unique=True)
+    name: Mapped[str] = mapped_column(Enum(ColorRangeEnum), unique=True)
 
     # Relationships
     products: Mapped[List["Product"]] = relationship(

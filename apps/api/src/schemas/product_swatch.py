@@ -1,5 +1,6 @@
 from typing import Optional, List, Annotated
 from pydantic import BaseModel, Field, ConfigDict
+from ..core.enums import OverlayEnum
 
 
 class ProductSwatchBase(BaseModel):
@@ -10,7 +11,9 @@ class ProductSwatchBase(BaseModel):
         List[float], Field(description="Gradient start color values")
     ]
     gradient_end: Annotated[List[float], Field(description="Gradient end color values")]
-    overlay: Annotated[Optional[str], Field(description="Overlay effect")] = None
+    overlay: Annotated[Optional[OverlayEnum], Field(description="Overlay effect")] = (
+        None
+    )
 
 
 class ProductSwatchCreate(ProductSwatchBase):
@@ -31,7 +34,9 @@ class ProductSwatchUpdate(BaseModel):
     gradient_end: Annotated[
         Optional[List[float]], Field(description="Gradient end color values")
     ] = None
-    overlay: Annotated[Optional[str], Field(description="Overlay effect")] = None
+    overlay: Annotated[Optional[OverlayEnum], Field(description="Overlay effect")] = (
+        None
+    )
     product_id: Annotated[Optional[int], Field(description="ID of the product")] = None
 
 

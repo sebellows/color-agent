@@ -1,5 +1,6 @@
 from typing import List, Optional, TYPE_CHECKING
-from sqlalchemy import String, Text, ForeignKey
+from sqlalchemy import String, Text, ForeignKey, Enum
+from ..core.enums import ProductLineTypeEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base import Base
 
@@ -17,7 +18,7 @@ class ProductLine(Base):
     marketing_name: Mapped[str] = mapped_column(String(255))
     slug: Mapped[str] = mapped_column(String(100), index=True)
     vendor_slug: Mapped[Optional[str]] = mapped_column(String(100))
-    product_line_type: Mapped[str] = mapped_column(String(50))
+    product_line_type: Mapped[str] = mapped_column(Enum(ProductLineTypeEnum))
     description: Mapped[Optional[str]] = mapped_column(Text)
 
     # Relationships

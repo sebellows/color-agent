@@ -1,10 +1,11 @@
 from typing import Optional, List, Annotated
 from pydantic import BaseModel, Field, ConfigDict
+from ..core.enums import ProductTypeEnum, ColorRangeEnum
 
 
 # ProductType schemas
 class ProductTypeBase(BaseModel):
-    name: Annotated[str, Field(description="Product type name")]
+    name: Annotated[ProductTypeEnum, Field(description="Product type name")]
 
 
 class ProductTypeCreate(ProductTypeBase):
@@ -23,7 +24,7 @@ class ProductType(ProductTypeBase):
 
 # ColorRange schemas
 class ColorRangeBase(BaseModel):
-    name: Annotated[str, Field(description="Color range name")]
+    name: Annotated[ColorRangeEnum, Field(description="Color range name")]
 
 
 class ColorRangeCreate(ColorRangeBase):

@@ -1,4 +1,5 @@
 from typing import Optional, List, Annotated
+from datetime import datetime
 from pydantic import BaseModel, Field, ConfigDict
 
 
@@ -36,6 +37,8 @@ class Vendor(VendorBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: Annotated[int, Field(description="Unique identifier")]
+    created_at: Annotated[datetime, Field(description="Creation timestamp")]
+    updated_at: Annotated[datetime, Field(description="Last update timestamp")]
 
 
 class VendorFilterParams(BaseModel):

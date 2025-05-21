@@ -1,7 +1,9 @@
 from typing import Optional, List, Annotated
+from datetime import datetime
 from pydantic import BaseModel, Field, ConfigDict
 from .product_swatch import ProductSwatch
 from .product_variant import ProductVariant
+from ..core.enums import ProductTypeEnum, ColorRangeEnum
 
 
 class ProductBase(BaseModel):
@@ -49,14 +51,14 @@ class ProductTypeInfo(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: Annotated[int, Field(description="Unique identifier")]
-    name: Annotated[str, Field(description="Product type name")]
+    name: Annotated[ProductTypeEnum, Field(description="Product type name")]
 
 
 class ColorRangeInfo(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: Annotated[int, Field(description="Unique identifier")]
-    name: Annotated[str, Field(description="Color range name")]
+    name: Annotated[ColorRangeEnum, Field(description="Color range name")]
 
 
 class TagInfo(BaseModel):
@@ -86,6 +88,8 @@ class Product(ProductBase):
     color_ranges: Annotated[List[ColorRangeInfo], Field(description="Color ranges")]
     tags: Annotated[List[TagInfo], Field(description="Tags")]
     analogous: Annotated[List[AnalogousInfo], Field(description="Analogous colors")]
+    created_at: Annotated[datetime, Field(description="Creation timestamp")]
+    updated_at: Annotated[datetime, Field(description="Last update timestamp")]
 
 
 class ProductFilterParams(BaseModel):
