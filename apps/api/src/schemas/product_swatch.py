@@ -1,4 +1,5 @@
 from typing import Optional, List, Annotated
+from uuid import UUID
 from pydantic import BaseModel, Field, ConfigDict
 from ..core.enums import OverlayEnum
 
@@ -11,17 +12,15 @@ class ProductSwatchBase(BaseModel):
         List[float], Field(description="Gradient start color values")
     ]
     gradient_end: Annotated[List[float], Field(description="Gradient end color values")]
-    overlay: Annotated[Optional[OverlayEnum], Field(description="Overlay effect")] = (
-        None
-    )
+    overlay: Annotated[OverlayEnum | None, Field(description="Overlay effect")] = None
 
 
 class ProductSwatchCreate(ProductSwatchBase):
-    product_id: Annotated[int, Field(description="ID of the product")]
+    product_id: Annotated[UUID, Field(description="ID of the product")]
 
 
 class ProductSwatchUpdate(BaseModel):
-    hex_color: Annotated[Optional[str], Field(description="Hex color code")] = None
+    hex_color: Annotated[str | None, Field(description="Hex color code")] = None
     rgb_color: Annotated[Optional[List[int]], Field(description="RGB color values")] = (
         None
     )
@@ -34,14 +33,12 @@ class ProductSwatchUpdate(BaseModel):
     gradient_end: Annotated[
         Optional[List[float]], Field(description="Gradient end color values")
     ] = None
-    overlay: Annotated[Optional[OverlayEnum], Field(description="Overlay effect")] = (
-        None
-    )
-    product_id: Annotated[Optional[int], Field(description="ID of the product")] = None
+    overlay: Annotated[OverlayEnum | None, Field(description="Overlay effect")] = None
+    product_id: Annotated[UUID | None, Field(description="ID of the product")] = None
 
 
 class ProductSwatch(ProductSwatchBase):
     model_config = ConfigDict(from_attributes=True)
 
-    id: Annotated[int, Field(description="Unique identifier")]
-    product_id: Annotated[int, Field(description="ID of the product")]
+    id: Annotated[UUID, Field(description="Unique identifier")]
+    product_id: Annotated[UUID, Field(description="ID of the product")]

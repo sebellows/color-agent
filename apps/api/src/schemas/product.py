@@ -1,112 +1,121 @@
-from typing import Optional, List, Annotated
-from datetime import datetime
+from typing import Annotated
+from uuid import UUID
 from pydantic import BaseModel, Field, ConfigDict
+from ..core.enums import ProductTypeEnum, ColorRangeEnum
 from .product_swatch import ProductSwatch
 from .product_variant import ProductVariant
-from ..core.enums import ProductTypeEnum, ColorRangeEnum
+
+from .mixins import (
+    SoftDeletionSchema,
+    TimestampSchema,
+)
 
 
 class ProductBase(BaseModel):
     name: Annotated[str, Field(description="Product name")]
     iscc_nbs_category: Annotated[
-        Optional[str], Field(description="ISCC NBS color category")
+        str | None, Field(description="ISCC NBS color category")
     ] = None
 
 
 class ProductCreate(ProductBase):
-    product_line_id: Annotated[int, Field(description="ID of the product line")]
+    product_line_id: Annotated[UUID, Field(description="ID of the product line")]
     product_types: Annotated[
-        Optional[List[int]], Field(description="IDs of product types")
+        list[UUID] | None, Field(description="IDs of product types")
     ] = None
     color_ranges: Annotated[
-        Optional[List[int]], Field(description="IDs of color ranges")
+        list[UUID] | None, Field(description="IDs of color ranges")
     ] = None
-    tags: Annotated[Optional[List[int]], Field(description="IDs of tags")] = None
+    tags: Annotated[list[UUID] | None, Field(description="IDs of tags")] = None
     analogous: Annotated[
-        Optional[List[int]], Field(description="IDs of analogous colors")
+        list[UUID] | None, Field(description="IDs of analogous colors")
     ] = None
 
 
 class ProductUpdate(BaseModel):
-    name: Annotated[Optional[str], Field(description="Product name")] = None
+    name: Annotated[str | None, Field(description="Product name")] = None
     iscc_nbs_category: Annotated[
-        Optional[str], Field(description="ISCC NBS color category")
+        str | None, Field(description="ISCC NBS color category")
     ] = None
     product_line_id: Annotated[
-        Optional[int], Field(description="ID of the product line")
+        UUID | None, Field(description="ID of the product line")
     ] = None
     product_types: Annotated[
-        Optional[List[int]], Field(description="IDs of product types")
+        list[UUID] | None, Field(description="IDs of product types")
     ] = None
     color_ranges: Annotated[
-        Optional[List[int]], Field(description="IDs of color ranges")
+        list[UUID] | None, Field(description="IDs of color ranges")
     ] = None
-    tags: Annotated[Optional[List[int]], Field(description="IDs of tags")] = None
+    tags: Annotated[list[UUID] | None, Field(description="IDs of tags")] = None
     analogous: Annotated[
-        Optional[List[int]], Field(description="IDs of analogous colors")
+        list[UUID] | None, Field(description="IDs of analogous colors")
     ] = None
+
+
+class ProductDelete(BaseModel, SoftDeletionSchema):
+    """Product delete schema"""
+
+    pass
 
 
 class ProductTypeInfo(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: Annotated[int, Field(description="Unique identifier")]
+    id: Annotated[UUID, Field(description="Unique identifier")]
     name: Annotated[ProductTypeEnum, Field(description="Product type name")]
 
 
 class ColorRangeInfo(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: Annotated[int, Field(description="Unique identifier")]
+    id: Annotated[UUID, Field(description="Unique identifier")]
     name: Annotated[ColorRangeEnum, Field(description="Color range name")]
 
 
 class TagInfo(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: Annotated[int, Field(description="Unique identifier")]
+    id: Annotated[UUID, Field(description="Unique identifier")]
     name: Annotated[str, Field(description="Tag name")]
 
 
 class AnalogousInfo(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: Annotated[int, Field(description="Unique identifier")]
+    id: Annotated[UUID, Field(description="Unique identifier")]
     name: Annotated[str, Field(description="Analogous color name")]
 
 
-class Product(ProductBase):
+class Product(ProductBase, TimestampSchema, SoftDeletionSchema):
     model_config = ConfigDict(from_attributes=True)
 
-    id: Annotated[int, Field(description="Unique identifier")]
-    product_line_id: Annotated[int, Field(description="ID of the product line")]
+    id: Annotated[UUID, Field(description="Unique identifier")]
+    product_line_id: Annotated[UUID, Field(description="ID of the product line")]
     swatch: Annotated[
-        Optional[ProductSwatch], Field(description="Product swatch information")
+        ProductSwatch | None, Field(description="Product swatch information")
     ] = None
-    variants: Annotated[List[ProductVariant], Field(description="Product variants")]
-    product_types: Annotated[List[ProductTypeInfo], Field(description="Product types")]
-    color_ranges: Annotated[List[ColorRangeInfo], Field(description="Color ranges")]
-    tags: Annotated[List[TagInfo], Field(description="Tags")]
-    analogous: Annotated[List[AnalogousInfo], Field(description="Analogous colors")]
-    created_at: Annotated[datetime, Field(description="Creation timestamp")]
-    updated_at: Annotated[datetime, Field(description="Last update timestamp")]
+    variants: Annotated[list[ProductVariant], Field(description="Product variants")]
+    product_types: Annotated[list[ProductTypeInfo], Field(description="Product types")]
+    color_ranges: Annotated[list[ColorRangeInfo], Field(description="Color ranges")]
+    tags: Annotated[list[TagInfo], Field(description="Tags")]
+    analogous: Annotated[list[AnalogousInfo], Field(description="Analogous colors")]
 
 
 class ProductFilterParams(BaseModel):
-    name: Annotated[Optional[str], Field(description="Filter by name")] = None
+    name: Annotated[str | None, Field(description="Filter by name")] = None
     product_line_id: Annotated[
-        Optional[int], Field(description="Filter by product line ID")
+        UUID | None, Field(description="Filter by product line ID")
     ] = None
     product_type_id: Annotated[
-        Optional[int], Field(description="Filter by product type ID")
+        UUID | None, Field(description="Filter by product type ID")
     ] = None
     color_range_id: Annotated[
-        Optional[int], Field(description="Filter by color range ID")
+        UUID | None, Field(description="Filter by color range ID")
     ] = None
-    tag_id: Annotated[Optional[int], Field(description="Filter by tag ID")] = None
+    tag_id: Annotated[UUID | None, Field(description="Filter by tag ID")] = None
     analogous_id: Annotated[
-        Optional[int], Field(description="Filter by analogous ID")
+        UUID | None, Field(description="Filter by analogous ID")
     ] = None
     iscc_nbs_category: Annotated[
-        Optional[str], Field(description="Filter by ISCC NBS category")
+        str | None, Field(description="Filter by ISCC NBS category")
     ] = None

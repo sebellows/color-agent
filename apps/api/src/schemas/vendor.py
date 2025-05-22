@@ -1,6 +1,12 @@
-from typing import Optional, List, Annotated
+from typing import Annotated
 from datetime import datetime
+from uuid import UUID
 from pydantic import BaseModel, Field, ConfigDict
+
+from .mixins import (
+    SoftDeletionSchema,
+    TimestampSchema,
+)
 
 
 class VendorBase(BaseModel):
@@ -18,30 +24,32 @@ class VendorCreate(VendorBase):
 
 
 class VendorUpdate(BaseModel):
-    name: Annotated[Optional[str], Field(description="Vendor name")] = None
-    url: Annotated[Optional[str], Field(description="Vendor website URL")] = None
-    slug: Annotated[Optional[str], Field(description="Unique identifier slug")] = None
-    platform: Annotated[Optional[str], Field(description="E-commerce platform")] = None
-    description: Annotated[Optional[str], Field(description="Vendor description")] = (
+    name: Annotated[str | None, Field(description="Vendor name")] = None
+    url: Annotated[str | None, Field(description="Vendor website URL")] = None
+    slug: Annotated[str | None, Field(description="Unique identifier slug")] = None
+    platform: Annotated[str | None, Field(description="E-commerce platform")] = None
+    description: Annotated[str | None, Field(description="Vendor description")] = None
+    pdp_slug: Annotated[str | None, Field(description="Product detail page slug")] = (
         None
     )
-    pdp_slug: Annotated[
-        Optional[str], Field(description="Product detail page slug")
-    ] = None
-    plp_slug: Annotated[
-        Optional[str], Field(description="Product listing page slug")
-    ] = None
+    plp_slug: Annotated[str | None, Field(description="Product listing page slug")] = (
+        None
+    )
 
 
-class Vendor(VendorBase):
+class VendorDelete(BaseModel, SoftDeletionSchema):
+    """Vendor delete schema"""
+
+    pass
+
+
+class Vendor(VendorBase, TimestampSchema, SoftDeletionSchema):
     model_config = ConfigDict(from_attributes=True)
 
-    id: Annotated[int, Field(description="Unique identifier")]
-    created_at: Annotated[datetime, Field(description="Creation timestamp")]
-    updated_at: Annotated[datetime, Field(description="Last update timestamp")]
+    id: Annotated[UUID, Field(description="Unique identifier")]
 
 
 class VendorFilterParams(BaseModel):
-    name: Annotated[Optional[str], Field(description="Filter by vendor name")] = None
-    platform: Annotated[Optional[str], Field(description="Filter by platform")] = None
-    slug: Annotated[Optional[str], Field(description="Filter by slug")] = None
+    name: Annotated[str | None, Field(description="Filter by vendor name")] = None
+    platform: Annotated[str | None, Field(description="Filter by platform")] = None
+    slug: Annotated[str | None, Field(description="Filter by slug")] = None

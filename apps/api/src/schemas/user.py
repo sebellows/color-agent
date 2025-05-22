@@ -1,16 +1,21 @@
 """User schema module."""
 
 from datetime import datetime
-from typing import Optional
+from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, Field
+
+from .mixins import (
+    SoftDeletionSchema,
+    TimestampSchema,
+)
 
 
 class UserBase(BaseModel):
     """Base user schema."""
 
     email: EmailStr
-    full_name: Optional[str] = None
+    full_name: str | None = None
     is_active: bool = True
 
 
@@ -23,18 +28,22 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     """User update schema."""
 
-    email: Optional[EmailStr] = None
-    full_name: Optional[str] = None
-    password: Optional[str] = Field(None, min_length=8)
-    is_active: Optional[bool] = None
+    email: EmailStr | None = None
+    full_name: str | None = None
+    password: str | None = Field(None, min_length=8)
+    is_active: bool | None = None
 
 
-class UserInDBBase(UserBase):
+class UserDelete(BaseModel, SoftDeletionSchema):
+    """User delete schema"""
+
+    pass
+
+
+class UserInDBBase(UserBase, TimestampSchema):
     """Base user schema for DB representation."""
 
-    id: int
-    created_at: datetime
-    updated_at: datetime
+    id: UUID
 
     class Config:
         """Pydantic config."""

@@ -1,5 +1,5 @@
-from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from uuid import UUID
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import func
@@ -17,7 +17,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/", response_model=ProductVariantSchema, status_code=status.HTTP_201_CREATED
+    "/", response_model=ProductVariantSchema, status_code=HTTPException.HTTP_201_CREATED
 )
 async def create_product_variant(
     product_variant_in: ProductVariantCreate, db: AsyncSession = Depends(get_db)
@@ -71,7 +71,7 @@ async def create_product_variant(
 
 @router.get("/{product_variant_id}", response_model=ProductVariantSchema)
 async def get_product_variant(
-    product_variant_id: int, db: AsyncSession = Depends(get_db)
+    product_variant_id: UUID, db: AsyncSession = Depends(get_db)
 ):
     """Get a product variant by ID"""
     result = await db.execute(
@@ -80,7 +80,7 @@ async def get_product_variant(
     product_variant = result.scalars().first()
     if not product_variant:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=HTTPException.HTTP_404_NOT_FOUND,
             detail=f"Product variant with ID {product_variant_id} not found",
         )
     return product_variant
@@ -90,11 +90,11 @@ async def get_product_variant(
 async def list_product_variants(
     skip: int = 0,
     limit: int = 100,
-    product_id: Optional[int] = None,
-    locale_id: Optional[int] = None,
-    sku: Optional[str] = None,
-    discontinued: Optional[bool] = None,
-    application_method: Optional[str] = None,
+    product_id: UUID | None = None,
+    locale_id: UUID | None = None,
+    sku: str | None = None,
+    discontinued: bool | None = None,
+    application_method: str | None = None,
     db: AsyncSession = Depends(get_db),
 ):
     """List product variants with filtering"""
@@ -122,7 +122,8 @@ async def list_product_variants(
 
     # Get total count
     result = await db.execute(count_query)
-    total = result.scalar()
+    scalar = result.scalar()
+    total = scalar if scalar is not None else 0
 
     # Apply pagination
     query = query.offset(skip).limit(limit)
@@ -142,7 +143,7 @@ async def list_product_variants(
 
 @router.put("/{product_variant_id}", response_model=ProductVariantSchema)
 async def update_product_variant(
-    product_variant_id: int,
+    product_variant_id: UUID,
     product_variant_in: ProductVariantUpdate,
     db: AsyncSession = Depends(get_db),
 ):
@@ -153,7 +154,7 @@ async def update_product_variant(
     product_variant = result.scalars().first()
     if not product_variant:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=HTTPException.HTTP_404_NOT_FOUND,
             detail=f"Product variant with ID {product_variant_id} not found",
         )
 
@@ -216,9 +217,9 @@ async def update_product_variant(
     return product_variant
 
 
-@router.delete("/{product_variant_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{product_variant_id}", status_code=HTTPException.HTTP_204_NO_CONTENT)
 async def delete_product_variant(
-    product_variant_id: int, db: AsyncSession = Depends(get_db)
+    product_variant_id: UUID, db: AsyncSession = Depends(get_db)
 ):
     """Delete a product variant"""
     result = await db.execute(
@@ -227,7 +228,7 @@ async def delete_product_variant(
     product_variant = result.scalars().first()
     if not product_variant:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=HTTPException.HTTP_404_NOT_FOUND,
             detail=f"Product variant with ID {product_variant_id} not found",
         )
 

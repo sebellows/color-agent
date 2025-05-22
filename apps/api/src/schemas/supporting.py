@@ -1,4 +1,5 @@
-from typing import Optional, List, Annotated
+from typing import Annotated
+from uuid import UUID
 from pydantic import BaseModel, Field, ConfigDict
 from ..core.enums import ProductTypeEnum, ColorRangeEnum
 
@@ -19,7 +20,7 @@ class ProductTypeUpdate(ProductTypeBase):
 class ProductType(ProductTypeBase):
     model_config = ConfigDict(from_attributes=True)
 
-    id: Annotated[int, Field(description="Unique identifier")]
+    id: Annotated[UUID, Field(description="Unique identifier")]
 
 
 # ColorRange schemas
@@ -38,7 +39,7 @@ class ColorRangeUpdate(ColorRangeBase):
 class ColorRange(ColorRangeBase):
     model_config = ConfigDict(from_attributes=True)
 
-    id: Annotated[int, Field(description="Unique identifier")]
+    id: Annotated[UUID, Field(description="Unique identifier")]
 
 
 # Tag schemas
@@ -57,7 +58,7 @@ class TagUpdate(TagBase):
 class Tag(TagBase):
     model_config = ConfigDict(from_attributes=True)
 
-    id: Annotated[int, Field(description="Unique identifier")]
+    id: Annotated[UUID, Field(description="Unique identifier")]
 
 
 # Analogous schemas
@@ -76,7 +77,7 @@ class AnalogousUpdate(AnalogousBase):
 class Analogous(AnalogousBase):
     model_config = ConfigDict(from_attributes=True)
 
-    id: Annotated[int, Field(description="Unique identifier")]
+    id: Annotated[UUID, Field(description="Unique identifier")]
 
 
 # VendorColorRange schemas
@@ -95,7 +96,7 @@ class VendorColorRangeUpdate(VendorColorRangeBase):
 class VendorColorRange(VendorColorRangeBase):
     model_config = ConfigDict(from_attributes=True)
 
-    id: Annotated[int, Field(description="Unique identifier")]
+    id: Annotated[UUID, Field(description="Unique identifier")]
 
 
 # VendorProductType schemas
@@ -114,4 +115,4 @@ class VendorProductTypeUpdate(VendorProductTypeBase):
 class VendorProductType(VendorProductTypeBase):
     model_config = ConfigDict(from_attributes=True)
 
-    id: Annotated[int, Field(description="Unique identifier")]
+    id: Annotated[UUID, Field(description="Unique identifier")]

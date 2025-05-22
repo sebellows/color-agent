@@ -1,7 +1,8 @@
 from typing import List, TYPE_CHECKING
 from sqlalchemy import String, Enum
-from ..core.enums import ProductTypeEnum, ColorRangeEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from ..core.enums import ProductTypeEnum, ColorRangeEnum
 from .base import Base
 from .associations import (
     product_product_type,
@@ -11,16 +12,16 @@ from .associations import (
     variant_vendor_color_range,
     variant_vendor_product_type,
 )
+from .mixins import UUIDMixin
 
 if TYPE_CHECKING:
     from .product import Product
     from .product_variant import ProductVariant
 
 
-class ProductType(Base):
+class ProductType(Base, UUIDMixin):
     __tablename__ = "product_types"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(Enum(ProductTypeEnum), unique=True)
 
     # Relationships
@@ -29,10 +30,9 @@ class ProductType(Base):
     )
 
 
-class ColorRange(Base):
+class ColorRange(Base, UUIDMixin):
     __tablename__ = "color_ranges"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(Enum(ColorRangeEnum), unique=True)
 
     # Relationships
@@ -41,10 +41,9 @@ class ColorRange(Base):
     )
 
 
-class Tag(Base):
+class Tag(Base, UUIDMixin):
     __tablename__ = "tags"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100), unique=True)
 
     # Relationships
@@ -53,10 +52,9 @@ class Tag(Base):
     )
 
 
-class Analogous(Base):
+class Analogous(Base, UUIDMixin):
     __tablename__ = "analogous"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100), unique=True)
 
     # Relationships
@@ -65,10 +63,9 @@ class Analogous(Base):
     )
 
 
-class VendorColorRange(Base):
+class VendorColorRange(Base, UUIDMixin):
     __tablename__ = "vendor_color_ranges"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100), unique=True)
 
     # Relationships
@@ -79,10 +76,9 @@ class VendorColorRange(Base):
     )
 
 
-class VendorProductType(Base):
+class VendorProductType(Base, UUIDMixin):
     __tablename__ = "vendor_product_types"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100), unique=True)
 
     # Relationships

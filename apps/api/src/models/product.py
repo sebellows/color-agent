@@ -1,5 +1,5 @@
-from typing import List, Optional, TYPE_CHECKING
-from sqlalchemy import String, ForeignKey
+from typing import TYPE_CHECKING
+from sqlalchemy import ForeignKey, String, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base import Base
 from .associations import (
@@ -8,6 +8,7 @@ from .associations import (
     product_tag,
     product_analogous,
 )
+from .mixins import CrudTimestampMixin, UUIDMixin
 
 if TYPE_CHECKING:
     from .product_line import ProductLine
@@ -16,15 +17,14 @@ if TYPE_CHECKING:
     from .supporting import ProductType, ColorRange, Tag, Analogous
 
 
-class Product(Base):
+class Product(Base, CrudTimestampMixin, UUIDMixin):
     __tablename__ = "products"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    product_line_id: Mapped[int] = mapped_column(
+    product_line_id: Mapped[UUID] = mapped_column(
         ForeignKey("product_lines.id", ondelete="CASCADE")
     )
     name: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
-    iscc_nbs_category: Mapped[Optional[str]] = mapped_column(String(100))
+    iscc_nbs_category: Mapped[str | None] = mapped_column(String(100))
 
     # Relationships
     product_line: Mapped["ProductLine"] = relationship(
@@ -36,20 +36,20 @@ class Product(Base):
         uselist=False,
         cascade="all, delete-orphan",
     )
-    variants: Mapped[List["ProductVariant"]] = relationship(
+    variants: Mapped[list["ProductVariant"]] = relationship(
         "ProductVariant", back_populates="product", cascade="all, delete-orphan"
     )
 
     # Many-to-many relationships
-    product_types: Mapped[List["ProductType"]] = relationship(
+    product_types: Mapped[list["ProductType"]] = relationship(
         "ProductType", secondary=product_product_type, back_populates="products"
     )
-    color_ranges: Mapped[List["ColorRange"]] = relationship(
+    color_ranges: Mapped[list["ColorRange"]] = relationship(
         "ColorRange", secondary=product_color_range, back_populates="products"
     )
-    tags: Mapped[List["Tag"]] = relationship(
+    tags: Mapped[list["Tag"]] = relationship(
         "Tag", secondary=product_tag, back_populates="products"
     )
-    analogous: Mapped[List["Analogous"]] = relationship(
+    analogous: Mapped[list["Analogous"]] = relationship(
         "Analogous", secondary=product_analogous, back_populates="products"
     )

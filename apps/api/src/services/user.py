@@ -30,8 +30,10 @@ class UserService:
         """Create new user."""
         db_obj = User(
             email=obj_in.email,
+            # username=obj_in.username,
+            # avatar_url=obj_in.avatar_url,
             hashed_password=get_password_hash(obj_in.password),
-            full_name=obj_in.full_name,
+            # full_name=obj_in.full_name,
             is_active=obj_in.is_active,
         )
         db.add(db_obj)
@@ -71,7 +73,7 @@ class UserService:
     @staticmethod
     async def is_active(user: User) -> bool:
         """Check if user is active."""
-        return user.is_active
+        return user.is_active if isinstance(user.is_active, bool) else False
 
     @staticmethod
     async def is_superuser(user: User) -> bool:

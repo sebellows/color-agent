@@ -1,7 +1,12 @@
-from typing import Optional, List, Annotated
-from datetime import datetime
+from typing import Annotated
+from uuid import UUID
 from pydantic import BaseModel, Field, ConfigDict
 from ..core.enums import ProductLineTypeEnum
+
+from .mixins import (
+    SoftDeletionSchema,
+    TimestampSchema,
+)
 
 
 class ProductLineBase(BaseModel):
@@ -10,49 +15,49 @@ class ProductLineBase(BaseModel):
         str, Field(description="Marketing name for the product line")
     ]
     slug: Annotated[str, Field(description="Unique identifier slug")]
-    vendor_slug: Annotated[Optional[str], Field(description="Vendor-specific slug")] = (
-        None
-    )
+    vendor_slug: Annotated[str | None, Field(description="Vendor-specific slug")] = None
     product_line_type: Annotated[
         ProductLineTypeEnum, Field(description="Type of product line")
     ]
     description: Annotated[
-        Optional[str], Field(description="Product line description")
+        str | None, Field(description="Product line description")
     ] = None
 
 
 class ProductLineCreate(ProductLineBase):
-    vendor_id: Annotated[int, Field(description="ID of the vendor")]
+    vendor_id: Annotated[UUID, Field(description="ID of the vendor")]
 
 
 class ProductLineUpdate(BaseModel):
-    name: Annotated[Optional[str], Field(description="Product line name")] = None
-    marketing_name: Annotated[Optional[str], Field(description="Marketing name")] = None
-    slug: Annotated[Optional[str], Field(description="Unique identifier slug")] = None
-    vendor_slug: Annotated[Optional[str], Field(description="Vendor-specific slug")] = (
-        None
-    )
+    name: Annotated[str | None, Field(description="Product line name")] = None
+    marketing_name: Annotated[str | None, Field(description="Marketing name")] = None
+    slug: Annotated[str | None, Field(description="Unique identifier slug")] = None
+    vendor_slug: Annotated[str | None, Field(description="Vendor-specific slug")] = None
     product_line_type: Annotated[
-        Optional[ProductLineTypeEnum], Field(description="Type of product line")
+        ProductLineTypeEnum | None, Field(description="Type of product line")
     ] = None
     description: Annotated[
-        Optional[str], Field(description="Product line description")
+        str | None, Field(description="Product line description")
     ] = None
-    vendor_id: Annotated[Optional[int], Field(description="ID of the vendor")] = None
+    vendor_id: Annotated[UUID | None, Field(description="ID of the vendor")] = None
 
 
-class ProductLine(ProductLineBase):
+class ProductLineDelete(BaseModel, SoftDeletionSchema):
+    """Product Line delete schema"""
+
+    pass
+
+
+class ProductLine(ProductLineBase, TimestampSchema, SoftDeletionSchema):
     model_config = ConfigDict(from_attributes=True)
 
-    id: Annotated[int, Field(description="Unique identifier")]
-    vendor_id: Annotated[int, Field(description="ID of the vendor")]
-    created_at: Annotated[datetime, Field(description="Creation timestamp")]
-    updated_at: Annotated[datetime, Field(description="Last update timestamp")]
+    id: Annotated[UUID, Field(description="Unique identifier")]
+    vendor_id: Annotated[UUID, Field(description="ID of the vendor")]
 
 
 class ProductLineFilterParams(BaseModel):
-    name: Annotated[Optional[str], Field(description="Filter by name")] = None
+    name: Annotated[str | None, Field(description="Filter by name")] = None
     product_line_type: Annotated[
-        Optional[ProductLineTypeEnum], Field(description="Filter by type")
+        ProductLineTypeEnum | None, Field(description="Filter by type")
     ] = None
-    vendor_id: Annotated[Optional[int], Field(description="Filter by vendor ID")] = None
+    vendor_id: Annotated[UUID | None, Field(description="Filter by vendor ID")] = None

@@ -1,5 +1,5 @@
-from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from uuid import UUID
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import func
@@ -10,14 +10,15 @@ from ...schemas import (
     ProductLine as ProductLineSchema,
     ProductLineCreate,
     ProductLineUpdate,
-    ProductLineFilterParams,
     PageResponse,
 )
 
 router = APIRouter()
 
 
-@router.post("/", response_model=ProductLineSchema, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/", response_model=ProductLineSchema, status_code=HTTPException.HTTP_201_CREATED
+)
 async def create_product_line(
     product_line_in: ProductLineCreate, db: AsyncSession = Depends(get_db)
 ):
@@ -30,7 +31,7 @@ async def create_product_line(
 
 
 @router.get("/{product_line_id}", response_model=ProductLineSchema)
-async def get_product_line(product_line_id: int, db: AsyncSession = Depends(get_db)):
+async def get_product_line(product_line_id: UUID, db: AsyncSession = Depends(get_db)):
     """Get a product line by ID"""
     result = await db.execute(
         select(ProductLine).filter(ProductLine.id == product_line_id)
@@ -38,7 +39,7 @@ async def get_product_line(product_line_id: int, db: AsyncSession = Depends(get_
     product_line = result.scalars().first()
     if not product_line:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=HTTPException.HTTP_404_NOT_FOUND,
             detail=f"Product line with ID {product_line_id} not found",
         )
     return product_line
@@ -48,9 +49,9 @@ async def get_product_line(product_line_id: int, db: AsyncSession = Depends(get_
 async def list_product_lines(
     skip: int = 0,
     limit: int = 100,
-    name: Optional[str] = None,
-    product_line_type: Optional[str] = None,
-    vendor_id: Optional[int] = None,
+    name: str | None = None,
+    product_line_type: str | None = None,
+    vendor_id: UUID | None = None,
     db: AsyncSession = Depends(get_db),
 ):
     """List product lines with filtering"""
@@ -72,7 +73,8 @@ async def list_product_lines(
 
     # Get total count
     result = await db.execute(count_query)
-    total = result.scalar()
+    scalar = result.scalar()
+    total = scalar if scalar is not None else 0
 
     # Apply pagination
     query = query.offset(skip).limit(limit)
@@ -92,7 +94,7 @@ async def list_product_lines(
 
 @router.put("/{product_line_id}", response_model=ProductLineSchema)
 async def update_product_line(
-    product_line_id: int,
+    product_line_id: UUID,
     product_line_in: ProductLineUpdate,
     db: AsyncSession = Depends(get_db),
 ):
@@ -103,7 +105,7 @@ async def update_product_line(
     product_line = result.scalars().first()
     if not product_line:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=HTTPException.HTTP_404_NOT_FOUND,
             detail=f"Product line with ID {product_line_id} not found",
         )
 
@@ -116,8 +118,10 @@ async def update_product_line(
     return product_line
 
 
-@router.delete("/{product_line_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_product_line(product_line_id: int, db: AsyncSession = Depends(get_db)):
+@router.delete("/{product_line_id}", status_code=HTTPException.HTTP_204_NO_CONTENT)
+async def delete_product_line(
+    product_line_id: UUID, db: AsyncSession = Depends(get_db)
+):
     """Delete a product line"""
     result = await db.execute(
         select(ProductLine).filter(ProductLine.id == product_line_id)
@@ -125,7 +129,7 @@ async def delete_product_line(product_line_id: int, db: AsyncSession = Depends(g
     product_line = result.scalars().first()
     if not product_line:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=HTTPException.HTTP_404_NOT_FOUND,
             detail=f"Product line with ID {product_line_id} not found",
         )
 

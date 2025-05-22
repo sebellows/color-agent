@@ -1,4 +1,5 @@
-from typing import Optional, List, Annotated
+from typing import Annotated
+from uuid import UUID
 from pydantic import BaseModel, Field, ConfigDict
 
 
@@ -14,24 +15,22 @@ class LocaleCreate(LocaleBase):
 
 
 class LocaleUpdate(BaseModel):
-    language_code: Annotated[Optional[str], Field(description="Language code")] = None
-    country_code: Annotated[Optional[str], Field(description="Country code")] = None
-    currency_code: Annotated[Optional[str], Field(description="Currency code")] = None
-    currency_symbol: Annotated[Optional[str], Field(description="Currency symbol")] = (
-        None
-    )
+    language_code: Annotated[str | None, Field(description="Language code")] = None
+    country_code: Annotated[str | None, Field(description="Country code")] = None
+    currency_code: Annotated[str | None, Field(description="Currency code")] = None
+    currency_symbol: Annotated[str | None, Field(description="Currency symbol")] = None
 
 
 class Locale(LocaleBase):
     model_config = ConfigDict(from_attributes=True)
 
-    id: Annotated[int, Field(description="Unique identifier")]
+    id: Annotated[UUID, Field(description="Unique identifier")]
 
 
 class LocaleFilterParams(BaseModel):
     language_code: Annotated[
-        Optional[str], Field(description="Filter by language code")
+        str | None, Field(description="Filter by language code")
     ] = None
-    country_code: Annotated[
-        Optional[str], Field(description="Filter by country code")
-    ] = None
+    country_code: Annotated[str | None, Field(description="Filter by country code")] = (
+        None
+    )
