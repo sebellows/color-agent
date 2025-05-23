@@ -1,5 +1,4 @@
-from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import func
@@ -10,14 +9,15 @@ from ...schemas import (
     Vendor as VendorSchema,
     VendorCreate,
     VendorUpdate,
-    VendorFilterParams,
     PageResponse,
 )
 
 router = APIRouter()
 
 
-@router.post("/", response_model=VendorSchema, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/", response_model=VendorSchema, status_code=HTTPException.HTTP_201_CREATED
+)
 async def create_vendor(vendor_in: VendorCreate, db: AsyncSession = Depends(get_db)):
     """Create a new vendor"""
     vendor = Vendor(**vendor_in.model_dump())
@@ -34,7 +34,7 @@ async def get_vendor(vendor_id: int, db: AsyncSession = Depends(get_db)):
     vendor = result.scalars().first()
     if not vendor:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=HTTPException.HTTP_404_NOT_FOUND,
             detail=f"Vendor with ID {vendor_id} not found",
         )
     return vendor
@@ -44,9 +44,9 @@ async def get_vendor(vendor_id: int, db: AsyncSession = Depends(get_db)):
 async def list_vendors(
     skip: int = 0,
     limit: int = 100,
-    name: Optional[str] = None,
-    platform: Optional[str] = None,
-    slug: Optional[str] = None,
+    name: str | None = None,
+    platform: str | None = None,
+    slug: str | None = None,
     db: AsyncSession = Depends(get_db),
 ):
     """List vendors with filtering"""
@@ -66,7 +66,8 @@ async def list_vendors(
 
     # Get total count
     result = await db.execute(count_query)
-    total = result.scalar()
+    scalar = result.scalar()
+    total = scalar if scalar is not None else 0
 
     # Apply pagination
     query = query.offset(skip).limit(limit)
@@ -93,7 +94,7 @@ async def update_vendor(
     vendor = result.scalars().first()
     if not vendor:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=HTTPException.HTTP_404_NOT_FOUND,
             detail=f"Vendor with ID {vendor_id} not found",
         )
 
@@ -106,14 +107,14 @@ async def update_vendor(
     return vendor
 
 
-@router.delete("/{vendor_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{vendor_id}", status_code=HTTPException.HTTP_204_NO_CONTENT)
 async def delete_vendor(vendor_id: int, db: AsyncSession = Depends(get_db)):
     """Delete a vendor"""
     result = await db.execute(select(Vendor).filter(Vendor.id == vendor_id))
     vendor = result.scalars().first()
     if not vendor:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=HTTPException.HTTP_404_NOT_FOUND,
             detail=f"Vendor with ID {vendor_id} not found",
         )
 

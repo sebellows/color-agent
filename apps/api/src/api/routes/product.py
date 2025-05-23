@@ -1,8 +1,7 @@
-from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import func
+from sqlalchemy import func, text
 
 from ...core.database import get_db
 from ...models import Product
@@ -10,14 +9,15 @@ from ...schemas import (
     Product as ProductSchema,
     ProductCreate,
     ProductUpdate,
-    ProductFilterParams,
     PageResponse,
 )
 
 router = APIRouter()
 
 
-@router.post("/", response_model=ProductSchema, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/", response_model=ProductSchema, status_code=HTTPException.HTTP_201_CREATED
+)
 async def create_product(product_in: ProductCreate, db: AsyncSession = Depends(get_db)):
     """Create a new product"""
     # Extract relationship IDs
@@ -39,41 +39,41 @@ async def create_product(product_in: ProductCreate, db: AsyncSession = Depends(g
     # Add relationships
     if product_types:
         await db.execute(
-            """
+            text("""
             INSERT INTO product_product_type (product_id, product_type_id)
             SELECT :product_id, pt.id FROM product_type pt
             WHERE pt.id IN :product_type_ids
-            """,
+            """),
             {"product_id": product.id, "product_type_ids": tuple(product_types)},
         )
 
     if color_ranges:
         await db.execute(
-            """
+            text("""
             INSERT INTO product_color_range (product_id, color_range_id)
             SELECT :product_id, cr.id FROM color_range cr
             WHERE cr.id IN :color_range_ids
-            """,
+            """),
             {"product_id": product.id, "color_range_ids": tuple(color_ranges)},
         )
 
     if tags:
         await db.execute(
-            """
+            text("""
             INSERT INTO product_tag (product_id, tag_id)
             SELECT :product_id, t.id FROM tag t
             WHERE t.id IN :tag_ids
-            """,
+            """),
             {"product_id": product.id, "tag_ids": tuple(tags)},
         )
 
     if analogous:
         await db.execute(
-            """
+            text("""
             INSERT INTO product_analogous (product_id, analogous_id)
             SELECT :product_id, a.id FROM analogous a
             WHERE a.id IN :analogous_ids
-            """,
+            """),
             {"product_id": product.id, "analogous_ids": tuple(analogous)},
         )
 
@@ -89,7 +89,7 @@ async def get_product(product_id: int, db: AsyncSession = Depends(get_db)):
     product = result.scalars().first()
     if not product:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=HTTPException.HTTP_404_NOT_FOUND,
             detail=f"Product with ID {product_id} not found",
         )
     return product
@@ -99,13 +99,13 @@ async def get_product(product_id: int, db: AsyncSession = Depends(get_db)):
 async def list_products(
     skip: int = 0,
     limit: int = 100,
-    name: Optional[str] = None,
-    product_line_id: Optional[int] = None,
-    product_type_id: Optional[int] = None,
-    color_range_id: Optional[int] = None,
-    tag_id: Optional[int] = None,
-    analogous_id: Optional[int] = None,
-    iscc_nbs_category: Optional[str] = None,
+    name: str | None = None,
+    product_line_id: int | None = None,
+    product_type_id: int | None = None,
+    color_range_id: int | None = None,
+    tag_id: int | None = None,
+    analogous_id: int | None = None,
+    iscc_nbs_category: str | None = None,
     db: AsyncSession = Depends(get_db),
 ):
     """List products with filtering"""
@@ -128,7 +128,8 @@ async def list_products(
 
     # Get total count
     result = await db.execute(count_query)
-    total = result.scalar()
+    scalar = result.scalar()
+    total = scalar if scalar is not None else 0
 
     # Apply pagination
     query = query.offset(skip).limit(limit)
@@ -155,7 +156,7 @@ async def update_product(
     product = result.scalars().first()
     if not product:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=HTTPException.HTTP_404_NOT_FOUND,
             detail=f"Product with ID {product_id} not found",
         )
 
@@ -177,72 +178,72 @@ async def update_product(
     if product_types is not None:
         # Clear existing relationships
         await db.execute(
-            "DELETE FROM product_product_type WHERE product_id = :product_id",
+            text("DELETE FROM product_product_type WHERE product_id = :product_id"),
             {"product_id": product.id},
         )
 
         # Add new relationships
         if product_types:
             await db.execute(
-                """
+                text("""
                 INSERT INTO product_product_type (product_id, product_type_id)
                 SELECT :product_id, pt.id FROM product_type pt
                 WHERE pt.id IN :product_type_ids
-                """,
+                """),
                 {"product_id": product.id, "product_type_ids": tuple(product_types)},
             )
 
     if color_ranges is not None:
         # Clear existing relationships
         await db.execute(
-            "DELETE FROM product_color_range WHERE product_id = :product_id",
+            text("DELETE FROM product_color_range WHERE product_id = :product_id"),
             {"product_id": product.id},
         )
 
         # Add new relationships
         if color_ranges:
             await db.execute(
-                """
+                text("""
                 INSERT INTO product_color_range (product_id, color_range_id)
                 SELECT :product_id, cr.id FROM color_range cr
                 WHERE cr.id IN :color_range_ids
-                """,
+                """),
                 {"product_id": product.id, "color_range_ids": tuple(color_ranges)},
             )
 
     if tags is not None:
         # Clear existing relationships
         await db.execute(
-            "DELETE FROM product_tag WHERE product_id = :product_id",
+            text("DELETE FROM product_tag WHERE product_id = :product_id"),
             {"product_id": product.id},
         )
 
         # Add new relationships
         if tags:
             await db.execute(
-                """
+                text("""
                 INSERT INTO product_tag (product_id, tag_id)
                 SELECT :product_id, t.id FROM tag t
                 WHERE t.id IN :tag_ids
-                """,
+                """),
                 {"product_id": product.id, "tag_ids": tuple(tags)},
             )
 
     if analogous is not None:
         # Clear existing relationships
         await db.execute(
-            "DELETE FROM product_analogous WHERE product_id = :product_id",
+            text("DELETE FROM product_analogous WHERE product_id = :product_id"),
             {"product_id": product.id},
         )
 
         # Add new relationships
         if analogous:
             await db.execute(
-                """
+                text("""
                 INSERT INTO product_analogous (product_id, analogous_id)
                 SELECT :product_id, a.id FROM analogous a
                 WHERE a.id IN :analogous_ids
-                """,
+                """),
                 {"product_id": product.id, "analogous_ids": tuple(analogous)},
             )
 
@@ -251,14 +252,14 @@ async def update_product(
     return product
 
 
-@router.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{product_id}", status_code=HTTPException.HTTP_204_NO_CONTENT)
 async def delete_product(product_id: int, db: AsyncSession = Depends(get_db)):
     """Delete a product"""
     result = await db.execute(select(Product).filter(Product.id == product_id))
     product = result.scalars().first()
     if not product:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=HTTPException.HTTP_404_NOT_FOUND,
             detail=f"Product with ID {product_id} not found",
         )
 
