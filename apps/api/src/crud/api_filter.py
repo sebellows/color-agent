@@ -110,7 +110,7 @@ class Filter(BaseModel, extra="forbid"):
             if "filter." in field_name:
                 parts = field_name.split(".")
                 field_name = parts.pop()
-                prefix = parts.pop(0)
+                # prefix = parts.pop(0)
                 if len(parts) > 1 and (op := parts.pop()) in _orm_operator_map:
                     operator = _orm_operator_map[op]
 

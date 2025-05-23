@@ -2,7 +2,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import func
+from sqlalchemy import func, text
 
 from ...core.database import get_db
 from ...models import ProductVariant
@@ -40,11 +40,11 @@ async def create_product_variant(
     # Add relationships
     if vendor_color_ranges:
         await db.execute(
-            """
+            text("""
             INSERT INTO product_variant_vendor_color_range (product_variant_id, vendor_color_range_id)
             SELECT :product_variant_id, vcr.id FROM vendor_color_range vcr
             WHERE vcr.id IN :vendor_color_range_ids
-            """,
+            """),
             {
                 "product_variant_id": product_variant.id,
                 "vendor_color_range_ids": tuple(vendor_color_ranges),
@@ -53,11 +53,11 @@ async def create_product_variant(
 
     if vendor_product_types:
         await db.execute(
-            """
+            text("""
             INSERT INTO product_variant_vendor_product_type (product_variant_id, vendor_product_type_id)
             SELECT :product_variant_id, vpt.id FROM vendor_product_type vpt
             WHERE vpt.id IN :vendor_product_type_ids
-            """,
+            """),
             {
                 "product_variant_id": product_variant.id,
                 "vendor_product_type_ids": tuple(vendor_product_types),
@@ -173,18 +173,20 @@ async def update_product_variant(
     if vendor_color_ranges is not None:
         # Clear existing relationships
         await db.execute(
-            "DELETE FROM product_variant_vendor_color_range WHERE product_variant_id = :product_variant_id",
+            text(
+                "DELETE FROM product_variant_vendor_color_range WHERE product_variant_id = :product_variant_id"
+            ),
             {"product_variant_id": product_variant.id},
         )
 
         # Add new relationships
         if vendor_color_ranges:
             await db.execute(
-                """
+                text("""
                 INSERT INTO product_variant_vendor_color_range (product_variant_id, vendor_color_range_id)
                 SELECT :product_variant_id, vcr.id FROM vendor_color_range vcr
                 WHERE vcr.id IN :vendor_color_range_ids
-                """,
+                """),
                 {
                     "product_variant_id": product_variant.id,
                     "vendor_color_range_ids": tuple(vendor_color_ranges),
@@ -194,18 +196,20 @@ async def update_product_variant(
     if vendor_product_types is not None:
         # Clear existing relationships
         await db.execute(
-            "DELETE FROM product_variant_vendor_product_type WHERE product_variant_id = :product_variant_id",
+            text(
+                "DELETE FROM product_variant_vendor_product_type WHERE product_variant_id = :product_variant_id"
+            ),
             {"product_variant_id": product_variant.id},
         )
 
         # Add new relationships
         if vendor_product_types:
             await db.execute(
-                """
+                text("""
                 INSERT INTO product_variant_vendor_product_type (product_variant_id, vendor_product_type_id)
                 SELECT :product_variant_id, vpt.id FROM vendor_product_type vpt
                 WHERE vpt.id IN :vendor_product_type_ids
-                """,
+                """),
                 {
                     "product_variant_id": product_variant.id,
                     "vendor_product_type_ids": tuple(vendor_product_types),
