@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from starlette.status import HTTP_204_NO_CONTENT, HTTP_201_CREATED, HTTP_404_NOT_FOUND
 
 from ...core.database import get_db
 from ...models import (
@@ -45,7 +46,7 @@ router = APIRouter()
 @router.post(
     "/product-types/",
     response_model=ProductTypeSchema,
-    status_code=HTTPException.HTTP_201_CREATED,
+    status_code=HTTP_201_CREATED,
 )
 async def create_product_type(
     product_type_in: ProductTypeCreate, db: AsyncSession = Depends(get_db)
@@ -67,7 +68,7 @@ async def get_product_type(product_type_id: int, db: AsyncSession = Depends(get_
     product_type = result.scalars().first()
     if not product_type:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Product type with ID {product_type_id} not found",
         )
     return product_type
@@ -94,7 +95,7 @@ async def update_product_type(
     product_type = result.scalars().first()
     if not product_type:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Product type with ID {product_type_id} not found",
         )
 
@@ -107,9 +108,7 @@ async def update_product_type(
     return product_type
 
 
-@router.delete(
-    "/product-types/{product_type_id}", status_code=HTTPException.HTTP_204_NO_CONTENT
-)
+@router.delete("/product-types/{product_type_id}", status_code=HTTP_204_NO_CONTENT)
 async def delete_product_type(product_type_id: int, db: AsyncSession = Depends(get_db)):
     """Delete a product type"""
     result = await db.execute(
@@ -118,7 +117,7 @@ async def delete_product_type(product_type_id: int, db: AsyncSession = Depends(g
     product_type = result.scalars().first()
     if not product_type:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Product type with ID {product_type_id} not found",
         )
 
@@ -131,7 +130,7 @@ async def delete_product_type(product_type_id: int, db: AsyncSession = Depends(g
 @router.post(
     "/color-ranges/",
     response_model=ColorRangeSchema,
-    status_code=HTTPException.HTTP_201_CREATED,
+    status_code=HTTP_201_CREATED,
 )
 async def create_color_range(
     color_range_in: ColorRangeCreate, db: AsyncSession = Depends(get_db)
@@ -153,7 +152,7 @@ async def get_color_range(color_range_id: int, db: AsyncSession = Depends(get_db
     color_range = result.scalars().first()
     if not color_range:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Color range with ID {color_range_id} not found",
         )
     return color_range
@@ -180,7 +179,7 @@ async def update_color_range(
     color_range = result.scalars().first()
     if not color_range:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Color range with ID {color_range_id} not found",
         )
 
@@ -193,9 +192,7 @@ async def update_color_range(
     return color_range
 
 
-@router.delete(
-    "/color-ranges/{color_range_id}", status_code=HTTPException.HTTP_204_NO_CONTENT
-)
+@router.delete("/color-ranges/{color_range_id}", status_code=HTTP_204_NO_CONTENT)
 async def delete_color_range(color_range_id: int, db: AsyncSession = Depends(get_db)):
     """Delete a color range"""
     result = await db.execute(
@@ -204,7 +201,7 @@ async def delete_color_range(color_range_id: int, db: AsyncSession = Depends(get
     color_range = result.scalars().first()
     if not color_range:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Color range with ID {color_range_id} not found",
         )
 
@@ -214,9 +211,7 @@ async def delete_color_range(color_range_id: int, db: AsyncSession = Depends(get
 
 
 # Tag routes
-@router.post(
-    "/tags/", response_model=TagSchema, status_code=HTTPException.HTTP_201_CREATED
-)
+@router.post("/tags/", response_model=TagSchema, status_code=HTTP_201_CREATED)
 async def create_tag(tag_in: TagCreate, db: AsyncSession = Depends(get_db)):
     """Create a new tag"""
     tag = Tag(**tag_in.model_dump())
@@ -233,7 +228,7 @@ async def get_tag(tag_id: int, db: AsyncSession = Depends(get_db)):
     tag = result.scalars().first()
     if not tag:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Tag with ID {tag_id} not found",
         )
     return tag
@@ -256,7 +251,7 @@ async def update_tag(
     tag = result.scalars().first()
     if not tag:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Tag with ID {tag_id} not found",
         )
 
@@ -269,14 +264,14 @@ async def update_tag(
     return tag
 
 
-@router.delete("/tags/{tag_id}", status_code=HTTPException.HTTP_204_NO_CONTENT)
+@router.delete("/tags/{tag_id}", status_code=HTTP_204_NO_CONTENT)
 async def delete_tag(tag_id: int, db: AsyncSession = Depends(get_db)):
     """Delete a tag"""
     result = await db.execute(select(Tag).filter(Tag.id == tag_id))
     tag = result.scalars().first()
     if not tag:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Tag with ID {tag_id} not found",
         )
 
@@ -289,7 +284,7 @@ async def delete_tag(tag_id: int, db: AsyncSession = Depends(get_db)):
 @router.post(
     "/analogous/",
     response_model=AnalogousSchema,
-    status_code=HTTPException.HTTP_201_CREATED,
+    status_code=HTTP_201_CREATED,
 )
 async def create_analogous(
     analogous_in: AnalogousCreate, db: AsyncSession = Depends(get_db)
@@ -309,7 +304,7 @@ async def get_analogous(analogous_id: int, db: AsyncSession = Depends(get_db)):
     analogous = result.scalars().first()
     if not analogous:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Analogous color with ID {analogous_id} not found",
         )
     return analogous
@@ -332,7 +327,7 @@ async def update_analogous(
     analogous = result.scalars().first()
     if not analogous:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Analogous color with ID {analogous_id} not found",
         )
 
@@ -345,16 +340,14 @@ async def update_analogous(
     return analogous
 
 
-@router.delete(
-    "/analogous/{analogous_id}", status_code=HTTPException.HTTP_204_NO_CONTENT
-)
+@router.delete("/analogous/{analogous_id}", status_code=HTTP_204_NO_CONTENT)
 async def delete_analogous(analogous_id: int, db: AsyncSession = Depends(get_db)):
     """Delete an analogous color"""
     result = await db.execute(select(Analogous).filter(Analogous.id == analogous_id))
     analogous = result.scalars().first()
     if not analogous:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Analogous color with ID {analogous_id} not found",
         )
 
@@ -367,7 +360,7 @@ async def delete_analogous(analogous_id: int, db: AsyncSession = Depends(get_db)
 @router.post(
     "/vendor-color-ranges/",
     response_model=VendorColorRangeSchema,
-    status_code=HTTPException.HTTP_201_CREATED,
+    status_code=HTTP_201_CREATED,
 )
 async def create_vendor_color_range(
     vendor_color_range_in: VendorColorRangeCreate, db: AsyncSession = Depends(get_db)
@@ -394,7 +387,7 @@ async def get_vendor_color_range(
     vendor_color_range = result.scalars().first()
     if not vendor_color_range:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Vendor color range with ID {vendor_color_range_id} not found",
         )
     return vendor_color_range
@@ -424,7 +417,7 @@ async def update_vendor_color_range(
     vendor_color_range = result.scalars().first()
     if not vendor_color_range:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Vendor color range with ID {vendor_color_range_id} not found",
         )
 
@@ -439,7 +432,7 @@ async def update_vendor_color_range(
 
 @router.delete(
     "/vendor-color-ranges/{vendor_color_range_id}",
-    status_code=HTTPException.HTTP_204_NO_CONTENT,
+    status_code=HTTP_204_NO_CONTENT,
 )
 async def delete_vendor_color_range(
     vendor_color_range_id: int, db: AsyncSession = Depends(get_db)
@@ -451,7 +444,7 @@ async def delete_vendor_color_range(
     vendor_color_range = result.scalars().first()
     if not vendor_color_range:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Vendor color range with ID {vendor_color_range_id} not found",
         )
 
@@ -464,7 +457,7 @@ async def delete_vendor_color_range(
 @router.post(
     "/vendor-product-types/",
     response_model=VendorProductTypeSchema,
-    status_code=HTTPException.HTTP_201_CREATED,
+    status_code=HTTP_201_CREATED,
 )
 async def create_vendor_product_type(
     vendor_product_type_in: VendorProductTypeCreate, db: AsyncSession = Depends(get_db)
@@ -491,7 +484,7 @@ async def get_vendor_product_type(
     vendor_product_type = result.scalars().first()
     if not vendor_product_type:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Vendor product type with ID {vendor_product_type_id} not found",
         )
     return vendor_product_type
@@ -521,7 +514,7 @@ async def update_vendor_product_type(
     vendor_product_type = result.scalars().first()
     if not vendor_product_type:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Vendor product type with ID {vendor_product_type_id} not found",
         )
 
@@ -536,7 +529,7 @@ async def update_vendor_product_type(
 
 @router.delete(
     "/vendor-product-types/{vendor_product_type_id}",
-    status_code=HTTPException.HTTP_204_NO_CONTENT,
+    status_code=HTTP_204_NO_CONTENT,
 )
 async def delete_vendor_product_type(
     vendor_product_type_id: int, db: AsyncSession = Depends(get_db)
@@ -548,7 +541,7 @@ async def delete_vendor_product_type(
     vendor_product_type = result.scalars().first()
     if not vendor_product_type:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Vendor product type with ID {vendor_product_type_id} not found",
         )
 

@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import func
+from starlette.status import HTTP_204_NO_CONTENT, HTTP_201_CREATED, HTTP_404_NOT_FOUND
 
 from ...core.database import get_db
 from ...models import ProductLine
@@ -16,9 +17,7 @@ from ...schemas import (
 router = APIRouter()
 
 
-@router.post(
-    "/", response_model=ProductLineSchema, status_code=HTTPException.HTTP_201_CREATED
-)
+@router.post("/", response_model=ProductLineSchema, status_code=HTTP_201_CREATED)
 async def create_product_line(
     product_line_in: ProductLineCreate, db: AsyncSession = Depends(get_db)
 ):
@@ -39,7 +38,7 @@ async def get_product_line(product_line_id: UUID, db: AsyncSession = Depends(get
     product_line = result.scalars().first()
     if not product_line:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Product line with ID {product_line_id} not found",
         )
     return product_line
@@ -87,7 +86,7 @@ async def list_product_lines(
         items=product_lines,
         total=total,
         page=skip // limit + 1,
-        size=limit,
+        items_per_page=limit,
         pages=(total + limit - 1) // limit,
     )
 
@@ -105,7 +104,7 @@ async def update_product_line(
     product_line = result.scalars().first()
     if not product_line:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Product line with ID {product_line_id} not found",
         )
 
@@ -118,7 +117,7 @@ async def update_product_line(
     return product_line
 
 
-@router.delete("/{product_line_id}", status_code=HTTPException.HTTP_204_NO_CONTENT)
+@router.delete("/{product_line_id}", status_code=HTTP_204_NO_CONTENT)
 async def delete_product_line(
     product_line_id: UUID, db: AsyncSession = Depends(get_db)
 ):
@@ -129,7 +128,7 @@ async def delete_product_line(
     product_line = result.scalars().first()
     if not product_line:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Product line with ID {product_line_id} not found",
         )
 

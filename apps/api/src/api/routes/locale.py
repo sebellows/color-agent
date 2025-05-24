@@ -1,8 +1,8 @@
-from typing import List, Optional
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from starlette.status import HTTP_204_NO_CONTENT, HTTP_201_CREATED, HTTP_404_NOT_FOUND
 
 from ...core.database import get_db
 from ...models import Locale
@@ -11,9 +11,7 @@ from ...schemas import Locale as LocaleSchema, LocaleCreate, LocaleUpdate
 router = APIRouter()
 
 
-@router.post(
-    "/", response_model=LocaleSchema, status_code=HTTPException.HTTP_201_CREATED
-)
+@router.post("/", response_model=LocaleSchema, status_code=HTTP_201_CREATED)
 async def create_locale(locale_in: LocaleCreate, db: AsyncSession = Depends(get_db)):
     """Create a new locale"""
     locale = Locale(**locale_in.model_dump())
@@ -30,17 +28,17 @@ async def get_locale(locale_id: UUID, db: AsyncSession = Depends(get_db)):
     locale = result.scalars().first()
     if not locale:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Locale with ID {locale_id} not found",
         )
     return locale
 
 
-@router.get("/", response_model=List[LocaleSchema])
+@router.get("/", response_model=list[LocaleSchema])
 async def list_locales(
-    country_code: Optional[str] = None,
-    language_code: Optional[str] = None,
-    currency_code: Optional[str] = None,
+    country_code: str | None = None,
+    language_code: str | None = None,
+    currency_code: str | None = None,
     db: AsyncSession = Depends(get_db),
 ):
     """List locales with optional filtering"""
@@ -70,7 +68,7 @@ async def update_locale(
     locale = result.scalars().first()
     if not locale:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Locale with ID {locale_id} not found",
         )
 
@@ -83,14 +81,14 @@ async def update_locale(
     return locale
 
 
-@router.delete("/{locale_id}", status_code=HTTPException.HTTP_204_NO_CONTENT)
+@router.delete("/{locale_id}", status_code=HTTP_204_NO_CONTENT)
 async def delete_locale(locale_id: UUID, db: AsyncSession = Depends(get_db)):
     """Delete a locale"""
     result = await db.execute(select(Locale).filter(Locale.id == locale_id))
     locale = result.scalars().first()
     if not locale:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Locale with ID {locale_id} not found",
         )
 

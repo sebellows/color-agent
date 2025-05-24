@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import func, text
+from starlette.status import HTTP_204_NO_CONTENT, HTTP_201_CREATED, HTTP_404_NOT_FOUND
 
 from ...core.database import get_db
 from ...models import Product
@@ -15,9 +16,7 @@ from ...schemas import (
 router = APIRouter()
 
 
-@router.post(
-    "/", response_model=ProductSchema, status_code=HTTPException.HTTP_201_CREATED
-)
+@router.post("/", response_model=ProductSchema, status_code=HTTP_201_CREATED)
 async def create_product(product_in: ProductCreate, db: AsyncSession = Depends(get_db)):
     """Create a new product"""
     # Extract relationship IDs
@@ -89,7 +88,7 @@ async def get_product(product_id: int, db: AsyncSession = Depends(get_db)):
     product = result.scalars().first()
     if not product:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Product with ID {product_id} not found",
         )
     return product
@@ -142,7 +141,7 @@ async def list_products(
         items=products,
         total=total,
         page=skip // limit + 1,
-        size=limit,
+        items_per_page=limit,
         pages=(total + limit - 1) // limit,
     )
 
@@ -156,7 +155,7 @@ async def update_product(
     product = result.scalars().first()
     if not product:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Product with ID {product_id} not found",
         )
 
@@ -252,14 +251,14 @@ async def update_product(
     return product
 
 
-@router.delete("/{product_id}", status_code=HTTPException.HTTP_204_NO_CONTENT)
+@router.delete("/{product_id}", status_code=HTTP_204_NO_CONTENT)
 async def delete_product(product_id: int, db: AsyncSession = Depends(get_db)):
     """Delete a product"""
     result = await db.execute(select(Product).filter(Product.id == product_id))
     product = result.scalars().first()
     if not product:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Product with ID {product_id} not found",
         )
 

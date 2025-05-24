@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from .supporting import VendorColorRange, VendorProductType
 
 
-class ProductVariant(Base, CrudTimestampMixin, UUIDMixin):
+class ProductVariant(Base, UUIDMixin, CrudTimestampMixin):
     __tablename__ = "product_variants"
 
     # Relationships

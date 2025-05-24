@@ -1,7 +1,5 @@
 """User service module."""
 
-from typing import Optional
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -14,13 +12,13 @@ class UserService:
     """User service."""
 
     @staticmethod
-    async def get_by_id(db: AsyncSession, user_id: int) -> Optional[User]:
+    async def get_by_id(db: AsyncSession, user_id: int) -> User | None:
         """Get user by ID."""
         result = await db.execute(select(User).where(User.id == user_id))
         return result.scalars().first()
 
     @staticmethod
-    async def get_by_email(db: AsyncSession, email: str) -> Optional[User]:
+    async def get_by_email(db: AsyncSession, email: str) -> User | None:
         """Get user by email."""
         result = await db.execute(select(User).where(User.email == email))
         return result.scalars().first()
@@ -59,9 +57,7 @@ class UserService:
         return db_obj
 
     @staticmethod
-    async def authenticate(
-        db: AsyncSession, email: str, password: str
-    ) -> Optional[User]:
+    async def authenticate(db: AsyncSession, email: str, password: str) -> User | None:
         """Authenticate user."""
         user = await UserService.get_by_email(db, email=email)
         if not user:

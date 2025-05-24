@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from .supporting import ProductType, ColorRange, Tag, Analogous
 
 
-class Product(Base, CrudTimestampMixin, UUIDMixin):
+class Product(Base, UUIDMixin, CrudTimestampMixin):
     __tablename__ = "products"
 
     product_line_id: Mapped[UUID] = mapped_column(

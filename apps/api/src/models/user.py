@@ -6,7 +6,7 @@ from .base import Base
 from .mixins import CrudTimestampMixin, UUIDMixin
 
 
-class User(Base, CrudTimestampMixin, UUIDMixin):
+class User(Base, UUIDMixin, CrudTimestampMixin):
     """User model."""
 
     __tablename__ = "users"

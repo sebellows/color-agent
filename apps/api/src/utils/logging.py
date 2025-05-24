@@ -1,8 +1,7 @@
 """Logging utilities."""
 
 import logging
-import sys
-from typing import Any, Dict, Optional
+from typing import Any
 
 import structlog
 from structlog.types import Processor
@@ -12,7 +11,7 @@ from src.core.config import settings
 
 def setup_logging() -> None:
     """Set up structured logging."""
-    log_level = getattr(logging, settings.LOG_LEVEL)
+    log_level = getattr(logging, settings.logger.LOG_LEVEL)
 
     shared_processors: list[Processor] = [
         structlog.contextvars.merge_contextvars,
@@ -22,7 +21,7 @@ def setup_logging() -> None:
         structlog.processors.format_exc_info,
     ]
 
-    if settings.DEBUG:
+    if settings.logger.LOG_LEVEL == "DEBUG":
         # Development configuration
         processors = shared_processors + [
             structlog.dev.ConsoleRenderer(colors=True),
@@ -42,7 +41,7 @@ def setup_logging() -> None:
     )
 
 
-def get_logger(name: Optional[str] = None) -> structlog.BoundLogger:
+def get_logger(name: str | None = None) -> structlog.BoundLogger:
     """Get a logger instance."""
     return structlog.get_logger(name)
 

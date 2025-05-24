@@ -20,12 +20,12 @@ product_color_range = Table(
     "product_color_range",
     Base.metadata,
     Column(
-        "product_id", ForeignKey("products.id", ondelete="CASCADE"), primary_key=True
+        "product_id",
+        ForeignKey("products.id", ondelete="CASCADE"),
     ),
     Column(
         "color_range_id",
         ForeignKey("color_ranges.id", ondelete="CASCADE"),
-        primary_key=True,
     ),
 )
 

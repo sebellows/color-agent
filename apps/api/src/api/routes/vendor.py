@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import func
+from starlette.status import HTTP_204_NO_CONTENT, HTTP_201_CREATED, HTTP_404_NOT_FOUND
 
 from ...core.database import get_db
 from ...models import Vendor
@@ -15,9 +16,7 @@ from ...schemas import (
 router = APIRouter()
 
 
-@router.post(
-    "/", response_model=VendorSchema, status_code=HTTPException.HTTP_201_CREATED
-)
+@router.post("/", response_model=VendorSchema, status_code=HTTP_201_CREATED)
 async def create_vendor(vendor_in: VendorCreate, db: AsyncSession = Depends(get_db)):
     """Create a new vendor"""
     vendor = Vendor(**vendor_in.model_dump())
@@ -34,7 +33,7 @@ async def get_vendor(vendor_id: int, db: AsyncSession = Depends(get_db)):
     vendor = result.scalars().first()
     if not vendor:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Vendor with ID {vendor_id} not found",
         )
     return vendor
@@ -80,7 +79,7 @@ async def list_vendors(
         items=vendors,
         total=total,
         page=skip // limit + 1,
-        size=limit,
+        items_per_page=limit,
         pages=(total + limit - 1) // limit,
     )
 
@@ -94,7 +93,7 @@ async def update_vendor(
     vendor = result.scalars().first()
     if not vendor:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Vendor with ID {vendor_id} not found",
         )
 
@@ -107,14 +106,14 @@ async def update_vendor(
     return vendor
 
 
-@router.delete("/{vendor_id}", status_code=HTTPException.HTTP_204_NO_CONTENT)
+@router.delete("/{vendor_id}", status_code=HTTP_204_NO_CONTENT)
 async def delete_vendor(vendor_id: int, db: AsyncSession = Depends(get_db)):
     """Delete a vendor"""
     result = await db.execute(select(Vendor).filter(Vendor.id == vendor_id))
     vendor = result.scalars().first()
     if not vendor:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Vendor with ID {vendor_id} not found",
         )
 

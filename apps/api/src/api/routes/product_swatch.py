@@ -2,6 +2,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from starlette.status import HTTP_204_NO_CONTENT, HTTP_201_CREATED, HTTP_404_NOT_FOUND
 
 from ...core.database import get_db
 from ...models import ProductSwatch
@@ -14,9 +15,7 @@ from ...schemas import (
 router = APIRouter()
 
 
-@router.post(
-    "/", response_model=ProductSwatchSchema, status_code=HTTPException.HTTP_201_CREATED
-)
+@router.post("/", response_model=ProductSwatchSchema, status_code=HTTP_201_CREATED)
 async def create_product_swatch(
     product_swatch_in: ProductSwatchCreate, db: AsyncSession = Depends(get_db)
 ):
@@ -39,7 +38,7 @@ async def get_product_swatch(
     product_swatch = result.scalars().first()
     if not product_swatch:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Product swatch with ID {product_swatch_id} not found",
         )
     return product_swatch
@@ -76,7 +75,7 @@ async def update_product_swatch(
     product_swatch = result.scalars().first()
     if not product_swatch:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Product swatch with ID {product_swatch_id} not found",
         )
 
@@ -89,7 +88,7 @@ async def update_product_swatch(
     return product_swatch
 
 
-@router.delete("/{product_swatch_id}", status_code=HTTPException.HTTP_204_NO_CONTENT)
+@router.delete("/{product_swatch_id}", status_code=HTTP_204_NO_CONTENT)
 async def delete_product_swatch(
     product_swatch_id: UUID, db: AsyncSession = Depends(get_db)
 ):
@@ -100,7 +99,7 @@ async def delete_product_swatch(
     product_swatch = result.scalars().first()
     if not product_swatch:
         raise HTTPException(
-            status_code=HTTPException.HTTP_404_NOT_FOUND,
+            status_code=HTTP_404_NOT_FOUND,
             detail=f"Product swatch with ID {product_swatch_id} not found",
         )
 

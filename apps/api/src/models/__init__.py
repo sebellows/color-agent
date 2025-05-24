@@ -23,3 +23,26 @@ from .associations import (
     variant_vendor_color_range,
     variant_vendor_product_type,
 )
+
+__all__ = [
+    "Base",
+    "ProductType",
+    "ColorRange",
+    "Tag",
+    "Analogous",
+    "VendorColorRange",
+    "VendorProductType",
+    "Locale",
+    "Vendor",
+    "ProductLine",
+    "Product",
+    "ProductSwatch",
+    "ProductVariant",
+    # Associations
+    "product_product_type",
+    "product_color_range",
+    "product_tag",
+    "product_analogous",
+    "variant_vendor_color_range",
+    "variant_vendor_product_type",
+]

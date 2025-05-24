@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from .product import Product
 
 
-class ProductLine(Base, CrudTimestampMixin, UUIDMixin):
+class ProductLine(Base, UUIDMixin, CrudTimestampMixin):
     __tablename__ = "product_lines"
 
     vendor_id: Mapped[UUID] = mapped_column(

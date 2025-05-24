@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from .product_line import ProductLine
 
 
-class Vendor(Base, CrudTimestampMixin, UUIDMixin):
+class Vendor(Base, UUIDMixin, CrudTimestampMixin):
     __tablename__ = "vendors"
 
     name: Mapped[str] = mapped_column(String(255), nullable=False)

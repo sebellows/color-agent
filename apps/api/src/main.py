@@ -1,7 +1,7 @@
 """Main FastAPI application module."""
 
 from fastapi import FastAPI
-import fastapi.middleware.cors as CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from .api.router import api_router
@@ -14,16 +14,16 @@ logger = get_logger(__name__)
 
 # Create FastAPI application
 app = FastAPI(
-    title=settings.PROJECT_NAME,
-    description="API for ColorAgent application",
-    version=settings.VERSION,
-    debug=settings.DEBUG,
+    title=settings.app.APP_TITLE,
+    description=settings.app.APP_DESCRIPTION,
+    version=settings.app.APP_VERSION,
+    debug=settings.db.DB_ECHO_LOG,
 )
 
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -33,7 +33,7 @@ app.add_middleware(
 app.middleware("http")(log_request_middleware())
 
 # Include routers
-app.include_router(api_router, prefix=settings.API_V1_STR)
+app.include_router(api_router, prefix=settings.api.API_PREFIX)
 
 
 class HealthResponse(BaseModel):
@@ -47,14 +47,14 @@ class HealthResponse(BaseModel):
 async def health_check() -> HealthResponse:
     """Health check endpoint."""
     logger.info("health_check_requested")
-    return HealthResponse(status="ok", version=settings.VERSION)
+    return HealthResponse(status="ok", version=settings.app.APP_VERSION)
 
 
 @app.get("/")
 async def root():
     """Root endpoint."""
     logger.info("root_endpoint_accessed")
-    return {"message": f"Welcome to {settings.PROJECT_NAME}"}
+    return {"message": f"Welcome to {settings.app.APP_TITLE}"}
 
 
 if __name__ == "__main__":
