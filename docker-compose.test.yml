@@ -44,8 +44,8 @@ services:
         condition: service_healthy
     command: >
       sh -c "
-        python -m src.scripts.create_tables &&
-        uvicorn src.main:app --host 0.0.0.0 --port 8000
+        python -m api.scripts.import_data_modified &&
+        uvicorn api.main:app --host 0.0.0.0 --port 8000
       "
 
   # Web application for testing

@@ -11,7 +11,7 @@ echo "Creating database if it doesn't exist..."
 psql -U postgres -c "CREATE DATABASE coloragent;" || true
 
 # Copy the import_data_modified.py script to the correct location
-cp apps/api/src/scripts/import_data_modified.py apps/api/src/scripts/import_data.py
+cp apps/api/src/api/scripts/import_data_modified.py apps/api/src/api/scripts/import_data.py
 
 # Set the database URL environment variable
 export DB_URL="postgresql+asyncpg://postgres:postgres@localhost:5432/coloragent"
@@ -23,10 +23,10 @@ fi
 
 # Run the create_tables.py script
 echo "Creating tables..."
-cd apps/api && python -m src.scripts.create_tables
+cd apps/api && python -m api.scripts.create_tables
 
 # Run the import_data.py script
 echo "Importing data..."
-cd apps/api && python -m src.scripts.import_data ../examples/data-sample-01.json
+cd apps/api && python -m api.scripts.import_data ../examples/data-sample-01.json
 
 echo "Data import completed!"

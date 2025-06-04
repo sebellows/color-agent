@@ -19,6 +19,6 @@ sleep 10
 
 # Run the import_data.py script inside the API container
 echo "Running the import script..."
-docker-compose exec api python -m src.scripts.import_data examples/data-sample-01.json
+docker-compose exec api python -m api.scripts.import_data_modified examples/data-sample-01.json
 
 echo "Data import completed!"

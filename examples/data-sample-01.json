@@ -18,6 +18,7 @@
                 "products": [
                     {
                         "name": "Leadbelcher",
+                        "slug": "leadbelcher",
                         "swatch": {
                             "hex_color": "#7b868e",
                             "rgb_color": [123, 134, 142],
@@ -105,6 +106,7 @@
                     },
                     {
                         "name": "Wraithbone",
+                        "slug": "wraithbone",
                         "swatch": {
                             "hex_color": "#dbd1b2",
                             "rgb_color": [219, 209, 178],
@@ -168,69 +170,70 @@
                         "iscc_nbs_category": "Pale Yellow Green"
                     },
                     {
-                    "name": "Grey Seer",
-                    "swatch": {
-                        "hex_color": "#a2a5a7",
-                        "rgb_color": [162, 165, 167],
-                        "oklch_color": [0.7201, 0.0045, 236.52],
-                        "gradient_start": [0.7201, 0.0045, 236.52],
-                        "gradient_end": [0.7201, 0.0045, 236.52],
-                        "overlay": null
-                    },
-                    "variants": [
-                        {
-                            "display_name": "Grey Seer",
-                            "marketing_name": "Grey Seer",
-                            "sku": "prod4540238-13209999106",
-                            "vendor_color_range": ["Grey"],
-                            "vendor_product_type": ["Spray"],
-                            "opacity": "opaque",
-                            "viscosity": "low",
-                            "discontinued": false,
-                            "image_url": "/app/resources/catalog/product/920x950/99209999060_sprayGreySeer.svg",
-                            "packaging": "Spray Can",
-                            "volume_ml": 295.735,
-                            "volume_oz": 10.0,
-                            "price": 2400,
-                            "currency_code": "USD",
-                            "currency_symbol": "$",
-                            "country_code": "US",
-                            "product_url": "https://www.warhammer.com/en-US/shop/Grey-Seer-Spray-US-2020",
-                            "language_code": "en",
-                            "product_line": "Citadel",
-                            "application_method": "Primer",
-                            "vendor_product_id": "0612cf8a-05b9-4e7c-b935-4e403a890dec"
+                        "name": "Grey Seer",
+                        "slug": "grey_seer",
+                        "swatch": {
+                            "hex_color": "#a2a5a7",
+                            "rgb_color": [162, 165, 167],
+                            "oklch_color": [0.7201, 0.0045, 236.52],
+                            "gradient_start": [0.7201, 0.0045, 236.52],
+                            "gradient_end": [0.7201, 0.0045, 236.52],
+                            "overlay": null
                         },
-                        {
-                            "display_name": "Grey Seer",
-                            "marketing_name": "Grey Seer",
-                            "sku": "prod4190167-99189950260",
-                            "vendor_color_range": ["Grey"],
-                            "vendor_product_type": ["Base"],
-                            "opacity": "opaque",
-                            "viscosity": "medium-to-high",
-                            "discontinued": false,
-                            "image_url": "/app/resources/catalog/product/920x950/99189950174_baseGreySeer.svg",
-                            "packaging": "Pot",
-                            "volume_ml": 18.0,
-                            "volume_oz": 0.609,
-                            "price": 455,
-                            "currency_code": "USD",
-                            "currency_symbol": "$",
-                            "country_code": "US",
-                            "product_url": "https://www.warhammer.com/en-US/shop/Grey-Seer-Spray-US-2020",
-                            "language_code": "en",
-                            "product_line": "Citadel",
-                            "application_method": null,
-                            "vendor_product_id": "afed8b1f-4f25-416b-b9fd-0845e75771aa"
-                        }
-                    ],
-                    "product_type": ["Acrylic", "Primer"],
-                    "tags": [],
-                    "color_range": ["Blue", "Grey"],
-                    "analogous": [],
-                    "iscc_nbs_category": "Pale Blue"
-                }
+                        "variants": [
+                            {
+                                "display_name": "Grey Seer",
+                                "marketing_name": "Grey Seer",
+                                "sku": "prod4540238-13209999106",
+                                "vendor_color_range": ["Grey"],
+                                "vendor_product_type": ["Spray"],
+                                "opacity": "opaque",
+                                "viscosity": "low",
+                                "discontinued": false,
+                                "image_url": "/app/resources/catalog/product/920x950/99209999060_sprayGreySeer.svg",
+                                "packaging": "Spray Can",
+                                "volume_ml": 295.735,
+                                "volume_oz": 10.0,
+                                "price": 2400,
+                                "currency_code": "USD",
+                                "currency_symbol": "$",
+                                "country_code": "US",
+                                "product_url": "https://www.warhammer.com/en-US/shop/Grey-Seer-Spray-US-2020",
+                                "language_code": "en",
+                                "product_line": "Citadel",
+                                "application_method": "Primer",
+                                "vendor_product_id": "0612cf8a-05b9-4e7c-b935-4e403a890dec"
+                            },
+                            {
+                                "display_name": "Grey Seer",
+                                "marketing_name": "Grey Seer",
+                                "sku": "prod4190167-99189950260",
+                                "vendor_color_range": ["Grey"],
+                                "vendor_product_type": ["Base"],
+                                "opacity": "opaque",
+                                "viscosity": "medium-to-high",
+                                "discontinued": false,
+                                "image_url": "/app/resources/catalog/product/920x950/99189950174_baseGreySeer.svg",
+                                "packaging": "Pot",
+                                "volume_ml": 18.0,
+                                "volume_oz": 0.609,
+                                "price": 455,
+                                "currency_code": "USD",
+                                "currency_symbol": "$",
+                                "country_code": "US",
+                                "product_url": "https://www.warhammer.com/en-US/shop/Grey-Seer-Spray-US-2020",
+                                "language_code": "en",
+                                "product_line": "Citadel",
+                                "application_method": null,
+                                "vendor_product_id": "afed8b1f-4f25-416b-b9fd-0845e75771aa"
+                            }
+                        ],
+                        "product_type": ["Acrylic", "Primer"],
+                        "tags": [],
+                        "color_range": ["Blue", "Grey"],
+                        "analogous": [],
+                        "iscc_nbs_category": "Pale Blue"
+                    }
                 ]
             }
         ]

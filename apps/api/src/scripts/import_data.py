@@ -5,25 +5,25 @@ import json
 import logging
 import sys
 from pathlib import Path
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
-from sqlalchemy.future import select
 
-from ..core.config import settings
-from ..models.base import Base
-from ..models.vendor import Vendor
-from ..models.product_line import ProductLine
-from ..models.product import Product
-from ..models.product_swatch import ProductSwatch
-from ..models.product_variant import ProductVariant
-from ..models.locale import Locale
-from ..models.supporting import (
-    ProductType,
-    ColorRange,
-    Tag,
+from api.core.config import settings
+from api.domain.locale.models import Locale
+from api.models.supporting import (
     Analogous,
+    ColorRange,
+    ProductType,
+    Tag,
     VendorColorRange,
     VendorProductType,
 )
+from product.models import Product
+from product_line.models import ProductLine
+from product_swatch.models import ProductSwatch
+from product_variant.models import ProductVariant
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.future import select
+from vendor.models import Vendor
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -48,9 +48,7 @@ async def import_data(json_path):
 
     # Create engine and session
     engine = create_async_engine(settings.DATABASE_URL)
-    async_session_factory = async_sessionmaker(
-        engine, expire_on_commit=False, class_=AsyncSession
-    )
+    async_session_factory = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
     # Read JSON file
     with open(json_path, "r") as f:
@@ -118,17 +116,13 @@ async def import_data(json_path):
 
                     # Process product types
                     for type_name in product_data.get("product_type", []):
-                        product_type = await get_or_create(
-                            session, ProductType, name=type_name
-                        )
-                        product.product_types.append(product_type)
+                        product_type = await get_or_create(session, ProductType, name=type_name)
+                        product.product_type.append(product_type)
 
                     # Process color ranges
                     for color_name in product_data.get("color_range", []):
-                        color_range = await get_or_create(
-                            session, ColorRange, name=color_name
-                        )
-                        product.color_ranges.append(color_range)
+                        color_range = await get_or_create(session, ColorRange, name=color_name)
+                        product.color_range.append(color_range)
 
                     # Process tags
                     for tag_name in product_data.get("tags", []):
@@ -137,9 +131,7 @@ async def import_data(json_path):
 
                     # Process analogous
                     for analogous_name in product_data.get("analogous", []):
-                        analogous = await get_or_create(
-                            session, Analogous, name=analogous_name
-                        )
+                        analogous = await get_or_create(session, Analogous, name=analogous_name)
                         product.analogous.append(analogous)
 
                     # Process variants
@@ -179,16 +171,12 @@ async def import_data(json_path):
 
                         # Process vendor color ranges
                         for vcr_name in variant_data.get("vendor_color_range", []):
-                            vcr = await get_or_create(
-                                session, VendorColorRange, name=vcr_name
-                            )
+                            vcr = await get_or_create(session, VendorColorRange, name=vcr_name)
                             variant.vendor_color_ranges.append(vcr)
 
                         # Process vendor product types
                         for vpt_name in variant_data.get("vendor_product_type", []):
-                            vpt = await get_or_create(
-                                session, VendorProductType, name=vpt_name
-                            )
+                            vpt = await get_or_create(session, VendorProductType, name=vpt_name)
                             variant.vendor_product_types.append(vpt)
 
         # Commit all changes
@@ -204,10 +192,6 @@ if __name__ == "__main__":
         json_path = sys.argv[1]
     else:
         # Default path
-        json_path = (
-            Path(__file__).parent.parent.parent.parent.parent
-            / "examples"
-            / "data-sample-01.json"
-        )
+        json_path = Path(__file__).parent.parent.parent.parent.parent / "examples" / "data-sample-01.json"
 
     asyncio.run(import_data(json_path))

@@ -5,7 +5,7 @@ import logging
 from pathlib import Path
 
 from .create_tables import create_tables
-from .import_data_modified import import_data
+from apps.api.src.api.scripts.import_data_modified import import_data
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -17,11 +17,7 @@ async def setup_and_import():
     await create_tables()
 
     # Import data
-    json_path = (
-        Path(__file__).parent.parent.parent.parent.parent
-        / "examples"
-        / "data-sample-01.json"
-    )
+    json_path = Path(__file__).parent.parent.parent.parent.parent / "examples" / "data-sample-01.json"
     await import_data(json_path)
 
 

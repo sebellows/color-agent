@@ -15,60 +15,84 @@ This is the backend API for the ColorAgent application, which provides data on v
 ## Project Structure
 
 ```
-apps/api/
+api/
 ├── src/
 │   ├── api/
-│   │   ├── routes/
+│   │   ├── core/
 │   │   │   ├── __init__.py
-│   │   │   ├── vendor.py
-│   │   │   ├── product_line.py
-│   │   │   ├── product.py
-│   │   │   ├── product_swatch.py
-│   │   │   ├── product_variant.py
-│   │   │   ├── locale.py
-│   │   │   └── supporting.py
-│   │   └── router.py
-│   ├── core/
+│   │   │   ├── config.py
+│   │   │   ├── database.py
+│   │   │   ├── decorators.py
+│   │   │   ├── enums.py
+│   │   │   ├── logger.py
+│   │   │   ├── models.py
+│   │   │   └── security.py
+│   │   ├── domain/
+│   │   │   ├── __init__.py
+│   │   │   ├── analogous/
+│   │   │   ├── color_range/
+│   │   │   ├── health/
+│   │   │   ├── locale/
+│   │   │   ├── product/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── dependencies.py
+│   │   │   │   ├── models.py
+│   │   │   │   ├── repository.py
+│   │   │   │   ├── routes.py
+│   │   │   │   ├── models.py
+│   │   │   │   └── schemas.py
+│   │   │   ├── product_line/
+│   │   │   ├── product_swatch/
+│   │   │   ├── product_type/
+│   │   │   ├── product_variant/
+│   │   │   ├── tag/
+│   │   │   ├── user/
+│   │   │   ├── vendor/
+│   │   │   └── associations.py
+│   │   ├── schemas/
+│   │   │   ├── __init__.py
+│   │   │   ├── address.py
+│   │   │   ├── auth.py
+│   │   │   ├── base.py
+│   │   │   ├── mixins.py
+│   │   │   └── pagination.py
+│   │   ├── scripts/
+│   │   │   ├── __init__.py
+│   │   │   └── import_data.py
+│   │   ├── services/
+│   │   │   ├── __init__.py
+│   │   │   └── queue.py
+│   │   ├── types/
+│   │   │   ├── __init__.py
+│   │   │   └── datetime_utc.py
+│   │   ├── utils/
+│   │   │   ├── __init__.py
+│   │   │   ├── color.py
+│   │   │   ├── lang.py
+│   │   │   ├── path.py
+│   │   │   ├── reducers.py
+│   │   │   ├── string.py
+│   │   │   └── terminal.py
 │   │   ├── __init__.py
-│   │   ├── config.py
-│   │   ├── database.py
-│   │   └── security.py
-│   ├── models/
-│   │   ├── __init__.py
-│   │   ├── base.py
-│   │   ├── associations.py
-│   │   ├── vendor.py
-│   │   ├── product_line.py
-│   │   ├── product.py
-│   │   ├── product_swatch.py
-│   │   ├── product_variant.py
-│   │   ├── locale.py
-│   │   └── supporting.py
-│   ├── schemas/
-│   │   ├── __init__.py
-│   │   ├── base.py
-│   │   ├── vendor.py
-│   │   ├── product_line.py
-│   │   ├── product.py
-│   │   ├── product_swatch.py
-│   │   ├── product_variant.py
-│   │   ├── locale.py
-│   │   └── supporting.py
-│   ├── scripts/
-│   │   ├── create_tables.py
-│   │   ├── import_data.py
-│   │   └── run_app.py
-│   ├── services/
-│   │   └── __init__.py
-│   ├── utils/
-│   │   ├── __init__.py
-│   │   └── logging.py
-│   └── main.py
+│   │   ├── routers.py
+│   │   └── main.py
 ├── tests/
 │   ├── __init__.py
 │   └── test_main.py
+├── package.json
 ├── pyproject.toml
+├── uv.lock
 └── README.md
+```
+
+**NOTE:** In order to for the Python virtual environment to correctly parse import paths, the nested `api/` directory inside of `src/` is required in order to infer a parent module. Otherwise you wind up with an error like the following when trying to run a file or the application:
+
+```bash
+(.venv)  ✘  color-agent/apps/api   main±  /Users/seanbellows/Projects/color-agent/apps/api/.venv/bin/python /Users/seanbellows/Projects/color-agent/apps/api/src/import_data.py
+Traceback (most recent call last):
+  File "/Users/seanbellows/Projects/color-agent/apps/api/src/import_data.py", line 12, in <module>
+    from src.core import get_logger, settings, setup_logging
+ModuleNotFoundError: No module named 'src'
 ```
 
 ## Getting Started
@@ -127,19 +151,19 @@ createdb coloragent
 2. Create database tables:
 
 ```bash
-python -m src.scripts.create_tables
+python -m api.scripts.create_tables
 ```
 
 3. Import sample data:
 
 ```bash
-python -m src.scripts.import_data
+python -m api.scripts.import_data
 ```
 
 ### Running the API
 
 ```bash
-python -m src.scripts.run_app
+python -m api.scripts.run_app
 ```
 
 The API will be available at http://localhost:8000.

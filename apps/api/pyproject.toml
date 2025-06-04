@@ -1,14 +1,9 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
 [project]
-name = "color-agent-api"
+name = "api"
 version = "0.0.1"
 description = "ColorAgent API"
 readme = "README.md"
 requires-python = ">=3.13"
-authors = [{ name = "Sean Bellows", email = "sean@example.com" }]
 dependencies = [
     "fastapi>=0.110.0",
     "uvicorn>=0.27.0",
@@ -25,26 +20,77 @@ dependencies = [
     "passlib>=1.7.4",
     "bcrypt>=4.1.0",
     "python-jose>=3.3.0",
+    "ruff>=0.11.12",
 ]
 
-[project.optional-dependencies]
-dev = [
+[tool.uv]
+dev-dependencies = [
+    "mypy>=1.8.0",
     "pytest>=8.0.0",
     "pytest-cov>=4.1.0",
     "pytest-asyncio>=0.23.0",
-    "httpx>=0.27.0",
-    "black>=24.0.0",
-    "isort>=5.13.0",
-    "mypy>=1.8.0",
+    "ruff>=0.11.12",
 ]
 
-[tool.black]
-line-length = 88
-target-version = ["py313"]
+[tool.uv.sources]
+src = { workspace = true }
 
-[tool.isort]
-profile = "black"
-line_length = 88
+[tool.uv.tasks]
+build = "uv build"
+dev = "uvicorn api.main:app --reload"
+lint = "uv run ruff check --fix"
+test = "uv run pytest"
+
+[tool.ruff]
+src = ["api", "scripts", "tests"]
+fix = true
+line-length = 120
+target-version = "py313"
+include = ["pyproject.toml", "api/**/*.py", "scripts/**/*.py", "tests/**/*.py"]
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "Q"]
+ignore = [
+    "B006", # Allow assigning of mutable data types as default values (e.g., `[]` or `{}`).
+    "B008", # Allow assigning of `Depends(...)` as a default value.
+    "B904",
+    "D",
+    # "E501", # Avoid enforcing line-length violations (`E501`)
+    "G004",
+]
+
+# Allow fix for all enabled rules (when `--fix` is used).
+fixable = ["I", "W", "COM", "Q"]
+# Avoid trying to fix flake8-bugbear (`B`) violations.
+unfixable = ["B"]
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+# Exclude specific files and directories from linting.
+exclude = [".cache", ".ruff_cache", ".tox", "env.py", "migrations"]
+
+[tool.ruff.lint.isort]
+case-sensitive = true
+lines-after-imports = 2
+
+# Ignore `E402` (import violations) in all `__init__.py` files, and in selected subdirectories.
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402"]
+"**/{tests,docs,tools}/*" = ["E402"]
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+# Like Black, respect magic trailing commas.
+# skip-magic-trailing-comma = false
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+[tool.ruff.pydocstyle]
+convention = "google"
 
 [tool.mypy]
 python_version = "3.13"
@@ -56,3 +102,9 @@ disallow_incomplete_defs = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = "test_*.py"
+filterwarnings = "ignore::DeprecationWarning"
+addopts = "-v -p no:cacheprovider"
+
+[tool.coverage.run]
+branch = true
+source = ["api", "tests"]

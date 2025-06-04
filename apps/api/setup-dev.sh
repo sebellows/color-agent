@@ -13,6 +13,6 @@ source .venv/bin/activate
 
 # Install development dependencies using uv
 echo "Installing development dependencies using uv..."
-uv pip sync requirements.txt requirements-dev.txt
+uv sync requirements.txt requirements-dev.txt
 
 echo "Development setup complete! Development dependencies installed."

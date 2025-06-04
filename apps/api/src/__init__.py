@@ -1,1 +1,0 @@
-"""ColorAgent API package."""

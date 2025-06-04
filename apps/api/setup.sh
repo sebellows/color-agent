@@ -11,7 +11,7 @@ source .venv/bin/activate
 
 # Install dependencies using uv
 echo "Installing dependencies using uv..."
-uv pip sync requirements.txt
+uv sync requirements.txt
 
 echo "Setup complete! Virtual environment created and dependencies installed."
 echo "To activate the virtual environment, run: source .venv/bin/activate"

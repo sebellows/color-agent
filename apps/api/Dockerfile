@@ -34,17 +34,25 @@ RUN apt-get update && apt-get install -y \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
+COPY pyproject.toml uv.lock ./
 # Install uv for faster Python package installation
 RUN pip install uv
+RUN uv sync
+
+COPY alembic.ini .
+COPY ./migrations ./migrations
+
+COPY ./src ./src
 
 # Copy package.json and requirements files
 COPY --from=builder /app/out/json/ .
-COPY --from=builder /app/out/full/apps/api/requirements*.txt ./apps/api/
+COPY --from=builder /app/out/full/apps/api/pyproject.toml ./apps/api/
+COPY --from=builder /app/out/full/apps/api/uv.lock ./apps/api/
 
 # Install Python dependencies
 RUN cd apps/api && \
-  uv pip install --system -r requirements.txt && \
-  if [ -f requirements-dev.txt ]; then uv pip install --system -r requirements-dev.txt; fi
+  uv pip install --system -r pyproject.toml && \
+  if [ -f uv.lock ]; then uv pip install --system -r uv.lock; fi
 
 # Stage 4: Final stage
 FROM base AS final
@@ -54,24 +62,11 @@ ENV PYTHONUNBUFFERED=1 \
   PYTHONDONTWRITEBYTECODE=1 \
   PORT=8000
 
-# Create a non-root user to run the application
-RUN adduser --disabled-password --gecos "" appuser
-
-# Copy Python dependencies
-COPY --from=python-deps /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
-COPY --from=python-deps /usr/local/bin /usr/local/bin
-
 # Copy application code
 COPY --from=builder /app/out/full/ .
-
-# Set ownership to non-root user
-RUN chown -R appuser:appuser /app
-
-# Switch to non-root user
-USER appuser
 
 # Expose the port the app will run on
 EXPOSE 8000
 
 # Command to run the application
-CMD ["uvicorn", "apps.api.src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uv", "run", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
