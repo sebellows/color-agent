@@ -8,7 +8,7 @@ from .logger import (
     log_request_middleware,
     setup_logging,
 )
-from .models import Base, SoftDeleteMixin, UniqueSlugMixin
+from .models import Entity, WithFullTimeAuditMixin, WithTimeAuditMixin
 from .security import get_keycloak_public_key, get_password_hash, verify_password
 
 
@@ -19,9 +19,9 @@ __all__ = [
     "log_request_middleware",
     "FastAPIStructLogger",
     "get_db",
-    "Base",
-    "SoftDeleteMixin",
-    "UniqueSlugMixin",
+    "Entity",
+    "WithFullTimeAuditMixin",
+    "WithTimeAuditMixin",
     "get_keycloak_public_key",
     "get_password_hash",
     "verify_password",

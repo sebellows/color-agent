@@ -1,9 +1,9 @@
 from datetime import datetime
 from typing import Annotated, Any
 from uuid import UUID
-from uuid_utils import uuid7
 
 from pydantic import Field, field_serializer
+from uuid_utils import uuid7
 
 
 class UUIDSchema:
@@ -25,9 +25,7 @@ class UpdatedTimestampSchema:
     updated_at: Annotated[datetime, Field(description="Last update timestamp")]
 
     @field_serializer("updated_at")
-    def serialize_updated_at(
-        self, updated_at: datetime | None, _info: Any
-    ) -> str | None:
+    def serialize_updated_at(self, updated_at: datetime | None, _info: Any) -> str | None:
         if updated_at is not None:
             return updated_at.isoformat(" ")
 
@@ -39,9 +37,7 @@ class TimestampSchema(CreatedTimestampSchema, UpdatedTimestampSchema):
 
 
 class SoftDeletionSchema:
-    deleted_at: Annotated[
-        datetime, Field(default=None, description="Last update timestamp")
-    ]
+    deleted_at: Annotated[datetime | None, Field(default=None, description="Last update timestamp")]
     is_deleted: bool = False
 
     @field_serializer("deleted_at")

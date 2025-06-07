@@ -1,9 +1,10 @@
-import re
-from collections.abc import Hashable
-from datetime import datetime, time, timezone
+from datetime import datetime, timezone
+from functools import partial
+from typing import Any
+from uuid import UUID
 
+from advanced_alchemy.base import CommonTableAttributes, orm_registry
 from advanced_alchemy.mixins import SlugKey, UniqueMixin
-from advanced_alchemy.utils.text import slugify
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import (
     DeclarativeBase,
@@ -12,74 +13,67 @@ from sqlalchemy.orm import (
     declarative_mixin,
     declared_attr,
     mapped_column,
+    orm_insert_sentinel,
     validates,
 )
-from sqlalchemy.sql.elements import ColumnElement
+from uuid_utils import uuid7
+
+from api.types import DateTimeUTC
 
 
-# from ..types import DateTimeUTC
-
-
-__all__ = ["Base", "SoftDeleteMixin", "UniqueSlugMixin"]
-
-
-"""Regular expression for table name"""
-table_name_regexp = re.compile(r"((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))")
-
-
-class Base(AsyncAttrs, MappedAsDataclass, DeclarativeBase):
-    """Base class for all SQLAlchemy models"""
-
-    """A set of attributes to exclude from JSON serialization."""
-    __json_exclude__: set[str] | None
-
-    def __json__(self, request):
-        json_exclude = getattr(self, "__json_exclude__", set())
-        return {
-            key: value
-            for key, value in self.__dict__.items()
-            # Do not serialize 'private' attributes
-            # (SQLAlchemy-internal attributes are among those, too)
-            if not key.startswith("_") and key not in json_exclude
-        }
-
-    def to_dict(self):
-        json_exclude = getattr(self, "__json_exclude__", set())
-        class_dict = {
-            key: value for key, value in self.__dict__.items() if not key.startswith("_") and key not in json_exclude
-        }
-
-        for key, value in class_dict.items():
-            if isinstance(value, time) or isinstance(value, datetime):
-                class_dict[key] = str(value.isoformat(" "))  # format time and make it a str
-
-        return class_dict
-
-    def to_repr(self, column_names: list[str] = []) -> str:
-        model_name = self.__class__.__name__
-        column_names.extend(["id", "created_at", "updated_at", "deleted_at", "is_deleted"])
-        fields = [f"{col.name}={getattr(self, col.name)}" for col in self.__table__.columns if col.name in column_names]
-        return f"{model_name}({', '.join(fields)})"
+# from sqlalchemy.sql.schema import _InsertSentinelColumnDefault  # pylance: ignore [reportPrivateUsage]
 
 
 @declarative_mixin
-class SoftDeleteMixin:
-    __abstract__ = True
+class WithUUIDMixin(MappedAsDataclass, init=False):
+    """UUID Primary Key Field Mixin."""
 
     @declared_attr
-    def deleted_at(cls) -> Mapped[datetime | None]:
+    def id(cls) -> Mapped[UUID]:
+        return mapped_column(primary_key=True, insert_default=uuid7)
+
+    @declared_attr
+    def _sentinel(cls) -> Mapped[int]:
+        """Sentinel value required for SQLAlchemy bulk DML with UUIDs."""
+        return orm_insert_sentinel(name="sa_orm_sentinel")
+
+
+class Entity(WithUUIDMixin, MappedAsDataclass, CommonTableAttributes, DeclarativeBase, AsyncAttrs, init=False):
+    registry = orm_registry
+    """UUID Primary Key Field Mixin."""
+
+
+@declarative_mixin
+class WithUniqueSlugMixin(MappedAsDataclass, SlugKey, UniqueMixin):
+    """Slug unique Field Model Mixin."""
+
+    pass
+
+
+@declarative_mixin
+class WithTimeAuditMixin(MappedAsDataclass, init=False):
+    """Date/time of instance creation."""
+
+    @declared_attr
+    def created_at(cls) -> Mapped[datetime]:
         return mapped_column(
-            # DateTimeUTC(timezone=True),
-            nullable=True,
-            default=None,
-            onupdate=datetime.now(timezone.utc),
+            DateTimeUTC(timezone=True),
+            nullable=False,
+            insert_default=partial(datetime.now, timezone.utc),
         )
 
-    @declared_attr
-    def is_deleted(cls) -> Mapped[bool | None]:
-        return mapped_column(index=True, nullable=True, default=False)
+    """Date/time of instance last update."""
 
-    @validates("deleted_at")
+    @declared_attr
+    def updated_at(cls) -> Mapped[datetime]:
+        return mapped_column(
+            DateTimeUTC(timezone=True),
+            nullable=False,
+            insert_default=partial(datetime.now, timezone.utc),
+            onupdate=partial(datetime.now, timezone.utc),
+        )
+
+    @validates("created_at", "updated_at")
     def validate_tz_info(self, _: str, value: datetime) -> datetime:
         if value.tzinfo is None:
             value = value.replace(tzinfo=timezone.utc)
@@ -87,19 +81,28 @@ class SoftDeleteMixin:
 
 
 @declarative_mixin
-class UniqueSlugMixin(SlugKey, UniqueMixin):
-    """Mixin to add a unique slug column for SQLAlchemy models."""
+class WithFullTimeAuditMixin(WithTimeAuditMixin, init=False):
+    @declared_attr
+    def deleted_at(cls) -> Mapped[datetime | None]:
+        return mapped_column(
+            DateTimeUTC(timezone=True),
+            nullable=True,
+            onupdate=partial(datetime.now, timezone.utc),
+        )
 
-    @classmethod
-    def unique_hash(cls, name: str, slug: str | None = None) -> Hashable:
-        """Generate a unique hash for deduplication."""
-        return slugify(name)
+    @declared_attr
+    def is_deleted(cls) -> Mapped[bool | None]:
+        return mapped_column(index=True, nullable=True, insert_default=False)
 
-    @classmethod
-    def unique_filter(
-        cls,
-        name: str,
-        slug: str | None = None,
-    ) -> ColumnElement[bool]:
-        """SQL filter for finding existing records."""
-        return cls.slug == slugify(name)
+    # def __post_init__(self, *args: Any, **kwargs: Any) -> None:
+    #     """Set default values for soft delete fields."""
+    #     if isinstance(self.deleted_at, datetime) and not self.is_deleted:
+    #         self.is_deleted = True
+    # elif self.deleted_at is None and self.is_deleted is None:
+    #     self.is_deleted = False
+
+    @validates("deleted_at")
+    def validate_tz_info(self, _: str, value: datetime) -> datetime:
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=timezone.utc)
+        return value

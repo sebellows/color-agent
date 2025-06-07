@@ -17,12 +17,10 @@ from api.core.database import DB
 from api.core.enums import ApplicationMethodEnum, OpacityEnum, PackagingTypeEnum, ViscosityEnum
 from api.core.logger import get_logger, settings, setup_logging
 from api.domain.analogous import provide_analogous_repository
-from api.domain.color_range import provide_color_range_repository
 from api.domain.locale import provide_locale_repository
 from api.domain.product import provide_product_repository
 from api.domain.product_line import provide_product_line_repository
 from api.domain.product_swatch import provide_product_swatch_repository
-from api.domain.product_type import provide_product_type_repository
 from api.domain.product_variant import provide_product_variant_repository
 from api.domain.tag import provide_tag_repository
 from api.domain.vendor import provide_vendor_repository
@@ -35,13 +33,11 @@ logger = get_logger(__name__)
 
 providers = {
     "analogous": provide_analogous_repository,
-    "color_range": provide_color_range_repository,
     "locale": provide_locale_repository,
     "product_line": provide_product_line_repository,
     "product": provide_product_repository,
     "product_swatch": provide_product_swatch_repository,
     "product_variant": provide_product_variant_repository,
-    "product_type": provide_product_type_repository,
     "tag": provide_tag_repository,
     "vendor": provide_vendor_repository,
 }
@@ -131,18 +127,18 @@ async def import_data(json_path):
                             logger.info(f"Processed swatch for product: {product.name}")
 
                         # Process product types
-                        for type_name in product_data.get("product_type", []):
-                            product_type = await get_or_create(
-                                provider=providers["product_type"](session), name=type_name, slug=slugify(type_name)
-                            )
-                            product.product_type.append(product_type)
+                        # for type_name in product_data.get("product_type", []):
+                        #     product_type = await get_or_create(
+                        #         provider=providers["product_type"](session), name=type_name, slug=slugify(type_name)
+                        #     )
+                        #     product.product_type.append(product_type)
 
                         # Process color ranges
-                        for color_name in product_data.get("color_range", []):
-                            color_range = await get_or_create(
-                                provider=providers["color_range"](session), name=color_name, slug=slugify(color_name)
-                            )
-                            product.color_range.append(color_range)
+                        # for color_name in product_data.get("color_range", []):
+                        #     color_range = await get_or_create(
+                        #         provider=providers["color_range"](session), name=color_name, slug=slugify(color_name)
+                        #     )
+                        #     product.color_range.append(color_range)
 
                         # Process tags
                         for tag_name in product_data.get("tags", []):
@@ -174,9 +170,9 @@ async def import_data(json_path):
 
                             packaging_val = variant_data.get("packaging", "Bottle")
                             packaging = PackagingTypeEnum.__members__.get(packaging_val, PackagingTypeEnum.Bottle)
-                            opacity = OpacityEnum.__members__.get(variant_data.get("opacity"), OpacityEnum.opaque)
+                            opacity = OpacityEnum.__members__.get(variant_data.get("opacity"), OpacityEnum.Opaque)
                             viscosity = ViscosityEnum.__members__.get(
-                                variant_data.get("viscosity"), ViscosityEnum.medium
+                                variant_data.get("viscosity"), ViscosityEnum.Medium
                             )
                             application_method = ApplicationMethodEnum.__members__.get(
                                 variant_data.get("application_method"), None

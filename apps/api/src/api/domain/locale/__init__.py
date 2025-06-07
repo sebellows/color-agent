@@ -5,19 +5,27 @@ from .routes import (
     get_locale,
     list_locales,
     update_locale,
+)
+from .routes import (
     router as locale_router,
 )
-from .schemas import Locale as LocaleSchema, LocaleCreate, LocaleUpdate
+from .schemas import Locale as LocaleSchema
+from .schemas import LocaleCreate, LocaleResponse, LocaleUpdate
+from .service import LocaleService, provide_locales_service
+
 
 __all__ = [
     "Locale",
-    "provide_locale_repository",
-    "LocaleSchema",
     "LocaleCreate",
+    "LocaleResponse",
+    "LocaleSchema",
+    "LocaleService",
     "LocaleUpdate",
     "create_locale",
     "get_locale",
     "list_locales",
     "locale_router",
+    "provide_locale_repository",
+    "provide_locales_service",
     "update_locale",
 ]

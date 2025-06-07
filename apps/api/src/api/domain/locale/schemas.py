@@ -16,10 +16,11 @@ class LocaleCreate(LocaleBase):
 
 
 class LocaleUpdate(BaseModel):
-    language_code: Annotated[str | None, Field(description="Language code")] = None
-    country_code: Annotated[str | None, Field(description="Country code")] = None
-    currency_code: Annotated[str | None, Field(description="Currency code")] = None
-    currency_symbol: Annotated[str | None, Field(description="Currency symbol")] = None
+    language_code: Annotated[str | None, Field(description="Language code", default=None)]
+    country_code: Annotated[str | None, Field(description="Country code", default=None)]
+    currency_code: Annotated[str | None, Field(description="Currency code", default=None)]
+    currency_symbol: Annotated[str | None, Field(description="Currency symbol", default=None)]
+    slug: Annotated[str | None, Field(description="Unique identifier slug", default=None)]
 
 
 class Locale(LocaleBase):
@@ -29,10 +30,14 @@ class Locale(LocaleBase):
         from_attributes = True
 
 
+class LocaleResponse(LocaleBase):
+    id: Annotated[UUID, Field(description="Unique identifier")]
+    slug: Annotated[str, Field(description="Unique identifier slug")]
+
+    class Config:
+        from_attributes = True
+
+
 class LocaleFilterParams(BaseModel):
-    language_code: Annotated[
-        str | None, Field(description="Filter by language code")
-    ] = None
-    country_code: Annotated[str | None, Field(description="Filter by country code")] = (
-        None
-    )
+    language_code: Annotated[str | None, Field(description="Filter by language code", default=None)]
+    country_code: Annotated[str | None, Field(description="Filter by country code", default=None)]

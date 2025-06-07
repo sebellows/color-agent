@@ -7,15 +7,15 @@ class OverlayEnum(Enum):
     swatch to convey the visual effect of the paint.
     """
 
-    crackle = "crackle"
-    chrome = "chrome"
-    glossy = "glossy"
-    glow = "glow"
-    grunge = "grunge"
-    liquid = "liquid"
-    matte = "matte"
-    topographic = "topographic"
-    unknown = "unknown"
+    Crackle = "Crackle"
+    Chrome = "Chrome"
+    Glossy = "Glossy"
+    Glow = "Glow"
+    Grunge = "Grunge"
+    Liquid = "Liquid"
+    Matte = "Matte"
+    Topographic = "Topographic"
+    Unknown = "Unknown"
 
     def _get_value(self, **kwargs) -> str:
         return self.value
@@ -27,11 +27,11 @@ class OpacityEnum(Enum):
     The higher the opacity, the less light can pass through.
     """
 
-    opaque = "opaque"
-    semi_opaque = "semi-opaque"
-    semi_transparent = "semi-transparent"
-    transparent = "transparent"
-    unknown = "unknown"
+    Opaque = "Opaque"
+    SemiOpaque = "SemiOpaque"
+    SemiTransparent = "SemiTransparent"
+    Transparent = "Transparent"
+    Unknown = "Unknown"
 
     def _get_value(self, **kwargs) -> str:
         return self.value
@@ -43,12 +43,12 @@ class ViscosityEnum(Enum):
     The higher the viscosity, the thicker the fluid.
     """
 
-    low = "low"
-    low_medium = "low-to-medium"
-    medium = "medium"
-    medium_high = "medium-to-high"
-    high = "high"
-    unknown = "unknown"
+    Low = "Low"
+    LowMedium = "LowMedium"
+    Medium = "Medium"
+    MediumHigh = "MediumHigh"
+    High = "High"
+    Unknown = "Unknown"
 
     def _get_value(self, **kwargs) -> str:
         return self.value
@@ -59,7 +59,7 @@ class ProductTypeEnum(Enum):
     Color Agent categories for product type
     """
 
-    Acrylic = "Acrylic"
+    Acrylic = "Acrylic"  # Default
     Contrast = "Contrast"
     Effect = "Effect"
     Enamel = "Enamel"
@@ -79,6 +79,7 @@ class ApplicationMethodEnum(Enum):
     Airbrush = "Airbrush"
     DryBrush = "Dry Brush"
     Spray = "Spray"
+    Unknown = "Unknown"
 
     def _get_value(self, **kwargs) -> str:
         return self.value
@@ -97,7 +98,7 @@ class ProductLineTypeEnum(Enum):
     Ink = "Ink"
     Medium = "Medium"  # Varnishes, thinners, mediums, etc.
     Metallic = "Metallic"
-    Mixed = "Mixed"  # When a product line is a mix of types
+    Mixed = "Mixed"  # Default, when a product line is a mix of types
     Primer = "Primer"
     Wash = "Wash"
 
@@ -140,11 +141,12 @@ class ColorRangeEnum(Enum):
 
 class PackagingTypeEnum(Enum):
     Bottle = "Bottle"
-    Dropper_Bottle = "Dropper Bottle"
+    DropperBottle = "DropperBottle"
     Jar = "Jar"
     Pot = "Pot"
-    Spray_Can = "Spray Can"
+    SprayCan = "SprayCan"
     Tube = "Tube"
+    Unknown = "Unknown"
 
     def _get_value(self, **kwargs) -> str:
         return self.value

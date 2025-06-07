@@ -5,9 +5,9 @@ from typing import (
     TypeVar,
     Union,
 )
-from typing_extensions import TypeAlias
 
 from pydantic import BaseModel, StrictInt, StrictStr, conint
+from typing_extensions import TypeAlias
 
 
 """Type variable for SQLAlchemy models."""

@@ -11,12 +11,11 @@ from passlib.context import CryptContext
 
 from .config import settings
 
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.auth.KeyCloak.BASE_URL}/protocol/openid-connect/token"
-)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.auth.KeyCloak.BASE_URL}/protocol/openid-connect/token")
 
 
 def get_keycloak_public_key():
@@ -60,7 +59,8 @@ def verify_token(token: str) -> bool:
         return False
 
 
-# async def create_current_user(token: str = Depends(settings.OAUTH2_TOKEN_URL), db: AsyncSession = Depends(get_async_db)) -> User:
+# async def create_current_user(token: str = Depends(
+# settings.OAUTH2_TOKEN_URL), db: AsyncSession = Depends(get_async_db)) -> User:
 #     """Get current user based on the JWT token"""
 #     token_data = decode_token(token)
 #     email = token_data.get("email", "")
@@ -73,20 +73,14 @@ def verify_token(token: str) -> bool:
 #     )
 
 
-def create_access_token(
-    subject: str | Any, expires_delta: timedelta | None = None
-) -> str:
+def create_access_token(subject: str | Any, expires_delta: timedelta | None = None) -> str:
     """Create JWT access token."""
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.now(timezone.utc) + timedelta(
-            minutes=settings.auth.JWT.ACCESS_TOKEN_EXPIRE_MINUTES
-        )
+        expire = datetime.now(timezone.utc) + timedelta(minutes=settings.auth.JWT.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode = {"exp": expire, "sub": str(subject)}
-    encoded_jwt = jwt.encode(
-        to_encode, settings.auth.JWT.SECRET_KEY, algorithm=settings.auth.JWT.ALGORITHM
-    )
+    encoded_jwt = jwt.encode(to_encode, settings.auth.JWT.SECRET_KEY, algorithm=settings.auth.JWT.ALGORITHM)
     return encoded_jwt
 
 

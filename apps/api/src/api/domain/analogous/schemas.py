@@ -21,3 +21,10 @@ class Analogous(AnalogousBase):
 
     class Config:
         from_attributes = True
+
+
+class AnalogousResponse(AnalogousBase):
+    id: Annotated[UUID, Field(description="Unique identifier")]
+
+    class Config:
+        from_attributes = True

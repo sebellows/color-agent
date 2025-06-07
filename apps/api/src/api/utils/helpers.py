@@ -1,7 +1,7 @@
-from dataclasses import dataclass
 import re
+from dataclasses import dataclass
 from typing import Any, Generic, Literal, NoReturn, Type, TypedDict
-from unicodedata import normalize, category
+from unicodedata import category, normalize
 
 from sqlalchemy import Select
 

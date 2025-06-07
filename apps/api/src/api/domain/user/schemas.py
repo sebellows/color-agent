@@ -55,17 +55,16 @@ class UserDelete(BaseModel, SoftDeletionSchema):
     pass
 
 
-class UserInDBBase(UserBase, TimestampSchema):
+class UserResponse(UserBase, TimestampSchema, SoftDeletionSchema):
     """Base user schema for DB representation."""
 
     pass
 
-    # id: UUID
 
-    # class Config:
-    #     """Pydantic config."""
+class UserInDBBase(UserBase, TimestampSchema, SoftDeletionSchema):
+    """Base user schema for DB representation."""
 
-    #     from_attributes = True
+    pass
 
 
 class User(UserInDBBase):

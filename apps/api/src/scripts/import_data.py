@@ -1,197 +1,313 @@
-"""Script to import sample data from JSON file."""
-
-import asyncio
 import json
-import logging
 import sys
 from pathlib import Path
+from typing import Any, TypeVar
 
-from api.core.config import settings
-from api.domain.locale.models import Locale
-from api.models.supporting import (
-    Analogous,
-    ColorRange,
-    ProductType,
-    Tag,
-    VendorColorRange,
-    VendorProductType,
+
+sys.path.append(str(Path(__file__).parent.parent))
+
+import asyncio
+
+from advanced_alchemy.base import ModelProtocol
+from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
+from advanced_alchemy.service.typing import ModelDTOT
+from advanced_alchemy.utils.text import slugify
+from api.core.database import DB
+from api.core.enums import (
+    ApplicationMethodEnum,
+    ColorRangeEnum,
+    OpacityEnum,
+    OverlayEnum,
+    PackagingTypeEnum,
+    ProductLineTypeEnum,
+    ProductTypeEnum,
+    ViscosityEnum,
 )
-from product.models import Product
-from product_line.models import ProductLine
-from product_swatch.models import ProductSwatch
-from product_variant.models import ProductVariant
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.future import select
-from vendor.models import Vendor
+from api.core.logger import get_logger, settings, setup_logging
+from api.domain.analogous import (
+    AnalogousResponse,
+    AnalogousUpdate,
+    provide_analogous_service,
+)
+from api.domain.locale import (
+    LocaleResponse,
+    LocaleUpdate,
+    provide_locales_service,
+)
+from api.domain.product import (
+    ProductCreate,
+    ProductResponse,
+    provide_products_service,
+)
+from api.domain.product_line import (
+    ProductLineCreate,
+    ProductLineResponse,
+    provide_product_lines_service,
+)
+from api.domain.product_swatch import (
+    ProductSwatchCreate,
+    ProductSwatchResponse,
+    provide_product_swatches_service,
+)
+from api.domain.product_variant import (
+    ProductVariantCreate,
+    ProductVariantResponse,
+    provide_product_variants_service,
+)
+from api.domain.tag import TagResponse, TagUpdate, provide_tags_service
+from api.domain.vendor import (
+    VendorSchema,
+    VendorUpdate,
+    provide_vendors_service,
+)
 
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+setup_logging(json_logs=settings.logger.LOG_JSON_FORMAT, log_level=settings.logger.LOG_LEVEL)
+logger = get_logger(__name__)
 
 
-async def get_or_create(session: AsyncSession, model, **kwargs):
+T = TypeVar("T", bound=ModelProtocol)
+
+
+async def get_or_create(service: SQLAlchemyAsyncRepositoryService, data: Any, schema_type: type["ModelDTOT"]):
     """Get or create a record."""
-    stmt = select(model).filter_by(**kwargs)
-    result = await session.execute(stmt)
-    instance = result.scalars().first()
-    if instance:
-        return instance
-    instance = model(**kwargs)
-    session.add(instance)
-    await session.flush()
-    return instance
+    model, _created = await service.get_or_upsert(**data.__dict__)
+
+    # locale = await locales_service.upsert(data)
+    # return locales_service.to_schema(locale, schema_type=LocaleResponse)
+    # if created:
+    #     logger.info(f"Created new model instance: {model}")
+    # else:
+    #     logger.info(f"Found existing model instance: {model}")
+
+    return service.to_schema(model, schema_type=schema_type)
 
 
-async def import_data(json_path):
+async def import_data(data):
+    db = DB.instance()
+
+    async with db.session_factory() as session:
+        try:
+            session.begin()
+            print("Processing data...", data.get("vendor_name", "Unknown Vendor"))
+
+            # await db.drop_all()
+            await db.create_all()
+
+            async for vendor_service in provide_vendors_service(session):
+                vendor_data = VendorUpdate(
+                    name=data["vendor_name"],
+                    url=data["vendor_url"],
+                    slug=data["slug"],
+                    platform=data["platform"],
+                    description=data["description"],
+                    pdp_slug=data["pdp_slug"],
+                    plp_slug=data["plp_slug"],
+                )
+                vendor = await get_or_create(vendor_service, data=vendor_data, schema_type=VendorSchema)
+
+                async for product_line_service in provide_product_lines_service(session):
+                    for product_line_item in data.get("product_lines", []):
+                        product_line_data: dict[str, Any] = product_line_item.get("product_line", {})
+                        product_line_type = ProductLineTypeEnum.__members__.get(
+                            product_line_data.get("product_line_type", "Mixed"), ProductLineTypeEnum.Mixed
+                        )
+                        product_line_model = ProductLineCreate(
+                            **{
+                                "description": product_line_data.get("description", ""),
+                                "marketing_name": product_line_data["marketing_name"],
+                                "name": product_line_data["product_line_name"],
+                                "slug": product_line_data["slug"],
+                                "vendor_slug": product_line_data.get(
+                                    "vendor_slug", ""
+                                ),  # Assuming vendor slug is the same as vendor's slug
+                                "product_line_type": product_line_type,
+                                "vendor_id": vendor.id,
+                            }
+                        )
+                        product_line = await get_or_create(
+                            product_line_service, data=product_line_model, schema_type=ProductLineResponse
+                        )
+                        # print("Product Line Update: ", product_line)
+
+                        if product_line:
+                            async for product_service in provide_products_service(session):
+                                for product_item in product_line.get("products", []):
+                                    product_type: list[ProductTypeEnum] = [
+                                        ProductTypeEnum.__members__.get(
+                                            pt if pt else "Acrylic", ProductTypeEnum.Acrylic
+                                        )
+                                        for pt in product_item.get("product_type", [])
+                                    ]
+                                    color_range: list[ColorRangeEnum] = [
+                                        ColorRangeEnum.__members__.get(cr if cr else "White", ColorRangeEnum.White)
+                                        for cr in product_item.get("color_range", [])
+                                    ]
+                                    product_tags = product_item.get("tags", [])
+                                    product_analogous = product_item.get("analogous", [])
+
+                                    if len(product_analogous):
+                                        async for analogous_service in provide_analogous_service(session):
+                                            for analogous_name in product_analogous:
+                                                analogous_data = AnalogousUpdate(name=analogous_name)
+                                                await get_or_create(
+                                                    analogous_service,
+                                                    data=analogous_data,
+                                                    schema_type=AnalogousResponse,
+                                                )
+                                            #     print("Analogous Response: ", analogous)
+                                            # print("Analogous Update: ", product_analogous)
+
+                                    if len(product_tags):
+                                        async for tags_service in provide_tags_service(session):
+                                            for tag in product_tags:
+                                                tag_data = TagUpdate(name=tag)
+                                                tag = await get_or_create(
+                                                    tags_service, data=tag_data, schema_type=TagResponse
+                                                )
+                                                # print("Tags Response: ", tag)
+                                            # print("Tags Update: ", product_tags)
+
+                                    # print("Product JSON: ", product_json, color_range, product_type)
+                                    product_name: str = product_item["name"]
+
+                                    product_update = ProductCreate(
+                                        name=product_name,
+                                        slug=product_item.get("slug", slugify(product_name)),
+                                        iscc_nbs_category=product_item["iscc_nbs_category"],
+                                        description=product_item.get("description", ""),
+                                        product_type=product_type,
+                                        color_range=color_range,
+                                        product_line_id=product_line.id,
+                                        tags=product_item.get("tags", []),
+                                        analogous=product_item.get("analogous", []),
+                                    )
+
+                                    product = await get_or_create(
+                                        product_service, data=product_update, schema_type=ProductResponse
+                                    )
+
+                                    if product:
+                                        async for product_swatches_service in provide_product_swatches_service(session):
+                                            swatch_data = product_item.get("swatch", {})
+                                            overlay = OverlayEnum.__members__.get(
+                                                swatch_data.get("overlay", "Unknown"), OverlayEnum.Unknown
+                                            )
+                                            product_swatch_data = ProductSwatchCreate(
+                                                product_id=product.id,
+                                                hex_color=swatch_data.get("hex_color", "#000000"),
+                                                rgb_color=swatch_data.get("rgb_color", [0, 0, 0]),
+                                                oklch_color=swatch_data.get("oklch_color", [0.0, 0.0, 0.0]),
+                                                gradient_start=swatch_data.get("gradient_start", [0.0, 0.0, 0.0]),
+                                                gradient_end=swatch_data.get("gradient_end", [0.0, 0.0, 0.0]),
+                                                overlay=overlay,
+                                            )
+                                            await get_or_create(
+                                                product_swatches_service,
+                                                data=product_swatch_data,
+                                                schema_type=ProductSwatchResponse,
+                                            )
+                                            # print("Product Swatch Update: ", product_swatch)
+
+                                        locale: LocaleResponse | None = None
+
+                                        async for product_variants_service in provide_product_variants_service(session):
+                                            for variant_item in product_item.get("variants", []):
+                                                if locale is None:
+                                                    lang = variant_item.get("language_code", "en")
+                                                    country = variant_item.get("country_code", "US")
+                                                    locale_data = LocaleUpdate(
+                                                        language_code=lang,
+                                                        country_code=country,
+                                                        currency_code=variant_item.get("currency_code", "USD"),
+                                                        currency_symbol=variant_item.get("currency_symbol", "$"),
+                                                        slug=f"{lang}_{country}",
+                                                    )
+                                                    # print("LocaleUpdate: ", locale_data)
+                                                    async for locale_service in provide_locales_service(session):
+                                                        locale = await get_or_create(
+                                                            locale_service, data=locale_data, schema_type=LocaleResponse
+                                                        )
+                                                        # print("Locale Added: ", locale)
+                                                # print("Product ID: ", product_id, "Locale ID: ", locale_id)
+
+                                                if locale:
+                                                    product_variant_data = ProductVariantCreate(
+                                                        locale_id=locale.id,
+                                                        product_id=product.id,
+                                                        # country_code=variant_data.get("country_code", "US"),
+                                                        # currency_code=variant_data.get("currency_code", "USD"),
+                                                        # currency_symbol=variant_data.get("currency_symbol", "$"),
+                                                        discontinued=variant_item.get("discontinued", False),
+                                                        display_name=variant_item.get("display_name", product.name),
+                                                        image_url=variant_item["image_url"],
+                                                        # language_code=variant_data.get("language_code", "en"),
+                                                        price=variant_item["price"],
+                                                        # product_line=variant_data.get("product_line", None),
+                                                        product_url=variant_item["product_url"],
+                                                        sku=variant_item["sku"],
+                                                        vendor_color_ranges=variant_item.get("vendor_color_range", []),
+                                                        vendor_product_id=variant_item.get("vendor_product_id", None),
+                                                        vendor_product_types=variant_item.get(
+                                                            "vendor_product_type", []
+                                                        ),
+                                                        volume_ml=variant_item.get("volume_ml", None),
+                                                        volume_oz=variant_item.get("volume_oz", None),
+                                                        marketing_name=variant_item.get("marketing_name", product.name),
+                                                        application_method=ApplicationMethodEnum.__members__.get(
+                                                            variant_item.get("application_method", "Unknown"),
+                                                            ApplicationMethodEnum.Unknown,
+                                                        ),
+                                                        opacity=OpacityEnum.__members__.get(
+                                                            variant_item.get("opacity", "Unknown"),
+                                                            OpacityEnum.Unknown,
+                                                        ),
+                                                        packaging=PackagingTypeEnum.__members__.get(
+                                                            variant_item.get("packaging", "Unknown"),
+                                                            PackagingTypeEnum.Unknown,
+                                                        ),
+                                                        viscosity=ViscosityEnum.__members__.get(
+                                                            variant_item.get("viscosity", "Unknown"),
+                                                            ViscosityEnum.Unknown,
+                                                        ),
+                                                    )
+                                                    await get_or_create(
+                                                        product_variants_service,
+                                                        data=product_variant_data,
+                                                        schema_type=ProductVariantResponse,
+                                                    )
+
+            await session.commit()
+        except Exception as e:
+            print(f"Error during vendor creation: {e}")
+            await session.rollback()
+            await db.engine.dispose()
+            raise
+        finally:
+            await session.close()
+            await db.engine.dispose()
+            print("FINALLY??!")
+
+
+async def setup_and_import():
+    """Set up database and import data."""
+    # Allow specifying the JSON file path as a command-line argument
+    if len(sys.argv) > 1:
+        json_path = sys.argv[1]
+    else:
+        json_path = Path(__file__).parent.parent.parent.parent.parent / "vendor-data" / "gamesworkshop.json"
+
     """Import data from JSON file."""
-    logger.info(f"Importing data from {json_path}...")
-
-    # Create engine and session
-    engine = create_async_engine(settings.DATABASE_URL)
-    async_session_factory = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+    # logger.info(f"Importing data from {json_path}.")
 
     # Read JSON file
     with open(json_path, "r") as f:
         data = json.load(f)
 
-    async with async_session_factory() as session:
-        # Process each vendor
-        for vendor_data in data:
-            # Create vendor
-            vendor = await get_or_create(
-                session,
-                Vendor,
-                name=vendor_data["vendor_name"],
-                url=vendor_data["vendor_url"],
-                slug=vendor_data["slug"],
-                platform=vendor_data["platform"],
-                description=vendor_data["description"],
-                pdp_slug=vendor_data["pdp_slug"],
-                plp_slug=vendor_data["plp_slug"],
-            )
-            logger.info(f"Processed vendor: {vendor.name}")
-
-            # Process product lines
-            for product_line_data in vendor_data.get("product_lines", []):
-                product_line = await get_or_create(
-                    session,
-                    ProductLine,
-                    vendor_id=vendor.id,
-                    name=product_line_data["product_line_name"],
-                    marketing_name=product_line_data["marketing_name"],
-                    slug=product_line_data["slug"],
-                    vendor_slug=product_line_data["vendor_slug"],
-                    product_line_type=product_line_data["product_line_type"],
-                    description=product_line_data.get("description", ""),
-                )
-                logger.info(f"Processed product line: {product_line.name}")
-
-                # Process products
-                for product_data in product_line_data.get("products", []):
-                    # Create product - using 'name' instead of 'product_name'
-                    product = await get_or_create(
-                        session,
-                        Product,
-                        product_line_id=product_line.id,
-                        name=product_data["name"],  # Changed from product_name to name
-                        iscc_nbs_category=product_data.get("iscc_nbs_category"),
-                    )
-                    logger.info(f"Processed product: {product.name}")
-
-                    # Create product swatch
-                    swatch_data = product_data.get("swatch", {})
-                    if swatch_data:
-                        swatch = await get_or_create(
-                            session,
-                            ProductSwatch,
-                            product_id=product.id,
-                            hex_color=swatch_data.get("hex_color", "#000000"),
-                            rgb_color=swatch_data.get("rgb_color", [0, 0, 0]),
-                            oklch_color=swatch_data.get("oklch_color", [0, 0, 0]),
-                            gradient_start=swatch_data.get("gradient_start", [0, 0, 0]),
-                            gradient_end=swatch_data.get("gradient_end", [0, 0, 0]),
-                            overlay=swatch_data.get("overlay"),
-                        )
-                        logger.info(f"Processed swatch for product: {product.name}")
-
-                    # Process product types
-                    for type_name in product_data.get("product_type", []):
-                        product_type = await get_or_create(session, ProductType, name=type_name)
-                        product.product_type.append(product_type)
-
-                    # Process color ranges
-                    for color_name in product_data.get("color_range", []):
-                        color_range = await get_or_create(session, ColorRange, name=color_name)
-                        product.color_range.append(color_range)
-
-                    # Process tags
-                    for tag_name in product_data.get("tags", []):
-                        tag = await get_or_create(session, Tag, name=tag_name)
-                        product.tags.append(tag)
-
-                    # Process analogous
-                    for analogous_name in product_data.get("analogous", []):
-                        analogous = await get_or_create(session, Analogous, name=analogous_name)
-                        product.analogous.append(analogous)
-
-                    # Process variants
-                    for variant_data in product_data.get("variants", []):
-                        # Get or create locale
-                        locale = await get_or_create(
-                            session,
-                            Locale,
-                            language_code=variant_data.get("language_code", "en"),
-                            country_code=variant_data.get("country_code", "US"),
-                            currency_code=variant_data.get("currency_code", "USD"),
-                            currency_symbol=variant_data.get("currency_symbol", "$"),
-                        )
-
-                        # Create variant
-                        variant = await get_or_create(
-                            session,
-                            ProductVariant,
-                            product_id=product.id,
-                            locale_id=locale.id,
-                            display_name=variant_data.get("display_name", ""),
-                            marketing_name=variant_data.get("marketing_name", ""),
-                            sku=variant_data.get("sku", ""),
-                            discontinued=variant_data.get("discontinued", False),
-                            image_url=variant_data.get("image_url", ""),
-                            packaging=variant_data.get("packaging", ""),
-                            volume_ml=variant_data.get("volume_ml"),
-                            volume_oz=variant_data.get("volume_oz"),
-                            price=variant_data.get("price", 0),
-                            product_url=variant_data.get("product_url", ""),
-                            opacity=variant_data.get("opacity"),
-                            viscosity=variant_data.get("viscosity"),
-                            application_method=variant_data.get("application_method"),
-                            vendor_product_id=variant_data.get("vendor_product_id"),
-                        )
-                        logger.info(f"Processed variant: {variant.display_name}")
-
-                        # Process vendor color ranges
-                        for vcr_name in variant_data.get("vendor_color_range", []):
-                            vcr = await get_or_create(session, VendorColorRange, name=vcr_name)
-                            variant.vendor_color_ranges.append(vcr)
-
-                        # Process vendor product types
-                        for vpt_name in variant_data.get("vendor_product_type", []):
-                            vpt = await get_or_create(session, VendorProductType, name=vpt_name)
-                            variant.vendor_product_types.append(vpt)
-
-        # Commit all changes
-        await session.commit()
-
-    await engine.dispose()
-    logger.info("Data import completed successfully!")
+        if data:
+            await import_data(data)
+    # print(f"Importing data from {json_path}...")
 
 
 if __name__ == "__main__":
-    # Allow specifying the JSON file path as a command-line argument
-    if len(sys.argv) > 1:
-        json_path = sys.argv[1]
-    else:
-        # Default path
-        json_path = Path(__file__).parent.parent.parent.parent.parent / "examples" / "data-sample-01.json"
-
-    asyncio.run(import_data(json_path))
+    asyncio.run(setup_and_import())

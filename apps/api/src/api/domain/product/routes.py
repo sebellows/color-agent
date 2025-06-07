@@ -7,9 +7,7 @@ from api.schemas.pagination import PaginatedResponse, get_paginated_list
 from .dependencies import provide_product_repository
 from .models import Product
 from .repository import ProductRepository
-from .schemas import (
-    Product as ProductSchema,
-)
+from .schemas import Product as ProductSchema
 from .schemas import (
     ProductCreate,
     ProductUpdate,
@@ -29,8 +27,8 @@ async def create_product(
 ):
     """Create a new product"""
     # Extract relationship IDs
-    product_types = product_in.product_type or []
-    color_ranges = product_in.color_range or []
+    # product_types = product_in.product_type or []
+    # color_ranges = product_in.color_range or []
     tags = product_in.tags or []
     analogous = product_in.analogous or []
 
@@ -39,25 +37,25 @@ async def create_product(
     product = await repository.add(new_product)
 
     # Add relationships
-    if product_types:
-        await repository.session.execute(
-            text("""
-            INSERT INTO product_product_type_association (product_id, product_type_id)
-            SELECT :product_id, pt.id FROM product_type pt
-            WHERE pt.id IN :product_type_ids
-            """),
-            {"product_id": product.id, "product_type_ids": tuple(product_types)},
-        )
+    # if product_types:
+    #     await repository.session.execute(
+    #         text("""
+    #         INSERT INTO product_product_type_association (product_id, product_type_id)
+    #         SELECT :product_id, pt.id FROM product_type pt
+    #         WHERE pt.id IN :product_type_ids
+    #         """),
+    #         {"product_id": product.id, "product_type_ids": tuple(product_types)},
+    #     )
 
-    if color_ranges:
-        await repository.session.execute(
-            text("""
-            INSERT INTO product_color_range_association (product_id, color_range_id)
-            SELECT :product_id, cr.id FROM color_range cr
-            WHERE cr.id IN :color_range_ids
-            """),
-            {"product_id": product.id, "color_range_ids": tuple(color_ranges)},
-        )
+    # if color_ranges:
+    #     await repository.session.execute(
+    #         text("""
+    #         INSERT INTO product_color_range_association (product_id, color_range_id)
+    #         SELECT :product_id, cr.id FROM color_range cr
+    #         WHERE cr.id IN :color_range_ids
+    #         """),
+    #         {"product_id": product.id, "color_range_ids": tuple(color_ranges)},
+    #     )
 
     if tags:
         await repository.session.execute(

@@ -1,10 +1,12 @@
+from collections.abc import Hashable
 from typing import TYPE_CHECKING, List
 
-from advanced_alchemy.base import UUIDv7Base
+from advanced_alchemy.utils.text import slugify
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.sql.elements import ColumnElement
 
-from api.core.models import UniqueSlugMixin
+from api.core.models import Entity, WithUniqueSlugMixin
 from api.domain.associations import product_tag_association
 
 
@@ -12,13 +14,27 @@ if TYPE_CHECKING:
     from api.domain.product.models import Product
 
 
-class Tag(UUIDv7Base, UniqueSlugMixin):
+class Tag(Entity, WithUniqueSlugMixin):
     __tablename__ = "tags"
 
     name: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
-    type: Mapped[str] = mapped_column(String(50), nullable=True, unique=False)
+    type: Mapped[str] = mapped_column(nullable=True)
 
     # Relationships
     products: Mapped[List["Product"]] = relationship(
-        "Product", secondary=product_tag_association, back_populates="tags"
+        "Product", secondary=product_tag_association, back_populates="tags", viewonly=True
     )
+
+    @classmethod
+    def unique_hash(cls, name: str, slug: str | None = None) -> Hashable:
+        """Generate a unique hash for deduplication."""
+        return slugify(name)
+
+    @classmethod
+    def unique_filter(
+        cls,
+        name: str,
+        slug: str | None = None,
+    ) -> ColumnElement[bool]:
+        """SQL filter for finding existing records."""
+        return cls.slug == slugify(name)

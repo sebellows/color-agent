@@ -11,7 +11,7 @@ from .repository import ProductLineRepository
 
 
 class ProductLineService(SQLAlchemyAsyncRepositoryService[ProductLine, ProductLineRepository]):
-    """Service for managing blog posts with automatic schema validation."""
+    """Service for managing Product Lines with automatic schema validation."""
 
     repository_type = ProductLineRepository
 

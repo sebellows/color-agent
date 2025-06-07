@@ -1,9 +1,9 @@
 import datetime
 import inspect
-
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from types import FunctionType
 from typing import Any, TypeGuard
+
 
 __all__ = [
     "isdict",
@@ -108,9 +108,7 @@ def isasync(o: Any) -> bool:  # TypeGuard[Coroutine]:
 
 
 def isempty(obj: Any) -> bool:
-    return (
-        len(obj) == 0 if isinstance(obj, (dict, list, set, str, tuple)) else bool(obj)
-    )
+    return len(obj) == 0 if isinstance(obj, (dict, list, set, str, tuple)) else bool(obj)
 
 
 def isnumber(value: Any, strict=False) -> bool:
@@ -200,9 +198,7 @@ def in_range(value: Any, start: Any = 0, end: Any = None) -> bool:
     return start <= value < end
 
 
-def equal_with(
-    obj1: Any, obj2: Any, comparator: Callable[[Any, Any], bool] | None = None
-) -> bool:
+def equal_with(obj1: Any, obj2: Any, comparator: Callable[[Any, Any], bool] | None = None) -> bool:
     if callable(comparator):
         if (
             type(obj1) is type(obj2)

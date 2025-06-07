@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any
+from typing import Annotated, Any
 from uuid import UUID
 
 from fastapi.security import OAuth2PasswordRequestForm
@@ -52,29 +52,29 @@ class Credential(BaseModel):
 
 
 class UserProfile(BaseModel):
-    access: dict[str, Any] | None = None
-    attributes: dict[str, Any] | None = None
-    client_consents: list[UserConsent] | None = None
-    client_roles: dict[str, Any] | None = None
-    created_timestamp: int | None = None
-    credentials: list[Credential] | None = None
-    disableable_credential_types: list[str] | None = None
-    email: EmailStr | None = None
-    email_verified: bool | None = None
-    enabled: bool | None = None
-    federated_identities: list[FederatedIdentity] | None = None
-    federation_link: str | None = None
-    first_name: str | None = None
-    groups: list[str] | None = None
-    id: UUID | None = None
-    last_name: str | None = None
-    not_before: int | None = None
-    origin: str | None = None
-    realm_roles: list[str] | None = None
-    required_actions: list[str] | None = None
-    self: str | None = None
-    service_account_client_id: str | None = None
-    username: str | None = None
+    id: Annotated[UUID, Field(description="Unique identifier")]
+    email: Annotated[EmailStr, Field(description="Valid email address")]
+    access: Annotated[dict[str, Any] | None, Field(default=None)]
+    attributes: Annotated[dict[str, Any] | None, Field(default=None)]
+    client_consents: Annotated[list[UserConsent] | None, Field(default=None)]
+    client_roles: Annotated[dict[str, Any] | None, Field(default=None)]
+    created_timestamp: Annotated[int | None, Field(default=None)]
+    credentials: Annotated[list[Credential] | None, Field(default=None)]
+    disableable_credential_types: Annotated[list[str] | None, Field(default=None)]
+    email_verified: Annotated[bool | None, Field(default=None)]
+    enabled: Annotated[bool | None, Field(default=None)]
+    federated_identities: Annotated[list[FederatedIdentity] | None, Field(default=None)]
+    federation_link: Annotated[str | None, Field(default=None)]
+    first_name: Annotated[str | None, Field(default=None)]
+    groups: Annotated[list[str] | None, Field(default=None)]
+    last_name: Annotated[str | None, Field(default=None)]
+    not_before: Annotated[int | None, Field(default=None)]
+    origin: Annotated[str | None, Field(default=None)]
+    realm_roles: Annotated[list[str] | None, Field(default=None)]
+    required_actions: Annotated[list[str] | None, Field(default=None)]
+    self: Annotated[str | None, Field(default=None)]
+    service_account_client_id: Annotated[str | None, Field(default=None)]
+    username: Annotated[str | None, Field(default=None)]
 
     class Config:
         """Pydantic config."""

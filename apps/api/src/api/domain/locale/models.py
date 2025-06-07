@@ -1,11 +1,11 @@
 from collections.abc import Hashable
 from typing import TYPE_CHECKING, List
 
-from advanced_alchemy.base import UUIDv7Base
-from advanced_alchemy.mixins import SlugKey, UniqueMixin
 from advanced_alchemy.utils.text import slugify
 from sqlalchemy import ColumnElement, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from api.core.models import Entity, WithUniqueSlugMixin
 
 from .locales import countries, languages
 
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from api.domain.product_variant.models import ProductVariant
 
 
-class Locale(UUIDv7Base, SlugKey, UniqueMixin):
+class Locale(Entity, WithUniqueSlugMixin):
     """
     Locale model to store locale information for products.
     This model is used to store the language, country, currency code,
@@ -32,7 +32,7 @@ class Locale(UUIDv7Base, SlugKey, UniqueMixin):
     __table_args__ = (UniqueConstraint("language_code", "country_code", name="uix_locale_lang_country"),)
 
     # Relationships
-    variants: Mapped[List["ProductVariant"]] = relationship("ProductVariant", back_populates="locale")
+    variants: Mapped[List["ProductVariant"]] = relationship()  # "ProductVariant", back_populates="locale"
 
     @classmethod
     def to_locale_string(cls, language_code: str, country_code: str) -> str:

@@ -1,8 +1,9 @@
 from typing import Annotated
 from uuid import UUID
 
-from api.core.enums import OverlayEnum
 from pydantic import BaseModel, Field
+
+from api.core.enums import OverlayEnum
 
 
 class ProductSwatchBase(BaseModel):
@@ -11,7 +12,11 @@ class ProductSwatchBase(BaseModel):
     oklch_color: Annotated[list[float], Field(description="OKLCH color values")]
     gradient_start: Annotated[list[float], Field(description="Gradient start color values")]
     gradient_end: Annotated[list[float], Field(description="Gradient end color values")]
-    overlay: Annotated[OverlayEnum | None, Field(description="Overlay effect")] = None
+    overlay: Annotated[OverlayEnum | None, Field(description="Overlay effect", default=OverlayEnum.Unknown)]
+
+    class Config:
+        from_attributes = True
+        use_enum_values = True
 
 
 class ProductSwatchCreate(ProductSwatchBase):
@@ -19,18 +24,16 @@ class ProductSwatchCreate(ProductSwatchBase):
 
 
 class ProductSwatchUpdate(BaseModel):
-    hex_color: Annotated[str | None, Field(description="Hex color code")] = None
-    rgb_color: Annotated[list[int] | None, Field(description="RGB color values")] = None
-    oklch_color: Annotated[list[float] | None, Field(description="OKLCH color values")] = None
-    gradient_start: Annotated[list[float] | None, Field(description="Gradient start color values")] = None
-    gradient_end: Annotated[list[float] | None, Field(description="Gradient end color values")] = None
-    overlay: Annotated[OverlayEnum | None, Field(description="Overlay effect")] = None
-    product_id: Annotated[UUID | None, Field(description="ID of the product")] = None
+    """Product Swatch update schema"""
+
+    pass
 
 
 class ProductSwatch(ProductSwatchBase):
     id: Annotated[UUID, Field(description="Unique identifier")]
     product_id: Annotated[UUID, Field(description="ID of the product")]
 
-    class Config:
-        from_attributes = True
+
+class ProductSwatchResponse(ProductSwatchBase):
+    id: Annotated[UUID, Field(description="Unique identifier")]
+    product_id: Annotated[UUID, Field(description="ID of the product")]
