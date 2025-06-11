@@ -1,5 +1,6 @@
 from .string import get_formatting_variables
 
+
 __all__ = ["write"]
 
 TColorKeys = [

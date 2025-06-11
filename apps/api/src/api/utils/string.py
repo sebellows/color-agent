@@ -3,6 +3,7 @@ from typing import Any
 
 from .lang import isstr
 
+
 pattern = re.compile("((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))")
 
 
@@ -132,9 +133,7 @@ def has_formatting_variables(text: str, *args, strict=True) -> bool:
         return False
     hasvars = str_requires_formatting(text)
     if hasvars and len(args):
-        results = [
-            re.search(r"\{" + re.escape(arg) + r"\}", text) is not None for arg in args
-        ]
+        results = [re.search(r"\{" + re.escape(arg) + r"\}", text) is not None for arg in args]
         return all(results) if strict else any(results)
     return hasvars
 

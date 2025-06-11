@@ -1,7 +1,4 @@
-from .dependencies import provide_product_repository
 from .models import Product
-
-# from .repository import ProductRepository
 from .routes import (
     create_product,
     delete_product,
@@ -13,11 +10,9 @@ from .routes import (
     router as product_router,
 )
 from .schemas import (
-    Product as ProductSchema,
-)
-from .schemas import (
     ProductCreate,
     ProductFilterParams,
+    ProductRead,
     ProductResponse,
     ProductUpdate,
 )
@@ -28,7 +23,7 @@ __all__ = [
     "Product",
     "ProductCreate",
     "ProductResponse",
-    "ProductSchema",
+    "ProductRead",
     "ProductService",
     "ProductUpdate",
     "ProductFilterParams",
@@ -38,6 +33,5 @@ __all__ = [
     "delete_product",
     "list_products",
     "update_product",
-    "provide_product_repository",
     "provide_products_service",
 ]

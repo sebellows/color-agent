@@ -21,10 +21,5 @@ class User(Entity, WithFullTimeAuditMixin):
     user_id: Mapped[UUID] = mapped_column(
         primary_key=True,
         default=uuid7,
-        server_default=text("gen_random_uuid()"),
     )
-    tier_id: Mapped[UUID | None] = mapped_column(ForeignKey("tier.id"), index=True, default=None, init=False)
-
-    # def __repr__(self) -> str:
-    #     """Return string representation of the user."""
-    #     return self.to_repr(["full_name", "username", "avatar_url", "is_active"])
+    # tier_id: Mapped[UUID | None] = mapped_column(ForeignKey("tier.id"), index=True, default=None, init=False)

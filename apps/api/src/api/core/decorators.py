@@ -3,7 +3,9 @@ from functools import wraps
 from typing import Callable, ParamSpec, TypeVar
 
 from api.utils.terminal import write
+
 from .logger import get_logger
+
 
 P = ParamSpec("P")
 InputT = TypeVar("InputT")

@@ -1,27 +1,34 @@
 from typing import Annotated, AsyncGenerator
 
+from advanced_alchemy.repository import (
+    SQLAlchemyAsyncRepository,
+    SQLAlchemyAsyncSlugRepository,
+)
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
 from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 
-from api.core.database import get_db
+from api.domain.dependencies import DatabaseSession
 
 from .models import Vendor
-from .repository import VendorRepository
 
 
-class VendorService(SQLAlchemyAsyncRepositoryService[Vendor, VendorRepository]):
+class VendorService(SQLAlchemyAsyncRepositoryService[Vendor]):
     """Service for managing blog posts with automatic schema validation."""
+
+    class VendorRepository(SQLAlchemyAsyncSlugRepository[Vendor], SQLAlchemyAsyncRepository[Vendor]):
+        """Repository for Vendor model."""
+
+        model_type = Vendor
 
     repository_type = VendorRepository
 
 
-DatabaseSession = Annotated[AsyncSession, Depends(get_db)]
-
-
 async def provide_vendors_service(db_session: DatabaseSession) -> AsyncGenerator[VendorService, None]:
     """This provides the default Authors repository."""
-    async with VendorService.new(session=db_session) as service:
+    async with VendorService.new(
+        session=db_session, statement=select(Vendor).where(Vendor.is_deleted.is_(False))
+    ) as service:
         yield service
 
 

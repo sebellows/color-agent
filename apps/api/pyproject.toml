@@ -21,6 +21,7 @@ dependencies = [
     "bcrypt>=4.1.0",
     "python-jose>=3.3.0",
     "ruff>=0.11.12",
+    "numpy>=2.3.0",
 ]
 
 [tool.uv]
@@ -34,12 +35,6 @@ dev-dependencies = [
 
 [tool.uv.sources]
 src = { workspace = true }
-
-[tool.uv.tasks]
-build = "uv build"
-dev = "uvicorn api.main:app --reload"
-lint = "uv run ruff check --fix"
-test = "uv run pytest"
 
 [tool.ruff]
 src = ["api", "scripts", "tests"]

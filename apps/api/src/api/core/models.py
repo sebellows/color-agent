@@ -1,6 +1,5 @@
 from datetime import datetime, timezone
 from functools import partial
-from typing import Any
 from uuid import UUID
 
 from advanced_alchemy.base import CommonTableAttributes, orm_registry
@@ -16,12 +15,9 @@ from sqlalchemy.orm import (
     orm_insert_sentinel,
     validates,
 )
-from uuid_utils import uuid7
+from uuid_utils.compat import uuid7
 
 from api.types import DateTimeUTC
-
-
-# from sqlalchemy.sql.schema import _InsertSentinelColumnDefault  # pylance: ignore [reportPrivateUsage]
 
 
 @declarative_mixin
@@ -30,7 +26,7 @@ class WithUUIDMixin(MappedAsDataclass, init=False):
 
     @declared_attr
     def id(cls) -> Mapped[UUID]:
-        return mapped_column(primary_key=True, insert_default=uuid7)
+        return mapped_column(primary_key=True, default=uuid7)
 
     @declared_attr
     def _sentinel(cls) -> Mapped[int]:
@@ -39,12 +35,13 @@ class WithUUIDMixin(MappedAsDataclass, init=False):
 
 
 class Entity(WithUUIDMixin, MappedAsDataclass, CommonTableAttributes, DeclarativeBase, AsyncAttrs, init=False):
+    __abstract__ = True
+
     registry = orm_registry
-    """UUID Primary Key Field Mixin."""
 
 
 @declarative_mixin
-class WithUniqueSlugMixin(MappedAsDataclass, SlugKey, UniqueMixin):
+class WithUniqueSlugMixin(MappedAsDataclass, SlugKey, UniqueMixin, init=False):
     """Slug unique Field Model Mixin."""
 
     pass

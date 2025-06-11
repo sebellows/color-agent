@@ -1,4 +1,3 @@
-from .dependencies import provide_tag_repository
 from .models import Tag
 from .routes import (
     create_tag,
@@ -10,23 +9,23 @@ from .routes import (
 from .routes import (
     router as tag_router,
 )
-from .schemas import TagCreate, TagResponse, TagSchema, TagUpdate
-from .service import TagService, provide_tags_service
+from .schemas import TagCreate, TagRead, TagResponse, TagUpdate
+from .service import TagService, Tags, provide_tags_service
 
 
 __all__ = [
     "Tag",
+    "Tags",
     "TagCreate",
+    "TagRead",
     "TagResponse",
     "TagService",
-    "TagSchema",
     "TagUpdate",
     "get_tag",
     "delete_tag",
     "create_tag",
     "update_tag",
     "list_tags",
-    "provide_tag_repository",
     "provide_tags_service",
     "tag_router",
 ]

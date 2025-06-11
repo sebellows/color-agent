@@ -3,8 +3,8 @@ from typing import TYPE_CHECKING
 from sqlalchemy import ARRAY, UUID, Enum, Float, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from api.core.enums import OverlayEnum
 from api.core.models import Entity
+from api.domain.enums import OverlayEnum
 
 
 if TYPE_CHECKING:

@@ -1,7 +1,4 @@
-from .dependencies import provide_product_variant_repository
 from .models import ProductVariant
-
-# from .repository import ProductVariantRepository
 from .routes import (
     create_product_variant,
     delete_product_variant,
@@ -12,22 +9,21 @@ from .routes import (
     router as product_variant_router,
 )
 from .schemas import (
-    ProductVariant as ProductVariantSchema,
-)
-from .schemas import (
     ProductVariantCreate,
     ProductVariantDelete,
+    ProductVariantRead,
     ProductVariantResponse,
     ProductVariantUpdate,
 )
-from .service import ProductVariantService, provide_product_variants_service
+from .service import ProductVariantService, ProductVariants, provide_product_variants_service
 
 
 __all__ = [
     "ProductVariant",
-    "ProductVariantSchema",
+    "ProductVariants",
     "ProductVariantCreate",
     "ProductVariantDelete",
+    "ProductVariantRead",
     "ProductVariantResponse",
     "ProductVariantService",
     "ProductVariantUpdate",
@@ -36,6 +32,5 @@ __all__ = [
     "get_product_variant",
     "update_product_variant",
     "product_variant_router",
-    "provide_product_variant_repository",
     "provide_product_variants_service",
 ]

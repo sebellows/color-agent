@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-from api.core.enums import ProductLineTypeEnum
+from api.domain.enums import ProductLineTypeEnum
 from api.schemas.mixins import (
     SoftDeletionSchema,
     TimestampSchema,
@@ -14,28 +14,34 @@ from api.schemas.pagination import PaginatedResponse
 class ProductLineBase(BaseModel):
     name: Annotated[str, Field(description="Product line name")]
     marketing_name: Annotated[str, Field(description="Marketing name for the product line")]
-    slug: Annotated[str, Field(description="Unique identifier slug")]
-    vendor_slug: Annotated[str | None, Field(description="Vendor-specific slug", default=None)]
-    product_line_type: Annotated[ProductLineTypeEnum, Field(description="Type of product line")]
+    vendor_slug: Annotated[str | None, Field(description="Vendor-specific slug used on their platform", default=None)]
+    product_line_type: Annotated[
+        ProductLineTypeEnum | None,
+        Field(description="Type of product line", examples=["Effect", "Mixed"]),
+    ]
     description: Annotated[str | None, Field(description="Product line description", default=None)]
 
     class Config:
         from_attributes = True
+        # Use enum values instead of names for serialization
+        # (for `product_line_type`)
         use_enum_values = True
 
 
 class ProductLineCreate(ProductLineBase):
     vendor_id: Annotated[UUID, Field(description="ID of the vendor")]
+    slug: Annotated[
+        str | None,
+        Field(description="Unique identifier slug", examples=["warpaints_fanatic", "game_color"]),
+    ]
 
 
 class ProductLineUpdate(BaseModel):
-    name: Annotated[str | None, Field(description="Product line name", default=None)]
-    marketing_name: Annotated[str | None, Field(description="Marketing name", default=None)]
-    slug: Annotated[str | None, Field(description="Unique identifier slug", default=None)]
-    vendor_slug: Annotated[str | None, Field(description="Vendor-specific slug", default=None)]
-    product_line_type: Annotated[ProductLineTypeEnum | None, Field(description="Type of product line", default=None)]
+    product_line_type: Annotated[
+        ProductLineTypeEnum | None,
+        Field(description="Type of product line", examples=["Effect", "Mixed"], default=None),
+    ]
     description: Annotated[str | None, Field(description="Product line description", default=None)]
-    # vendor_id: Annotated[UUID | None, Field(description="ID of the vendor", default=None)]
 
     class Config:
         from_attributes = True
@@ -48,23 +54,34 @@ class ProductLineDelete(BaseModel, SoftDeletionSchema):
     pass
 
 
-class ProductLine(ProductLineBase, TimestampSchema, SoftDeletionSchema):
+class ProductLineRead(ProductLineBase, TimestampSchema, SoftDeletionSchema):
     id: Annotated[UUID, Field(description="Unique identifier")]
     vendor_id: Annotated[UUID, Field(description="ID of the vendor")]
+    slug: Annotated[
+        str | None,
+        Field(description="Unique identifier slug", examples=["warpaints_fanatic", "game_color"]),
+    ]
 
 
 class ProductLineResponse(ProductLineBase, TimestampSchema, SoftDeletionSchema):
     id: Annotated[UUID, Field(description="Unique identifier")]
     vendor_id: Annotated[UUID, Field(description="ID of the vendor")]
+    slug: Annotated[
+        str | None,
+        Field(description="Unique identifier slug", examples=["warpaints_fanatic", "game_color"]),
+    ]
 
 
 class ProductLineFilterParams(BaseModel):
     name: Annotated[str | None, Field(description="Filter by name", default=None)]
     product_line_type: Annotated[ProductLineTypeEnum | None, Field(description="Filter by type", default=None)]
+    slug: Annotated[
+        str | None, Field(description="Filter by slug", examples=["warpaints_fanatic", "game_color"], default=None)
+    ]
     vendor_id: Annotated[UUID | None, Field(description="Filter by vendor ID", default=None)]
 
 
-class PaginatedProductLine(PaginatedResponse[ProductLine]):
+class PaginatedProductLine(PaginatedResponse[ProductLineRead]):
     """Paginated response for Product Lines"""
 
     pass

@@ -12,16 +12,15 @@ from .routes import (
 from .routes import (
     router as analogous_router,
 )
-from .schemas import Analogous as AnalogousSchema
-from .schemas import AnalogousCreate, AnalogousResponse, AnalogousUpdate
+from .schemas import AnalogousCreate, AnalogousRead, AnalogousResponse, AnalogousUpdate
 from .service import AnalogousService, provide_analogous_service
 
 
 __all__ = [
     "Analogous",
     "AnalogousCreate",
+    "AnalogousRead",
     "AnalogousResponse",
-    "AnalogousSchema",
     "AnalogousService",
     "AnalogousUpdate",
     "analogous_router",

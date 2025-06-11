@@ -7,7 +7,7 @@ from api.core.config import settings
 from api.core.database import AsyncSession, async_engine, async_session_factory
 from api.core.security import get_password_hash
 from api.domain.user import User
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, MetaData, String, Table, insert, select
+from sqlalchemy import Boolean, Column, DateTime, Integer, MetaData, String, Table, insert, select
 from sqlalchemy.dialects.postgresql import UUID
 
 

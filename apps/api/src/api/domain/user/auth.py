@@ -5,29 +5,14 @@ from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_500_INTERNAL_SERVER_ERROR
 
 from api.core.config import settings
-from api.core.database import get_db
 from api.core.logger import logging
 from api.exceptions import ForbiddenException
 
-from .models import User
-from .repository import UserRepository
-
 
 logger = logging.getLogger(__name__)
-
-
-def provide_user_repository(
-    db: AsyncSession = Depends(get_db),
-) -> UserRepository:
-    """Dependency to provide UserRepository instance."""
-    return UserRepository(
-        session=db,
-        statement=select(User).where(User.is_deleted.is_(False)),
-    )
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=settings.auth.KeyCloak.BASE_URL)
@@ -175,7 +160,10 @@ async def get_current_superuser(
 #         )
 
 
-# def verify_refresh_token(credentials: HTTPAuthorizationCredentials = Security(security), db: Session = Depends(get_db)):
+# def verify_refresh_token(
+#     credentials: HTTPAuthorizationCredentials = Security(security),
+#     db: Session = Depends(get_db)
+# ):
 #     try:
 #         payload = jwt.decode(credentials.credentials, settings.REFRESH_SECRET_KEY, algorithms=[settings.ALGORITHM])
 #         token_data = schemas.TokenData(**payload)

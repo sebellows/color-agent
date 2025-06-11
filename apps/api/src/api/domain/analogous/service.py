@@ -1,22 +1,26 @@
 from typing import Annotated, AsyncGenerator
 
+from advanced_alchemy.repository import (
+    SQLAlchemyAsyncRepository,
+    SQLAlchemyAsyncSlugRepository,
+)
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
 from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.core.database import get_db
+from api.domain.dependencies import DatabaseSession
 
 from .models import Analogous
-from .repository import AnalogousRepository
 
 
-class AnalogousService(SQLAlchemyAsyncRepositoryService[Analogous, AnalogousRepository]):
+class AnalogousService(SQLAlchemyAsyncRepositoryService[Analogous]):
     """Service for managing blog posts with automatic schema validation."""
 
+    class AnalogousRepository(SQLAlchemyAsyncSlugRepository[Analogous], SQLAlchemyAsyncRepository[Analogous]):
+        """Repository for Analogous tag model."""
+
+        model_type = Analogous
+
     repository_type = AnalogousRepository
-
-
-DatabaseSession = Annotated[AsyncSession, Depends(get_db)]
 
 
 async def provide_analogous_service(db_session: DatabaseSession) -> AsyncGenerator[AnalogousService, None]:
@@ -25,4 +29,4 @@ async def provide_analogous_service(db_session: DatabaseSession) -> AsyncGenerat
         yield service
 
 
-Analogous = Annotated[AnalogousService, Depends(provide_analogous_service)]
+AnalogousTags = Annotated[AnalogousService, Depends(provide_analogous_service)]

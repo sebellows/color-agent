@@ -6,38 +6,41 @@ from contextlib import asynccontextmanager
 import redis.asyncio as redis
 from advanced_alchemy.base import orm_registry
 from advanced_alchemy.extensions.fastapi import AdvancedAlchemy, AsyncSessionConfig, SQLAlchemyAsyncConfig
-from fastapi import APIRouter, FastAPI
+from fastapi import APIRouter, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from structlog import BoundLogger
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.core.config import RedisCacheSettings, Settings, settings
 from api.core.logger import get_logger, log_request_middleware, setup_logging
+from api.routers import domain_routers
 from api.services import Cache, Queue
 
-from .config import RedisCacheSettings, RedisQueueSettings, Settings, settings
-from .database import async_engine as engine
+
+setup_logging(
+    json_logs=settings.logger.LOG_JSON_FORMAT,
+    log_level=settings.logger.LOG_LEVEL,
+)
 
 
-# Reference: https://docs.astral.sh/ruff/rules/asyncio-dangling-task/
-# _background_tasks = set()
+async def provide_db_session(request: Request) -> AsyncSession:
+    """Provide a DB session."""
+    return alchemy.get_async_session(request)
 
-app: FastAPI | None = None
-alchemy: AdvancedAlchemy | None = None
-logger: BoundLogger | None = None
+
+async def on_startup() -> None:
+    """Initializes the database."""
+    if sqlalchemy_config.create_all:
+        async with sqlalchemy_config.get_engine().begin() as conn:
+            await conn.run_sync(orm_registry.metadata.create_all)
+
 
 cache = Cache.instance()
 queue = Queue.instance()
 
 
-async def create_tables() -> None:
-    """Create database tables."""
-    async with engine.begin() as conn:
-        print("Creating database tables...", orm_registry.metadata.tables)
-        await conn.run_sync(orm_registry.metadata.create_all)
-
-
-async def create_redis_cache_pool() -> None:
+async def create_redis_cache_pool(config: Settings) -> None:
     """Create Redis client and pool."""
-    cache.pool = redis.ConnectionPool.from_url(settings.redis.REDIS_URL)
+    cache.pool = redis.ConnectionPool.from_url(config.redis.REDIS_URL)
     cache.client = redis.Redis.from_pool(cache.pool)  # type: ignore
 
 
@@ -56,93 +59,226 @@ async def close_redis_queue_pool() -> None:
     await queue.pool.aclose()  # type: ignore
 
 
-def lifespan_factory(settings: Settings, create_tables_on_start: bool = True):
-    """Factory for lifespan context manager."""
+@asynccontextmanager
+async def lifespan(app_instance: FastAPI) -> AsyncGenerator:
+    app_config = app_instance.state.config
 
-    @asynccontextmanager
-    async def lifespan(_app: FastAPI) -> AsyncGenerator:
-        if not isinstance(settings, Settings):
-            raise ValueError("Configuration settings must be an instance of Settings")
+    if isinstance(settings.redis, RedisCacheSettings):
+        await create_redis_cache_pool(app_config)
 
-        if settings.db and create_tables_on_start:
-            await create_tables()
+    # if isinstance(settings.queue, RedisQueueSettings):
+    #     await create_redis_queue_pool()
 
-        if isinstance(settings.redis, RedisCacheSettings):
-            await create_redis_cache_pool()
+    yield
 
-        if isinstance(settings.queue, RedisQueueSettings):
-            await create_redis_queue_pool()
+    if isinstance(settings.redis, RedisCacheSettings):
+        await close_redis_cache_pool()
 
-        yield
-
-        if isinstance(settings.redis, RedisCacheSettings):
-            await close_redis_cache_pool()
-
-        if isinstance(settings.queue, RedisQueueSettings):
-            await close_redis_queue_pool()
-
-    return lifespan
+    # if isinstance(settings.queue, RedisQueueSettings):
+    #     await close_redis_queue_pool()
 
 
-def create_app(
-    settings: Settings,
-    router: APIRouter | None = None,
-    create_tables_on_start: bool = True,
-):
-    global app
+session_config = AsyncSessionConfig(expire_on_commit=False)
 
-    setup_logging(json_logs=settings.logger.LOG_JSON_FORMAT, log_level=settings.logger.LOG_LEVEL)
+sqlalchemy_config = SQLAlchemyAsyncConfig(
+    connection_string=settings.db.DB_URL,
+    session_config=session_config,
+    create_all=True,
+)  # Create 'db_session' dependency.
 
-    logger = get_logger(__name__)
+is_non_prod = settings.app.ENVIRONMENT != "production"
 
-    isprod = settings.app.ENVIRONMENT == "production" and router is not None
+app = FastAPI(
+    lifespan=lifespan,
+    title=settings.app.APP_TITLE,
+    description=settings.app.APP_DESCRIPTION,
+    version=settings.app.APP_VERSION,
+    debug=settings.db.DB_ECHO_LOG,
+    openapi_url="/api/openapi.json" if is_non_prod else None,
+    docs_url="/api/docs" if is_non_prod else None,
+    redoc_url="/api/redoc" if is_non_prod else None,
+    on_startup=[on_startup],
+)
 
-    lifespan = lifespan_factory(settings=settings, create_tables_on_start=create_tables_on_start)
+app.state.config = settings
 
-    sqlalchemy_config = SQLAlchemyAsyncConfig(
-        connection_string=settings.db.DB_URL,
-        session_config=AsyncSessionConfig(expire_on_commit=False),
-        create_all=True,
-        commit_mode="autocommit",
-    )
+# TODO: Add proper setting for initial locale
+app.state.locale = {
+    "id": "019755df-b0f0-7881-bb92-fa849016fd7a",
+    "country_code": "US",
+    "language_code": "en",
+    "currency_code": "USD",
+    "currency_symbol": "$",
+    "currency_decimal_spaces": 2,
+    "display_name": "United States",
+    "locale": "en-US",
+}
 
-    app = FastAPI(
-        lifespan=lifespan,
-        title=settings.app.APP_TITLE,
-        description=settings.app.APP_DESCRIPTION,
-        version=settings.app.APP_VERSION,
-        debug=settings.db.DB_ECHO_LOG,
-        openapi_url="/api/openapi.json" if not isprod else None,
-        docs_url="/api/docs" if not isprod else None,
-        redoc_url="/api/redoc" if not isprod else None,
-    )
+alchemy = AdvancedAlchemy(config=sqlalchemy_config, app=app)
 
-    alchemy = AdvancedAlchemy(config=sqlalchemy_config, app=app)
+# Include routers
+api = APIRouter(
+    prefix="/api",
+    responses={404: {"description": "Page not found"}},
+)
 
-    if router:
-        app.include_router(router)
+for router in domain_routers:
+    api.include_router(router)
 
-    # Configure CORS
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
-        allow_headers=[
-            "Content-Type",
-            "Set-Cookie",
-            "Access-Control-Allow-Headers",
-            "Access-Control-Allow-Origin",
-            "Authorization",
-        ],
-    )
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
+    allow_headers=[
+        "Content-Type",
+        "Set-Cookie",
+        "Access-Control-Allow-Headers",
+        "Access-Control-Allow-Origin",
+        "Authorization",
+    ],
+)
 
-    # Add logging middleware
-    app.middleware("http")(log_request_middleware())
+# # Add logging middleware
+app.middleware("http")(log_request_middleware())
 
-    logger.info("Color Agent API initialized!")
+logger = get_logger(__name__)
 
-    return app, alchemy
+
+@app.get("/")
+async def root():
+    """Root endpoint."""
+    logger.info("root_endpoint_accessed")
+    return {"message": f"Welcome to {settings.app.APP_TITLE}"}
+
+
+# Reference: https://docs.astral.sh/ruff/rules/asyncio-dangling-task/
+# _background_tasks = set()
+
+# app: FastAPI | None = None
+# alchemy: AdvancedAlchemy | None = None
+# logger: BoundLogger | None = None
+
+# cache = Cache.instance()
+# queue = Queue.instance()
+
+
+# async def create_tables() -> None:
+#     """Create database tables."""
+#     async with engine.begin() as conn:
+#         print("Creating database tables...", orm_registry.metadata.tables)
+#         await conn.run_sync(orm_registry.metadata.create_all)
+
+
+# async def create_redis_cache_pool() -> None:
+#     """Create Redis client and pool."""
+#     cache.pool = redis.ConnectionPool.from_url(settings.redis.REDIS_URL)
+#     cache.client = redis.Redis.from_pool(cache.pool)  # type: ignore
+
+
+# async def close_redis_cache_pool() -> None:
+#     """Close Redis client and pool."""
+#     await cache.client.aclose()  # type: ignore
+
+
+# async def create_redis_queue_pool() -> None:
+#     """Create Arq Redis queue pool."""
+#     await queue.create_pool()
+
+
+# async def close_redis_queue_pool() -> None:
+#     """Clost the Arq Redis queue pool."""
+#     await queue.pool.aclose()  # type: ignore
+
+
+# def lifespan_factory(settings: Settings, create_tables_on_start: bool = True):
+#     """Factory for lifespan context manager."""
+
+#     @asynccontextmanager
+#     async def lifespan(_app: FastAPI) -> AsyncGenerator:
+#         if not isinstance(settings, Settings):
+#             raise ValueError("Configuration settings must be an instance of Settings")
+
+#         if settings.db and create_tables_on_start:
+#             await create_tables()
+
+#         if isinstance(settings.redis, RedisCacheSettings):
+#             await create_redis_cache_pool()
+
+#         if isinstance(settings.queue, RedisQueueSettings):
+#             await create_redis_queue_pool()
+
+#         yield
+
+#         if isinstance(settings.redis, RedisCacheSettings):
+#             await close_redis_cache_pool()
+
+#         if isinstance(settings.queue, RedisQueueSettings):
+#             await close_redis_queue_pool()
+
+#     return lifespan
+
+
+# def create_app(
+#     settings: Settings,
+#     router: APIRouter | None = None,
+#     create_tables_on_start: bool = True,
+# ):
+#     global app
+
+#     setup_logging(json_logs=settings.logger.LOG_JSON_FORMAT, log_level=settings.logger.LOG_LEVEL)
+
+#     logger = get_logger(__name__)
+
+#     isprod = settings.app.ENVIRONMENT == "production" and router is not None
+
+#     lifespan = lifespan_factory(settings=settings, create_tables_on_start=create_tables_on_start)
+
+#     sqlalchemy_config = SQLAlchemyAsyncConfig(
+#         connection_string=settings.db.DB_URL,
+#         session_config=AsyncSessionConfig(expire_on_commit=False),
+#         create_all=True,
+#         commit_mode="autocommit",
+#     )
+
+#     app = FastAPI(
+#         lifespan=lifespan,
+#         title=settings.app.APP_TITLE,
+#         description=settings.app.APP_DESCRIPTION,
+#         version=settings.app.APP_VERSION,
+#         debug=settings.db.DB_ECHO_LOG,
+#         openapi_url="/api/openapi.json" if not isprod else None,
+#         docs_url="/api/docs" if not isprod else None,
+#         redoc_url="/api/redoc" if not isprod else None,
+#     )
+
+#     alchemy = AdvancedAlchemy(config=sqlalchemy_config, app=app)
+
+#     if router:
+#         app.include_router(router)
+
+#     # Configure CORS
+#     app.add_middleware(
+#         CORSMiddleware,
+#         allow_origins=["*"],
+#         allow_credentials=True,
+#         allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
+#         allow_headers=[
+#             "Content-Type",
+#             "Set-Cookie",
+#             "Access-Control-Allow-Headers",
+#             "Access-Control-Allow-Origin",
+#             "Authorization",
+#         ],
+#     )
+
+#     # Add logging middleware
+#     app.middleware("http")(log_request_middleware())
+
+#     logger.info("Color Agent API initialized!")
+
+#     return app, alchemy
 
 
 # class AsyncSessionHandler:

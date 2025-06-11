@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from typing import Generic, TypeVar
 
 from advanced_alchemy.filters import LimitOffset
-from advanced_alchemy.repository import SQLAlchemyAsyncRepository
+from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
 
 
 # from pydantic import BaseModel
@@ -29,7 +29,7 @@ class PaginatedResponse(Generic[T]):
 
 
 async def get_paginated_list[T](
-    repository: SQLAlchemyAsyncRepository,
+    service: SQLAlchemyAsyncRepositoryService,
     page: int = 1,
     limit: int = 100,
     *filters,
@@ -37,7 +37,7 @@ async def get_paginated_list[T](
 ):
     offset = (page - 1) * limit if page > 0 else 0
 
-    results, total = await repository.list_and_count(LimitOffset(offset=offset, limit=limit), *filters, **kwargs)
+    results, total = await service.list_and_count(LimitOffset(offset=offset, limit=limit), *filters, **kwargs)
 
     return PaginatedResponse[T](
         items=results,

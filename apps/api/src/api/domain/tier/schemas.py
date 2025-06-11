@@ -1,3 +1,4 @@
+from uuid import UUID
 from pydantic import BaseModel, Field
 from typing_extensions import Annotated
 
@@ -11,17 +12,17 @@ from api.schemas.mixins import (
 class TierBase(BaseModel):
     name: Annotated[str, Field(examples=["unlimited"])]
 
-
-class TierCreate(TierBase):
     class Config:
         from_attributes = True
         validate_assignment = True
+
+
+class TierCreate(TierBase):
+    slug: Annotated[str, Field(description="Unique slug for the tier", examples=["unlimited-tier"])]
 
 
 class TierUpdate(TierBase):
-    class Config:
-        from_attributes = True
-        validate_assignment = True
+    pass
 
 
 class TierDelete(BaseModel, SoftDeletionSchema):
@@ -29,5 +30,4 @@ class TierDelete(BaseModel, SoftDeletionSchema):
 
 
 class TierResponse(TierBase, TimestampSchema, UUIDSchema):
-    class Config:
-        from_attributes = True
+    slug: Annotated[str, Field(description="Unique slug for the tier", examples=["unlimited-tier"])]

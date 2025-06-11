@@ -1,106 +1,205 @@
-from typing import Annotated, AsyncGenerator
+from typing import Annotated, AsyncGenerator, TypedDict
+from uuid import UUID
 
+from advanced_alchemy.repository import (
+    SQLAlchemyAsyncRepository,
+    SQLAlchemyAsyncSlugRepository,
+)
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
+from advanced_alchemy.service.typing import ModelDictT
+from advanced_alchemy.utils.text import slugify
 from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 
-from api.core.database import get_db
+from api.domain.analogous.models import Analogous
+from api.domain.dependencies import DatabaseSession
+from api.domain.enums import ColorRangeEnum, ProductTypeEnum
+from api.domain.helpers import enum_has
+from api.domain.tag.models import Tag
 
 from .models import Product
-from .repository import ProductRepository
 
 
-# from uuid import UUID
+class ProductCategoryFields(TypedDict):
+    """TypedDict for Product category fields."""
 
-# from advanced_alchemy.service.typing import ModelDictT, is_dict
-# from advanced_alchemy.utils.text import slugify
-# from uuid_utils import uuid7
-# from ..helpers import is_pydantic_model
-# from ..product_swatch import ProductSwatch
-# from ..product_variant import ProductVariant
-# from .schemas import ProductResponse, ProductUpdate
-
-# if TYPE_CHECKING:
-#     from api.domain.tag.models import Tag
+    product_type: list[ProductTypeEnum]
+    color_range: list[ColorRangeEnum]
 
 
-class ProductService(SQLAlchemyAsyncRepositoryService[Product, ProductRepository]):
+class ProductService(SQLAlchemyAsyncRepositoryService[Product]):
     """Service for managing blog posts with automatic schema validation."""
+
+    class ProductRepository(SQLAlchemyAsyncSlugRepository[Product], SQLAlchemyAsyncRepository[Product]):
+        """Repository for the Product model."""
+
+        model_type = Product
 
     repository_type = ProductRepository
 
-    # Override creation behavior to handle tags
-    # async def create(self, data: ModelDictT[Product], **kwargs) -> Product:
-    #     """Create a new post with tags, if provided."""
+    async def create_product(
+        self,
+        data: "ModelDictT[Product]",
+        **kwargs,
+    ) -> Product:
+        """Create a new product with validated enum fields."""
 
-    #     tags_added: list[str] = []
-    #     if isinstance(data, dict):
-    #         data["id"] = data.get("id", uuid7())
-    #         tags_added = data.pop("tags", [])
-    #     data = await self.to_model(data, "create")
+        tags: list[str] = []
+        analogous_tags: list[str] = []
+        # swatch: ModelDictT["ProductSwatch"] = {}
+        # variants: list[ModelDictT["ProductVariant"]] = []
 
-    #     if tags_added:
-    #         data.tags.extend(
-    #             [
-    #                 await Tag.as_unique_async(self.repository.session, name=tag_text, slug=slugify(tag_text))
-    #                 for tag_text in tags_added
-    #             ],
-    #         )
-    #     return await super().create(data=data, **kwargs)
+        if isinstance(data, dict):
+            self.set_valid_enum_fields(data)
+            data["slug"] = slugify(data.get("name", ""))
+            tags = data.pop("tags", [])
+            analogous_tags = data.pop("analogous", [])
+            # swatch = data.pop("swatch", {})
+            # variants = data.pop("variants", [])
 
-    # # Override update behavior to handle tags
-    # async def update(
-    #     self,
-    #     data: ModelDictT[Product],
-    #     item_id: UUID | None = None,
-    #     **kwargs,
-    # ) -> Product:
-    #     """Update a post with tags, if provided."""
-    #     tags_updated: list[str] = []
-    #     if isinstance(data, dict):
-    #         tags_updated.extend(data.pop("tags", None) or [])
-    #         data["id"] = item_id
-    #         data = await self.to_model(data, "update")
-    #         existing_tags = [tag.name for tag in data.tags]
-    #         tags_to_remove = [tag for tag in data.tags if tag.name not in tags_updated]
-    #         tags_to_add = [tag for tag in tags_updated if tag not in existing_tags]
-    #         for tag_rm in tags_to_remove:
-    #             data.tags.remove(tag_rm)
-    #         data.tags.extend(
-    #             [
-    #                 await Tag.as_unique_async(self.repository.session, name=tag_text, slug=slugify(tag_text))
-    #                 for tag_text in tags_to_add
-    #             ],
-    #         )
+        model = await self.to_model(data, "create")
 
-    #     return await super().update(data=data, item_id=item_id, **kwargs)
+        if tags:
+            model.tags.extend(
+                [await Tag.as_unique_async(self.repository.session, name=tag, slug=slugify(tag)) for tag in tags]
+            )
 
-    # async def to_response(
-    #     self, data: ModelDictT[Product], swatch: ModelDictT[ProductSwatch],
-    # variants: list[ModelDictT[ProductVariant]], operation: str | None = None
-    # ) -> ProductResponse:
-    #     product = await self.to_model(data, operation)
-    #     swatch = await ProductSwatch.as_unique_async(self.repository.session, **swatch)
+        if analogous_tags:
+            model.analogous.extend(
+                [
+                    await Analogous.as_unique_async(
+                        self.repository.session,
+                        name=tag,
+                        slug=slugify(tag),
+                    )
+                    for tag in analogous_tags
+                ]
+            )
 
-    # async def to_model(self, data: ModelDictT[Product], operation: str | None = None) -> Product:
-    #     """Convert a dictionary, msgspec Struct, or Pydantic model to a Post model."""
-    #     if is_pydantic_model(data) and operation in {"create", "update"} and data.slug is None:
-    #         data.slug = await self.repository.get_available_slug(data.name)
-    #     if (
-    #         is_dict(data)
-    #         and "slug" not in data
-    #         and (operation == "create" or ("name" in data and operation == "update"))
-    #     ):
-    #         data["slug"] = await self.repository.get_available_slug(data["name"])
-    #     return await super().to_model(data, operation)
+        # if swatch:
+        #     if isinstance(swatch, dict):
+        #         swatch["product_id"] = model.id
 
+        #     swatch = await swatch_service.create(swatch)
+        #     model.swatch = swatch
 
-DatabaseSession = Annotated[AsyncSession, Depends(get_db)]
+        # if variants:
+        #     for variant in variants:
+        #         if isinstance(variant, dict):
+        #             variant["product_id"] = model.id
+        #             variant["locale_id"] = locale_service.current_locale.id
+
+        #     new_variants = await variant_service.create_many(variants, auto_commit=True)
+        #     model.variants.extend(new_variants)
+
+        return await super().create(model, **kwargs)
+
+    async def update_product(
+        self,
+        data: "ModelDictT[Product]",
+        item_id: UUID,
+        **kwargs,
+    ) -> Product:
+        """Update existing product."""
+
+        tags: list[str] = []
+        analogous_tags: list[str] = []
+        # swatch: ModelDictT["ProductSwatch"] = {}
+        # variants: list[ModelDictT["ProductVariant"]] = []
+
+        if isinstance(data, dict):
+            self.set_valid_enum_fields(data)
+            data["slug"] = slugify(data.get("name", ""))
+            tags = data.pop("tags", [])
+            analogous_tags = data.pop("analogous", [])
+            # swatch = data.pop("swatch", {})
+            # variants = data.pop("variants", [])
+
+        model = await self.to_model(data, "update")
+
+        if tags:
+            model.tags.extend(
+                [await Tag.as_unique_async(self.repository.session, name=tag, slug=slugify(tag)) for tag in tags]
+            )
+
+        if analogous_tags:
+            model.analogous.extend(
+                [
+                    await Analogous.as_unique_async(
+                        self.repository.session,
+                        name=tag,
+                        slug=slugify(tag),
+                    )
+                    for tag in analogous_tags
+                ]
+            )
+
+        # if swatch:
+        #     if isinstance(swatch, dict):
+        #         swatch["product_id"] = model.id
+
+        #     swatch = await swatch_service.update(swatch)
+        #     model.swatch = swatch
+
+        # if variants:
+        #     await variant_service.update_many(variants, auto_commit=True)
+        #     model_variants = await variant_service.list_of_product_variants(
+        #         product_id=model.id,
+        #         locale_id=locale_service.current_locale.id,
+        #     )
+        #     model.variants = list(model_variants)
+
+        return await super().update(model, item_id=item_id, **kwargs)
+
+    def set_valid_enum_fields(self, data: "ModelDictT[Product]") -> None:
+        """Add categories to a product."""
+        if not isinstance(data, dict):
+            return None
+
+        product_types = data.get("product_type", [])
+        color_ranges = data.get("color_range", [])
+
+        data["product_type"] = [ProductTypeEnum[pt] for pt in product_types if enum_has(ProductTypeEnum, pt)]
+        if not len(data["product_type"]):
+            data["product_type"] = [ProductTypeEnum.Acrylic]
+        data["color_range"] = [ColorRangeEnum[cr] for cr in color_ranges if enum_has(ColorRangeEnum, cr)]
+        if not len(data["color_range"]):
+            print("No valid color range provided")
+            raise ValueError(
+                "At least one color range must be provided. Valid options are: "
+                f"{', '.join([cr.value for cr in ColorRangeEnum])}"
+            )
+
+    def get_valid_enum_fields(self, data: "ModelDictT[Product]") -> ProductCategoryFields:
+        """Add categories to a product."""
+        if not isinstance(data, dict):
+            raise TypeError("Data must be a dictionary.")
+
+        product_types = data.get("product_type", [])
+        color_ranges = data.get("color_range", [])
+
+        product_type = [ProductTypeEnum[pt] for pt in product_types if enum_has(ProductTypeEnum, pt)]
+        if not len(product_type):
+            product_type = [ProductTypeEnum.Acrylic]
+        color_range = [ColorRangeEnum[cr] for cr in color_ranges if enum_has(ColorRangeEnum, cr)]
+        if not len(color_range):
+            print("No valid color range provided")
+            raise ValueError(
+                "At least one color range must be provided. Valid options are: "
+                f"{', '.join([cr.value for cr in ColorRangeEnum])}"
+            )
+
+        return {
+            "product_type": product_type,
+            "color_range": color_range,
+        }
 
 
 async def provide_products_service(db_session: DatabaseSession) -> AsyncGenerator[ProductService, None]:
     """This provides the default Product Lines service."""
-    async with ProductService.new(session=db_session) as service:
+    async with ProductService.new(
+        session=db_session, statement=select(Product).where(Product.is_deleted.is_(False))
+    ) as service:
         yield service
 
 

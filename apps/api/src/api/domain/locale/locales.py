@@ -1,3 +1,6 @@
+from typing import TypedDict
+
+
 languages = {
     "ca": "Castillano",
     "da": "Dansk",
@@ -30,12 +33,25 @@ countries = {
     "JP": "Japan",
     "NL": "Netherlands",
     "NO": "Norway",
+    "NZ": "New Zealand",
     "PL": "Poland",
     "SE": "Sweden",
     "US": "United States",
 }
 
-locales = [
+
+class LocaleConfig(TypedDict):
+    name: str  # Exonym
+    endonyms: dict[str, str]  # Language code to endonym mapping
+    language_code: str  # Primary language code
+    supported_languages: list[str]  # List of supported language codes
+    country_code: str  # ISO country code
+    currency_code: str  # ISO currency code
+    currency_decimal_spaces: int  # Decimal places for the currency
+    currency_symbol: str  # Currency symbol
+
+
+locales: list[LocaleConfig] = [
     {
         "name": "Austria",  # i.e., "exonym"
         "endonyms": {

@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Depends
-from starlette.status import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_201_CREATED
+from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
 from .dependencies import AnalogousRepository, provide_analogous_repository
 from .models import Analogous
 from .schemas import (
-    Analogous as AnalogousSchema,
     AnalogousCreate,
+    AnalogousResponse,
     AnalogousUpdate,
 )
+
 
 router = APIRouter(
     prefix="/analogous",
@@ -17,7 +18,7 @@ router = APIRouter(
 
 @router.post(
     "/analogous/",
-    response_model=AnalogousSchema,
+    response_model=AnalogousResponse,
     status_code=HTTP_201_CREATED,
 )
 async def create_analogous(
@@ -28,21 +29,19 @@ async def create_analogous(
     analogous_data = analogous_in.model_dump(exclude_unset=True)
     analogous = Analogous(**analogous_data)
     await repository.add(analogous)
-    return AnalogousSchema.model_validate(analogous)
+    return AnalogousResponse.model_validate(analogous)
 
 
-@router.get(
-    "/analogous/{analogous_id}", response_model=AnalogousSchema, status_code=HTTP_200_OK
-)
+@router.get("/analogous/{analogous_id}", response_model=AnalogousResponse, status_code=HTTP_200_OK)
 async def get_analogous(
     analogous_id: int,
     repository: AnalogousRepository = Depends(provide_analogous_repository),
 ):
     """Get an analogous color by ID"""
-    return await repository.get(AnalogousSchema.id == analogous_id)
+    return await repository.get(AnalogousResponse.id == analogous_id)
 
 
-@router.get("/analogous/", response_model=list[AnalogousSchema])
+@router.get("/analogous/", response_model=list[AnalogousResponse])
 async def list_analogous(
     repository: AnalogousRepository = Depends(provide_analogous_repository),
 ):
@@ -50,9 +49,7 @@ async def list_analogous(
     return await repository.list()
 
 
-@router.put(
-    "/analogous/{analogous_id}", response_model=AnalogousSchema, status_code=HTTP_200_OK
-)
+@router.put("/analogous/{analogous_id}", response_model=AnalogousResponse, status_code=HTTP_200_OK)
 async def update_analogous(
     analogous_id: int,
     analogous_in: AnalogousUpdate,
@@ -60,10 +57,10 @@ async def update_analogous(
 ):
     """Update an analogous color"""
     analogous = await repository.get_and_update(
-        filters=[AnalogousSchema.id == analogous_id],
+        filters=[AnalogousResponse.id == analogous_id],
         data=analogous_in.model_dump(exclude_unset=True),
     )
-    return AnalogousSchema.model_validate(analogous)
+    return AnalogousResponse.model_validate(analogous)
 
 
 @router.delete("/analogous/{analogous_id}", status_code=HTTP_204_NO_CONTENT)
@@ -72,6 +69,6 @@ async def delete_analogous(
     repository: AnalogousRepository = Depends(provide_analogous_repository),
 ):
     """Delete an analogous color"""
-    await repository.delete(AnalogousSchema.id == analogous_id)
+    await repository.delete(AnalogousResponse.id == analogous_id)
 
     return None

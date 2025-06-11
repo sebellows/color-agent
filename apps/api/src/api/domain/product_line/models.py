@@ -6,7 +6,7 @@ from advanced_alchemy.utils.text import slugify
 from sqlalchemy import ColumnElement, Enum, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from api.core.enums import ProductLineTypeEnum
+from api.domain.enums import ProductLineTypeEnum
 from api.core.models import Entity, WithFullTimeAuditMixin, WithUniqueSlugMixin
 
 

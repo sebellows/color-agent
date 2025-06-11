@@ -1,5 +1,5 @@
-from collections.abc import Callable
 import re
+from collections.abc import Callable
 
 from .reducers import reduce_with_index
 
@@ -19,9 +19,7 @@ def variadic(*args):
     >>> getargs('d', 'e', 'f', 'g')
     ['d', 'e', 'f', 'g']
     """
-    return (
-        args[0] if len(args) == 1 and isinstance(args[0], (list, set, tuple)) else args
-    )
+    return args[0] if len(args) == 1 and isinstance(args[0], (list, set, tuple)) else args
 
 
 def default_customizer[P](path: P) -> P:
@@ -69,15 +67,11 @@ def to_paths(*args, sep=".") -> list[int | str]:
 
 
 def to_str_paths(*args, sep=".") -> list[str]:
-    paths = parse_keys(
-        [arg for arg in variadic(*args) if isinstance(arg, (int | str))], sep
-    )
+    paths = parse_keys([arg for arg in variadic(*args) if isinstance(arg, (int | str))], sep)
     return [str(path) for path in paths]
 
 
-def to_url(
-    *paths: str, init="", customizer: Callable[[str], str] = default_customizer
-) -> str:
+def to_url(*paths: str, init="", customizer: Callable[[str], str] = default_customizer) -> str:
     """
     Convert a path to a URL.
 

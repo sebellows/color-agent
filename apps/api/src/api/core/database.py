@@ -86,7 +86,7 @@ class DB:
         db = cls.instance()
 
         async with db.engine.begin() as conn:
-            await conn.run_sync(db.metadata.create_all, checkfirst=True)
+            await conn.run_sync(orm_registry.metadata.create_all)
 
     @classmethod
     async def drop_all(cls) -> None:

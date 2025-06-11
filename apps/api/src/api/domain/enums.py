@@ -17,8 +17,12 @@ class OverlayEnum(Enum):
     Topographic = "Topographic"
     Unknown = "Unknown"
 
-    def _get_value(self, **kwargs) -> str:
-        return self.value
+    def __getitem__(self, name: str):
+        return super().__getattribute__(name)
+
+    @classmethod
+    def has_value(cls, value):
+        return value in cls._value2member_map_
 
 
 class OpacityEnum(Enum):
@@ -33,8 +37,12 @@ class OpacityEnum(Enum):
     Transparent = "Transparent"
     Unknown = "Unknown"
 
-    def _get_value(self, **kwargs) -> str:
-        return self.value
+    def __getitem__(self, name: str):
+        return super().__getattribute__(name)
+
+    @classmethod
+    def has_value(cls, value):
+        return value in cls._value2member_map_
 
 
 class ViscosityEnum(Enum):
@@ -50,8 +58,12 @@ class ViscosityEnum(Enum):
     High = "High"
     Unknown = "Unknown"
 
-    def _get_value(self, **kwargs) -> str:
-        return self.value
+    def __getitem__(self, name: str):
+        return super().__getattribute__(name)
+
+    @classmethod
+    def has_value(cls, value):
+        return value in cls._value2member_map_
 
 
 class ProductTypeEnum(Enum):
@@ -71,8 +83,12 @@ class ProductTypeEnum(Enum):
     Wash = "Wash"
     Primer = "Primer"  # Could be spray or brush on
 
-    def _get_value(self, **kwargs) -> str:
-        return self.value
+    def __getitem__(self, name: str):
+        return super().__getattribute__(name)
+
+    @classmethod
+    def has_value(cls, value):
+        return value in cls._value2member_map_
 
 
 class ApplicationMethodEnum(Enum):
@@ -81,8 +97,12 @@ class ApplicationMethodEnum(Enum):
     Spray = "Spray"
     Unknown = "Unknown"
 
-    def _get_value(self, **kwargs) -> str:
-        return self.value
+    def __getitem__(self, name: str):
+        return super().__getattribute__(name)
+
+    @classmethod
+    def has_value(cls, value):
+        return value in cls._value2member_map_
 
 
 class ProductLineTypeEnum(Enum):
@@ -102,8 +122,12 @@ class ProductLineTypeEnum(Enum):
     Primer = "Primer"
     Wash = "Wash"
 
-    def _get_value(self, **kwargs) -> str:
-        return self.value
+    def __getitem__(self, name: str):
+        return super().__getattribute__(name)
+
+    @classmethod
+    def has_value(cls, value):
+        return value in cls._value2member_map_
 
 
 class ColorRangeEnum(Enum):
@@ -135,8 +159,12 @@ class ColorRangeEnum(Enum):
     Gold = "Gold"
     Silver = "Silver"
 
-    def _get_value(self, **kwargs) -> str:
-        return self.value
+    def __getitem__(self, name: str):
+        return super().__getattribute__(name)
+
+    @classmethod
+    def has_value(cls, value):
+        return value in cls._value2member_map_
 
 
 class PackagingTypeEnum(Enum):
@@ -148,5 +176,9 @@ class PackagingTypeEnum(Enum):
     Tube = "Tube"
     Unknown = "Unknown"
 
-    def _get_value(self, **kwargs) -> str:
-        return self.value
+    def __getitem__(self, name: str):
+        return super().__getattribute__(name)
+
+    @classmethod
+    def has_value(cls, value):
+        return value in cls._value2member_map_

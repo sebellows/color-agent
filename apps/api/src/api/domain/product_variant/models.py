@@ -6,8 +6,8 @@ from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from api.core.enums import ApplicationMethodEnum, OpacityEnum, PackagingTypeEnum, ViscosityEnum
 from api.core.models import Entity, WithFullTimeAuditMixin
+from api.domain.enums import ApplicationMethodEnum, OpacityEnum, PackagingTypeEnum, ViscosityEnum
 
 
 if TYPE_CHECKING:
@@ -35,10 +35,10 @@ class ProductVariant(Entity, WithFullTimeAuditMixin):
     product_url: Mapped[str] = mapped_column(String(512))
 
     # Optional fields (with default values or nullable)
-    vendor_color_ranges: Mapped[list[str]] = mapped_column(
+    vendor_color_range: Mapped[list[str]] = mapped_column(
         MutableList.as_mutable(ARRAY(String, dimensions=1)), default_factory=list
     )
-    vendor_product_types: Mapped[list[str]] = mapped_column(
+    vendor_product_type: Mapped[list[str]] = mapped_column(
         MutableList.as_mutable(ARRAY(String, dimensions=1)), default_factory=list
     )
     discontinued: Mapped[bool | None] = mapped_column(Boolean, default=False)

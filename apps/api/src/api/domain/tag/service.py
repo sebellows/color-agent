@@ -1,22 +1,26 @@
 from typing import Annotated, AsyncGenerator
 
+from advanced_alchemy.repository import (
+    SQLAlchemyAsyncRepository,
+    SQLAlchemyAsyncSlugRepository,
+)
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
 from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.core.database import get_db
+from api.domain.dependencies import DatabaseSession
 
 from .models import Tag
-from .repository import TagRepository
 
 
-class TagService(SQLAlchemyAsyncRepositoryService[Tag, TagRepository]):
+class TagService(SQLAlchemyAsyncRepositoryService[Tag]):
     """Service for managing blog posts with automatic schema validation."""
 
+    class TagRepository(SQLAlchemyAsyncSlugRepository[Tag], SQLAlchemyAsyncRepository[Tag]):
+        """Repository for Tag model."""
+
+        model_type = Tag
+
     repository_type = TagRepository
-
-
-DatabaseSession = Annotated[AsyncSession, Depends(get_db)]
 
 
 async def provide_tags_service(db_session: DatabaseSession) -> AsyncGenerator[TagService, None]:

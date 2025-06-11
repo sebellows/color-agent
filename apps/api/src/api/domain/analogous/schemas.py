@@ -7,24 +7,23 @@ from pydantic import BaseModel, Field
 class AnalogousBase(BaseModel):
     name: Annotated[str, Field(description="Analogous color name")]
 
+    class Config:
+        from_attributes = True
+
 
 class AnalogousCreate(AnalogousBase):
-    pass
+    slug: Annotated[str, Field(description="Unique slug for the tier", examples=["unlimited-tier"])]
 
 
 class AnalogousUpdate(AnalogousBase):
     pass
 
 
-class Analogous(AnalogousBase):
+class AnalogousRead(AnalogousBase):
     id: Annotated[UUID, Field(description="Unique identifier")]
-
-    class Config:
-        from_attributes = True
+    slug: Annotated[str, Field(description="Unique slug for the tier", examples=["unlimited-tier"])]
 
 
 class AnalogousResponse(AnalogousBase):
     id: Annotated[UUID, Field(description="Unique identifier")]
-
-    class Config:
-        from_attributes = True
+    slug: Annotated[str, Field(description="Unique slug for the tier", examples=["unlimited-tier"])]

@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-from api.core.enums import (
+from api.domain.enums import (
     ApplicationMethodEnum,
     OpacityEnum,
     PackagingTypeEnum,
@@ -32,14 +32,14 @@ class ProductVariantBase(BaseModel):
         ApplicationMethodEnum | None, Field(description="Application method", default=ApplicationMethodEnum.Unknown)
     ]
     vendor_product_id: Annotated[str | None, Field(description="Vendor's product ID", default=None)]
-    vendor_color_ranges: Annotated[
+    vendor_color_range: Annotated[
         list[str],
         Field(
             description="Original assigned vendor color range categories",
             default_factory=list,
         ),
     ]
-    vendor_product_types: Annotated[
+    vendor_product_type: Annotated[
         list[str],
         Field(
             description="Original assigned vendor product type categories",
@@ -49,6 +49,8 @@ class ProductVariantBase(BaseModel):
 
     class Config:
         from_attributes = True
+        # Use enum values instead of names for serialization
+        # (for `packaging`, `opacity`, `viscosity`, `application_method`)
         use_enum_values = True
 
 
@@ -69,7 +71,7 @@ class ProductVariantDelete(BaseModel, SoftDeletionSchema):
     pass
 
 
-class ProductVariant(ProductVariantBase, TimestampSchema, SoftDeletionSchema):
+class ProductVariantRead(ProductVariantBase, TimestampSchema, SoftDeletionSchema):
     id: Annotated[UUID, Field(description="Unique identifier")]
     product_id: Annotated[UUID, Field(description="ID of the product")]
     locale_id: Annotated[UUID, Field(description="ID of the locale")]
@@ -84,4 +86,7 @@ class ProductVariantResponse(ProductVariantBase, TimestampSchema, SoftDeletionSc
 class ProductVariantFilterParams(BaseModel):
     discontinued: Annotated[bool | None, Field(description="Filter by discontinued status", default=None)]
     locale_id: Annotated[UUID | None, Field(description="Filter by locale ID", default=None)]
+    name: Annotated[str | None, Field(description="Filter by display name", default=None)]
+    packaging: Annotated[PackagingTypeEnum | None, Field(description="Filter by packaging type", default=None)]
+    price: Annotated[int | None, Field(description="Filter by price in cents", default=None)]
     product_id: Annotated[UUID | None, Field(description="Filter by product ID", default=None)]

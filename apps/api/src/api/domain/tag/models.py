@@ -1,5 +1,5 @@
 from collections.abc import Hashable
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
 from advanced_alchemy.utils.text import slugify
 from sqlalchemy import String
@@ -17,12 +17,12 @@ if TYPE_CHECKING:
 class Tag(Entity, WithUniqueSlugMixin):
     __tablename__ = "tags"
 
-    name: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
-    type: Mapped[str] = mapped_column(nullable=True)
+    name: Mapped[str] = mapped_column(String(100), nullable=False, unique=True, index=True)
+    type: Mapped[str] = mapped_column(String(100), nullable=True)
 
     # Relationships
-    products: Mapped[List["Product"]] = relationship(
-        "Product", secondary=product_tag_association, back_populates="tags", viewonly=True
+    products: Mapped[list["Product"]] = relationship(
+        secondary=product_tag_association, back_populates="tags", viewonly=True
     )
 
     @classmethod

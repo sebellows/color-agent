@@ -1,3 +1,4 @@
+from uuid import UUID
 from pydantic import BaseModel, EmailStr, Field, StringConstraints
 from typing_extensions import Annotated
 
@@ -55,10 +56,16 @@ class UserDelete(BaseModel, SoftDeletionSchema):
     pass
 
 
+class UserRead(UserBase, TimestampSchema, SoftDeletionSchema):
+    """Read-only user schema for API responses."""
+
+    id: Annotated[UUID, Field(description="Unique identifier")]
+
+
 class UserResponse(UserBase, TimestampSchema, SoftDeletionSchema):
     """Base user schema for DB representation."""
 
-    pass
+    id: Annotated[UUID, Field(description="Unique identifier")]
 
 
 class UserInDBBase(UserBase, TimestampSchema, SoftDeletionSchema):
@@ -67,13 +74,8 @@ class UserInDBBase(UserBase, TimestampSchema, SoftDeletionSchema):
     pass
 
 
-class User(UserInDBBase):
-    """User schema for API responses."""
-
-    pass
-
-
 class UserInDB(UserInDBBase):
     """User schema with password hash."""
 
+    id: Annotated[UUID, Field(description="Unique identifier")]
     hashed_password: str
