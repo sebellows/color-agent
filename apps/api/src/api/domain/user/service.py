@@ -9,7 +9,7 @@ from advanced_alchemy.repository import (
     SQLAlchemyAsyncRepository,
 )
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
-from api.domain.dependencies import DatabaseSession
+from domain.dependencies import DatabaseSession
 from fastapi import Depends
 
 from .models import User
@@ -17,7 +17,7 @@ from .models import User
 
 # from sqlalchemy import select
 
-# from api.core.security import get_password_hash, verify_password
+# from core.security import get_password_hash, verify_password
 # from .schemas import UserCreate, UserUpdate
 
 
@@ -164,7 +164,7 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
 
 
 async def provide_users_service(db_session: DatabaseSession) -> AsyncGenerator[UserService, None]:
-    """This provides the default Authors repository."""
+    """This provides the default User repository."""
     async with UserService.new(session=db_session) as service:
         yield service
 

@@ -5,15 +5,14 @@ from contextlib import asynccontextmanager
 
 import redis.asyncio as redis
 from advanced_alchemy.base import orm_registry
-from advanced_alchemy.extensions.fastapi import AdvancedAlchemy, AsyncSessionConfig, SQLAlchemyAsyncConfig
-from fastapi import APIRouter, FastAPI, Request
+from advanced_alchemy.extensions.fastapi import AdvancedAlchemy, AsyncSessionConfig
+from advanced_alchemy.extensions.starlette import SQLAlchemyAsyncConfig
+from core.config import RedisCacheSettings, Settings, settings
+from core.logger import log_request_middleware, setup_logging
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from services import Cache, Queue
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from api.core.config import RedisCacheSettings, Settings, settings
-from api.core.logger import get_logger, log_request_middleware, setup_logging
-from api.routers import domain_routers
-from api.services import Cache, Queue
 
 
 setup_logging(
@@ -27,12 +26,14 @@ async def provide_db_session(request: Request) -> AsyncSession:
     return alchemy.get_async_session(request)
 
 
-async def on_startup() -> None:
-    """Initializes the database."""
-    if sqlalchemy_config.create_all:
-        async with sqlalchemy_config.get_engine().begin() as conn:
-            await conn.run_sync(orm_registry.metadata.create_all)
-
+# async def on_startup() -> None:
+#     """Initializes the database."""
+#     if sqlalchemy_config.create_all:
+#         async with sqlalchemy_config.get_engine().begin() as conn:
+#             await conn.run_sync(orm_registry.metadata.create_all)
+# async def create_tables() -> None:
+#     async with engine.begin() as conn:
+#         await conn.run_sync(Base.metadata.create_all)
 
 cache = Cache.instance()
 queue = Queue.instance()
@@ -89,15 +90,15 @@ sqlalchemy_config = SQLAlchemyAsyncConfig(
 is_non_prod = settings.app.ENVIRONMENT != "production"
 
 app = FastAPI(
-    lifespan=lifespan,
+    # lifespan=lifespan,
     title=settings.app.APP_TITLE,
     description=settings.app.APP_DESCRIPTION,
     version=settings.app.APP_VERSION,
     debug=settings.db.DB_ECHO_LOG,
-    openapi_url="/api/openapi.json" if is_non_prod else None,
-    docs_url="/api/docs" if is_non_prod else None,
-    redoc_url="/api/redoc" if is_non_prod else None,
-    on_startup=[on_startup],
+    openapi_url="/openapi.json" if is_non_prod else None,
+    docs_url="/docs" if is_non_prod else None,
+    redoc_url="/redoc" if is_non_prod else None,
+    # on_startup=[on_startup],
 )
 
 app.state.config = settings
@@ -116,14 +117,13 @@ app.state.locale = {
 
 alchemy = AdvancedAlchemy(config=sqlalchemy_config, app=app)
 
-# Include routers
-api = APIRouter(
-    prefix="/api",
-    responses={404: {"description": "Page not found"}},
-)
 
-for router in domain_routers:
-    api.include_router(router)
+def provide_service(service: str | None = None):
+    return alchemy.provide_session(service)
+
+
+# for router in domain_routers:
+#     api.include_router(router)
 
 # Configure CORS
 app.add_middleware(
@@ -142,15 +142,6 @@ app.add_middleware(
 
 # # Add logging middleware
 app.middleware("http")(log_request_middleware())
-
-logger = get_logger(__name__)
-
-
-@app.get("/")
-async def root():
-    """Root endpoint."""
-    logger.info("root_endpoint_accessed")
-    return {"message": f"Welcome to {settings.app.APP_TITLE}"}
 
 
 # Reference: https://docs.astral.sh/ruff/rules/asyncio-dangling-task/

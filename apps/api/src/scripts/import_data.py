@@ -16,6 +16,7 @@ from api.core.logger import get_logger, settings, setup_logging
 from api.domain.analogous import (
     Analogous,
 )
+from api.domain.enums import ProductLineTypeEnum
 from api.domain.locale import provide_locales_service
 from api.domain.product import (
     provide_products_service,
@@ -37,7 +38,6 @@ from api.domain.vendor import (
     VendorCreate,
     provide_vendors_service,
 )
-from api.domain.enums import ProductLineTypeEnum
 from sqlalchemy.ext.asyncio import AsyncSession
 
 

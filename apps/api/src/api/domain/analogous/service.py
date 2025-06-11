@@ -5,9 +5,9 @@ from advanced_alchemy.repository import (
     SQLAlchemyAsyncSlugRepository,
 )
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
+from domain.dependencies import DatabaseSession
 from fastapi import Depends
-
-from api.domain.dependencies import DatabaseSession
+from sqlalchemy import select
 
 from .models import Analogous
 
@@ -24,8 +24,8 @@ class AnalogousService(SQLAlchemyAsyncRepositoryService[Analogous]):
 
 
 async def provide_analogous_service(db_session: DatabaseSession) -> AsyncGenerator[AnalogousService, None]:
-    """This provides the default Authors repository."""
-    async with AnalogousService.new(session=db_session) as service:
+    """This provides the default Analogous tags repository."""
+    async with AnalogousService.new(session=db_session, statement=select(Analogous)) as service:
         yield service
 
 

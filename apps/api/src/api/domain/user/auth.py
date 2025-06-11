@@ -7,9 +7,9 @@ from jose import JWTError, jwt
 from sqlalchemy import select
 from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_500_INTERNAL_SERVER_ERROR
 
-from api.core.config import settings
-from api.core.logger import logging
-from api.exceptions import ForbiddenException
+from core.config import settings
+from core.logger import logging
+from exceptions import ForbiddenException
 
 
 logger = logging.getLogger(__name__)

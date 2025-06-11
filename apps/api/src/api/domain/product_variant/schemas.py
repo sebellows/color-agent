@@ -3,13 +3,13 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-from api.domain.enums import (
+from domain.enums import (
     ApplicationMethodEnum,
     OpacityEnum,
     PackagingTypeEnum,
     ViscosityEnum,
 )
-from api.schemas.mixins import (
+from schemas.mixins import (
     SoftDeletionSchema,
     TimestampSchema,
 )

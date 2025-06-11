@@ -2,23 +2,22 @@ from collections.abc import Hashable
 from typing import TYPE_CHECKING
 
 from advanced_alchemy.utils.text import slugify
-from sqlalchemy import ARRAY, UUID, ColumnElement, Enum, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-from api.core.models import Entity, WithFullTimeAuditMixin, WithUniqueSlugMixin
-from api.domain.associations import (
+from core.models import Entity, WithFullTimeAuditMixin, WithUniqueSlugMixin
+from domain.associations import (
     product_analogous_association,
     product_tag_association,
 )
-from api.domain.enums import ColorRangeEnum, ProductTypeEnum
+from domain.enums import ColorRangeEnum, ProductTypeEnum
+from sqlalchemy import ARRAY, UUID, ColumnElement, Enum, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 if TYPE_CHECKING:
-    from api.domain.analogous.models import Analogous
-    from api.domain.product_line.models import ProductLine
-    from api.domain.product_swatch.models import ProductSwatch
-    from api.domain.product_variant.models import ProductVariant
-    from api.domain.tag.models import Tag
+    from domain.analogous.models import Analogous
+    from domain.product_line.models import ProductLine
+    from domain.product_swatch.models import ProductSwatch
+    from domain.product_variant.models import ProductVariant
+    from domain.tag.models import Tag
 
 
 class Product(Entity, WithFullTimeAuditMixin, WithUniqueSlugMixin):

@@ -1,10 +1,9 @@
 from typing import Annotated
 from uuid import UUID
 
+from domain.product_line.schemas import ProductLineResponse
 from pydantic import BaseModel, Field
-
-from api.domain.product_line.schemas import ProductLineResponse
-from api.schemas.mixins import (
+from schemas.mixins import (
     SoftDeletionSchema,
     TimestampSchema,
 )

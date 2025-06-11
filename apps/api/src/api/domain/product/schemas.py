@@ -1,18 +1,17 @@
 from typing import Annotated
 from uuid import UUID
 
+from domain.analogous import AnalogousResponse
+from domain.enums import ColorRangeEnum, ProductTypeEnum
+from domain.product_swatch.schemas import ProductSwatchCreate, ProductSwatchResponse
+from domain.product_variant.schemas import ProductVariantCreate, ProductVariantResponse
+from domain.tag.schemas import TagResponse
 from pydantic import BaseModel, Field
-
-from api.domain.analogous import AnalogousResponse
-from api.domain.enums import ColorRangeEnum, ProductTypeEnum
-from api.domain.product_swatch.schemas import ProductSwatchCreate, ProductSwatchResponse
-from api.domain.product_variant.schemas import ProductVariantCreate, ProductVariantResponse
-from api.domain.tag.schemas import TagResponse
-from api.schemas.mixins import (
+from schemas.mixins import (
     SoftDeletionSchema,
     TimestampSchema,
 )
-from api.schemas.pagination import PaginatedResponse
+from schemas.pagination import PaginatedResponse
 
 
 class ProductBase(BaseModel):

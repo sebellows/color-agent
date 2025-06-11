@@ -1,14 +1,13 @@
 from typing import Annotated
 from uuid import UUID
 
+from domain.enums import ProductLineTypeEnum
 from pydantic import BaseModel, Field
-
-from api.domain.enums import ProductLineTypeEnum
-from api.schemas.mixins import (
+from schemas.mixins import (
     SoftDeletionSchema,
     TimestampSchema,
 )
-from api.schemas.pagination import PaginatedResponse
+from schemas.pagination import PaginatedResponse
 
 
 class ProductLineBase(BaseModel):

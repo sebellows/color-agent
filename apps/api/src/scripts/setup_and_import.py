@@ -5,7 +5,7 @@ import logging
 from pathlib import Path
 
 from .create_tables import create_tables
-from api.scripts.import_data_modified import import_data
+from scripts.import_data_modified import import_data
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

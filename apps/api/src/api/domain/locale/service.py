@@ -5,10 +5,9 @@ from advanced_alchemy.repository import (
     SQLAlchemyAsyncSlugRepository,
 )
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
+from core.setup import app
+from domain.dependencies import DatabaseSession
 from fastapi import Depends
-
-from api.core.setup import app
-from api.domain.dependencies import DatabaseSession
 
 from .locales import languages, locales
 from .models import Locale
@@ -83,7 +82,7 @@ class LocaleService(SQLAlchemyAsyncRepositoryService[Locale]):
 
 
 async def provide_locales_service(db_session: DatabaseSession) -> AsyncGenerator[LocaleService, None]:
-    """This provides the default Authors repository."""
+    """This provides the default Locales repository."""
     async with LocaleService.new(session=db_session) as service:
         yield service
 

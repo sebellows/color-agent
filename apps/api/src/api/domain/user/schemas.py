@@ -2,8 +2,8 @@ from uuid import UUID
 from pydantic import BaseModel, EmailStr, Field, StringConstraints
 from typing_extensions import Annotated
 
-from api.schemas.auth import UserProfile
-from api.schemas.mixins import (
+from schemas.auth import UserProfile
+from schemas.mixins import (
     SoftDeletionSchema,
     TimestampSchema,
 )

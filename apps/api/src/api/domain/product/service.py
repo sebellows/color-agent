@@ -8,14 +8,13 @@ from advanced_alchemy.repository import (
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
 from advanced_alchemy.service.typing import ModelDictT
 from advanced_alchemy.utils.text import slugify
+from domain.analogous.models import Analogous
+from domain.dependencies import DatabaseSession
+from domain.enums import ColorRangeEnum, ProductTypeEnum
+from domain.helpers import enum_has
+from domain.tag.models import Tag
 from fastapi import Depends
 from sqlalchemy import select
-
-from api.domain.analogous.models import Analogous
-from api.domain.dependencies import DatabaseSession
-from api.domain.enums import ColorRangeEnum, ProductTypeEnum
-from api.domain.helpers import enum_has
-from api.domain.tag.models import Tag
 
 from .models import Product
 

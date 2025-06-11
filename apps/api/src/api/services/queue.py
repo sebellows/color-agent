@@ -1,7 +1,7 @@
 from arq import create_pool
 from arq.connections import ArqRedis, RedisSettings
 
-from api.core.config import settings
+from core.config import settings
 
 
 class Queue:

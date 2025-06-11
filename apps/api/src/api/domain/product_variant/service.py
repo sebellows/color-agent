@@ -6,13 +6,11 @@ from advanced_alchemy.repository import (
     SQLAlchemyAsyncSlugRepository,
 )
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
+from domain.dependencies import DatabaseSession
+from domain.enums import ApplicationMethodEnum, OpacityEnum, PackagingTypeEnum, ViscosityEnum
+from domain.helpers import enum_has, from_dict
 from fastapi import Depends
 from sqlalchemy import select
-
-from api.domain.dependencies import DatabaseSession
-from api.domain.enums import ApplicationMethodEnum, OpacityEnum, PackagingTypeEnum, ViscosityEnum
-from api.domain.helpers import enum_has, is_pydantic_model
-from api.types import Unknown
 
 from .models import ProductVariant
 
@@ -41,7 +39,7 @@ class ProductVariantService(SQLAlchemyAsyncRepositoryService[ProductVariant]):
 
     def set_valid_enum_fields(self, data) -> None:
         """Add categories to a product."""
-        data = data if isinstance(data, dict) else data.to_dict() if is_pydantic_model(data) else Unknown
+        data = from_dict(data)
 
         if not isinstance(data, dict):
             data = {}

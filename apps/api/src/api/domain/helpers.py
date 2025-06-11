@@ -1,20 +1,13 @@
 from enum import Enum, EnumType
-from typing import Any, TypeGuard, TypeVar
+from typing import Any, TypeVar
 
 from advanced_alchemy.base import ModelProtocol
 from advanced_alchemy.repository.typing import ModelT
-from advanced_alchemy.service.typing import ModelDictT
+from advanced_alchemy.service.typing import ModelDictT, is_dict, is_pydantic_model, is_schema
 from pydantic import BaseModel
-
-from api.types import Unknown
 
 
 T = TypeVar("T", bound=ModelProtocol)
-
-
-def is_pydantic_model(data: ModelT | Unknown | BaseModel) -> TypeGuard[ModelT]:
-    """Check if the data is a Pydantic model."""
-    return isinstance(data, BaseModel)
 
 
 EnumT = TypeVar("EnumT", bound=EnumType)
@@ -60,16 +53,14 @@ def get_enum_values(enum_class: EnumT, datalist: list[str], default: str | None 
 
 
 def from_dict(
-    data: dict[str, Any] | ModelDictT[T] | ModelProtocol | BaseModel,
+    data: ModelDictT,
 ) -> dict[str, Any]:
     """Convert a dictionary to a model instance."""
-    if isinstance(data, dict):
+    if is_dict(data):
         return data
     if is_pydantic_model(data):
-        return data.to_dict()
-    if isinstance(data, BaseModel):
-        model = data.__class__
-        if is_pydantic_model(data):
-            return model.model_dump(data)
+        return data.model_dump()
+    if is_schema(data):
+        return data.model_dump()
 
     raise TypeError(f"Expected a dict or a Pydantic model, got {type(data)}")

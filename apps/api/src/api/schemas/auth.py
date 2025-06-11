@@ -7,9 +7,9 @@ from uuid import UUID
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel, EmailStr, Field
 
-from api.core.config import settings
-from api.core.logger import get_logger
-from api.utils.string import camelize
+from core.config import settings
+from core.logger import get_logger
+from utils.string import camelize
 
 from .address import Address
 

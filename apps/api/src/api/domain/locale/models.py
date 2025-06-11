@@ -1,15 +1,14 @@
 from typing import TYPE_CHECKING, List
 
+from core.models import Entity
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
-
-from api.core.models import Entity
 
 from .locales import countries
 
 
 if TYPE_CHECKING:
-    from api.domain.product_variant.models import ProductVariant
+    from domain.product_variant.models import ProductVariant
 
 
 class Locale(Entity):

@@ -1,7 +1,6 @@
 from fastapi import APIRouter
+from schemas.pagination import PaginatedResponse, get_paginated_list
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
-
-from api.schemas.pagination import PaginatedResponse, get_paginated_list
 
 from .models import Vendor
 from .schemas import (

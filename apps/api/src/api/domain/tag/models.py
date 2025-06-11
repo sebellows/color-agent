@@ -2,16 +2,15 @@ from collections.abc import Hashable
 from typing import TYPE_CHECKING
 
 from advanced_alchemy.utils.text import slugify
+from core.models import Entity, WithUniqueSlugMixin
+from domain.associations import product_tag_association
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql.elements import ColumnElement
 
-from api.core.models import Entity, WithUniqueSlugMixin
-from api.domain.associations import product_tag_association
-
 
 if TYPE_CHECKING:
-    from api.domain.product.models import Product
+    from domain.product.models import Product
 
 
 class Tag(Entity, WithUniqueSlugMixin):

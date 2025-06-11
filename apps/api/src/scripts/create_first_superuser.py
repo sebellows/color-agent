@@ -3,10 +3,10 @@ import logging
 import uuid
 from datetime import UTC, datetime
 
-from api.core.config import settings
-from api.core.database import AsyncSession, async_engine, async_session_factory
-from api.core.security import get_password_hash
-from api.domain.user import User
+from core.config import settings
+from core.database import AsyncSession, async_engine, async_session_factory
+from core.security import get_password_hash
+from domain.user import User
 from sqlalchemy import Boolean, Column, DateTime, Integer, MetaData, String, Table, insert, select
 from sqlalchemy.dialects.postgresql import UUID
 

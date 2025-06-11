@@ -2,8 +2,8 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 from starlette.status import HTTP_200_OK
 
-from api.core.config import settings
-from api.core.logger import get_logger
+from core.config import settings
+from core.logger import get_logger
 
 
 __all__ = ["health_router", "health_check"]

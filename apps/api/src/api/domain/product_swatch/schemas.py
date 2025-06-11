@@ -1,9 +1,8 @@
 from typing import Annotated
 from uuid import UUID
 
+from domain.enums import OverlayEnum
 from pydantic import BaseModel, Field
-
-from api.domain.enums import OverlayEnum
 
 
 class ProductSwatchBase(BaseModel):

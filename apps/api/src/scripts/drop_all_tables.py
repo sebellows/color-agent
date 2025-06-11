@@ -6,8 +6,8 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 import asyncio
 
-from api.core.database import DB
-from api.core.logger import get_logger
+from core.database import DB
+from core.logger import get_logger
 
 
 logger = get_logger(__name__)

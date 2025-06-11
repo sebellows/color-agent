@@ -6,11 +6,10 @@ from advanced_alchemy.repository import (
 )
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
 from advanced_alchemy.service.typing import ModelDictT
+from domain.dependencies import DatabaseSession
+from domain.helpers import from_dict
 from fastapi import Depends
-
-from api.domain.dependencies import DatabaseSession
-from api.domain.helpers import from_dict
-from api.utils.color.formatters import format_color
+from utils.color.formatters import format_color
 
 from .models import ProductSwatch
 from .schemas import ProductSwatchResponse
@@ -40,7 +39,7 @@ class ProductSwatchService(SQLAlchemyAsyncRepositoryService[ProductSwatch]):
 
 
 async def provide_product_swatches_service(db_session: DatabaseSession) -> AsyncGenerator[ProductSwatchService, None]:
-    """This provides the default Authors repository."""
+    """This provides the default Product Swatches repository."""
     async with ProductSwatchService.new(session=db_session) as service:
         yield service
 

@@ -1,10 +1,9 @@
+from domain.locale import Locales
+from domain.product_swatch import ProductSwatches
+from domain.product_variant import ProductVariants
 from fastapi import APIRouter, HTTPException
+from schemas.pagination import PaginatedResponse, get_paginated_list
 from starlette.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND
-
-from api.domain.locale import Locales
-from api.domain.product_swatch import ProductSwatches
-from api.domain.product_variant import ProductVariants
-from api.schemas.pagination import PaginatedResponse, get_paginated_list
 
 from .models import Product
 from .schemas import (

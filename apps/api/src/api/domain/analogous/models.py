@@ -2,12 +2,12 @@ from collections.abc import Hashable
 from typing import TYPE_CHECKING
 
 from advanced_alchemy.utils.text import slugify
+from core.models import Entity, WithUniqueSlugMixin
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql.elements import ColumnElement
 
-from api.core.models import Entity, WithUniqueSlugMixin
-from api.domain.associations import product_analogous_association
+from ..associations import product_analogous_association
 
 
 if TYPE_CHECKING:

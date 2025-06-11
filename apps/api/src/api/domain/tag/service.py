@@ -5,9 +5,8 @@ from advanced_alchemy.repository import (
     SQLAlchemyAsyncSlugRepository,
 )
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
+from domain.dependencies import DatabaseSession
 from fastapi import Depends
-
-from api.domain.dependencies import DatabaseSession
 
 from .models import Tag
 

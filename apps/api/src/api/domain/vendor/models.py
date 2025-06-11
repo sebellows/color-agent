@@ -2,15 +2,14 @@ from collections.abc import Hashable
 from typing import TYPE_CHECKING
 
 from advanced_alchemy.utils.text import slugify
+from core.models import Entity, WithFullTimeAuditMixin, WithUniqueSlugMixin
 from sqlalchemy import String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql.elements import ColumnElement
 
-from api.core.models import Entity, WithFullTimeAuditMixin, WithUniqueSlugMixin
-
 
 if TYPE_CHECKING:
-    from api.domain.product_line import ProductLine
+    from domain.product_line import ProductLine
 
 
 class Vendor(Entity, WithFullTimeAuditMixin, WithUniqueSlugMixin):

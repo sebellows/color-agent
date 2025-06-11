@@ -1,18 +1,17 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from core.models import Entity, WithFullTimeAuditMixin
+from domain.enums import ApplicationMethodEnum, OpacityEnum, PackagingTypeEnum, ViscosityEnum
 from sqlalchemy import UUID, Boolean, Enum, Float, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from api.core.models import Entity, WithFullTimeAuditMixin
-from api.domain.enums import ApplicationMethodEnum, OpacityEnum, PackagingTypeEnum, ViscosityEnum
-
 
 if TYPE_CHECKING:
-    from api.domain.locale.models import Locale
-    from api.domain.product.models import Product
+    from domain.locale.models import Locale
+    from domain.product.models import Product
 
 
 @dataclass

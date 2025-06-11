@@ -17,7 +17,7 @@ from sqlalchemy.orm import (
 )
 from uuid_utils.compat import uuid7
 
-from api.types import DateTimeUTC
+from .types import DateTimeUTC
 
 
 @declarative_mixin

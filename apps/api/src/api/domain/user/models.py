@@ -3,7 +3,7 @@ from sqlalchemy import UUID, ForeignKey, text
 from sqlalchemy.orm import Mapped, mapped_column
 from uuid_utils import uuid7
 
-from api.core.models import Entity, WithFullTimeAuditMixin
+from core.models import Entity, WithFullTimeAuditMixin
 
 
 class User(Entity, WithFullTimeAuditMixin):

@@ -2,7 +2,7 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 from typing_extensions import Annotated
 
-from api.schemas.mixins import (
+from schemas.mixins import (
     SoftDeletionSchema,
     TimestampSchema,
     UUIDSchema,

@@ -3,16 +3,15 @@ from typing import TYPE_CHECKING
 from uuid import UUID
 
 from advanced_alchemy.utils.text import slugify
+from core.models import Entity, WithFullTimeAuditMixin, WithUniqueSlugMixin
+from domain.enums import ProductLineTypeEnum
 from sqlalchemy import ColumnElement, Enum, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from api.domain.enums import ProductLineTypeEnum
-from api.core.models import Entity, WithFullTimeAuditMixin, WithUniqueSlugMixin
-
 
 if TYPE_CHECKING:
-    from api.domain.product.models import Product
-    from api.domain.vendor.models import Vendor
+    from domain.product.models import Product
+    from domain.vendor.models import Vendor
 
 
 class ProductLine(Entity, WithFullTimeAuditMixin, WithUniqueSlugMixin):

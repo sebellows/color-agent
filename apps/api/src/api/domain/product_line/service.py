@@ -5,11 +5,10 @@ from advanced_alchemy.repository import (
     SQLAlchemyAsyncSlugRepository,
 )
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
+from core.database import get_db
 from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from api.core.database import get_db
 
 from .models import ProductLine
 
