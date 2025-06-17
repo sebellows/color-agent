@@ -9,7 +9,7 @@ from sqlalchemy.sql.elements import ColumnElement
 
 
 if TYPE_CHECKING:
-    from domain.product_line import ProductLine
+    from domain.product_line.models import ProductLine
 
 
 class Vendor(Entity, WithFullTimeAuditMixin, WithUniqueSlugMixin):
@@ -29,7 +29,6 @@ class Vendor(Entity, WithFullTimeAuditMixin, WithUniqueSlugMixin):
 
     # Relationships
     product_lines: Mapped[list["ProductLine"]] = relationship(
-        "ProductLine",
         back_populates="vendor",
         cascade="all, delete",
         default_factory=list,

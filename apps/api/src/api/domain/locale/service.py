@@ -1,4 +1,4 @@
-from typing import Annotated, AsyncGenerator
+# from typing import Annotated, AsyncGenerator
 
 from advanced_alchemy.repository import (
     SQLAlchemyAsyncRepository,
@@ -6,9 +6,9 @@ from advanced_alchemy.repository import (
 )
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
 from core.setup import app
-from domain.dependencies import DatabaseSession
-from fastapi import Depends
 
+# from domain.dependencies import DatabaseSession
+# from fastapi import Depends
 from .locales import languages, locales
 from .models import Locale
 
@@ -16,7 +16,7 @@ from .models import Locale
 class LocaleService(SQLAlchemyAsyncRepositoryService[Locale]):
     """Service for managing blog posts with automatic schema validation."""
 
-    class LocaleRepository(SQLAlchemyAsyncSlugRepository[Locale], SQLAlchemyAsyncRepository[Locale]):
+    class Repo(SQLAlchemyAsyncSlugRepository[Locale], SQLAlchemyAsyncRepository[Locale]):
         """
         Repository for managing locale data.
         """
@@ -32,7 +32,7 @@ class LocaleService(SQLAlchemyAsyncRepositoryService[Locale]):
                 filters=[Locale.country_code == country, Locale.language_code == lang],
             )
 
-    repository_type = LocaleRepository
+    repository_type = Repo
 
     _current_locale: Locale = app.state.locale
 
@@ -81,15 +81,15 @@ class LocaleService(SQLAlchemyAsyncRepositoryService[Locale]):
         return locale_models
 
 
-async def provide_locales_service(db_session: DatabaseSession) -> AsyncGenerator[LocaleService, None]:
-    """This provides the default Locales repository."""
-    async with LocaleService.new(session=db_session) as service:
-        yield service
+# async def provide_locales_service(db_session: DatabaseSession) -> AsyncGenerator[LocaleService, None]:
+#     """This provides the default Locales repository."""
+#     async with LocaleService.new(session=db_session) as service:
+#         yield service
 
 
-Locales = Annotated[LocaleService, Depends(provide_locales_service)]
+# Locales = Annotated[LocaleService, Depends(provide_locales_service)]
 
 
-def get_current_locale(locales_service: Locales) -> Locale:
-    """Get the current locale."""
-    return locales_service.current_locale
+# def get_current_locale(locales_service: Locales) -> Locale:
+#     """Get the current locale."""
+#     return locales_service.current_locale

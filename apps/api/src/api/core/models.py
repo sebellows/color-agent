@@ -4,6 +4,7 @@ from uuid import UUID
 
 from advanced_alchemy.base import CommonTableAttributes, orm_registry
 from advanced_alchemy.mixins import SlugKey, UniqueMixin
+from advanced_alchemy.types import DateTimeUTC
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import (
     DeclarativeBase,
@@ -16,8 +17,6 @@ from sqlalchemy.orm import (
     validates,
 )
 from uuid_utils.compat import uuid7
-
-from .types import DateTimeUTC
 
 
 @declarative_mixin

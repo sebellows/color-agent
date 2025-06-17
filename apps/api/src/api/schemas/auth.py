@@ -4,11 +4,10 @@ from enum import Enum
 from typing import Annotated, Any
 from uuid import UUID
 
-from fastapi.security import OAuth2PasswordRequestForm
-from pydantic import BaseModel, EmailStr, Field
-
 from core.config import settings
 from core.logger import get_logger
+from fastapi.security import OAuth2PasswordRequestForm
+from pydantic import BaseModel, EmailStr, Field
 from utils.string import camelize
 
 from .address import Address
@@ -87,7 +86,7 @@ class UserProfile(BaseModel):
 
 class FederatedIdentity(BaseModel):
     identity_provider: str | None = None
-    user_id: str | None = None
+    user_id: UUID | None = None
     user_name: str | None = None
 
     class Config:
@@ -273,8 +272,8 @@ class RefreshTokenRequest(OAuthRequest):
     """Represents Keycloak token refreshment request"""
 
     refresh_token: str
-    client_id = settings.auth.KeyCloak.CLIENT_ID
-    grant_type = "refresh_token"
+    client_id: str | None = settings.auth.KeyCloak.CLIENT_ID
+    grant_type: str = "refresh_token"
 
 
 class RealmAccess(BaseModel):

@@ -18,13 +18,11 @@ if TYPE_CHECKING:
 class ProductVariant(Entity, WithFullTimeAuditMixin):
     __tablename__ = "product_variants"
 
-    # Relationships
-    product: Mapped["Product"] = relationship("Product", back_populates="variants")
-    locale: Mapped["Locale"] = relationship("Locale", back_populates="variants")
-
     # Required fields (no default values)
-    product_id: Mapped[UUID] = mapped_column(ForeignKey("products.id", ondelete="CASCADE"))
     locale_id: Mapped[UUID] = mapped_column(ForeignKey("locales.id"))  # , ondelete="CASCADE"
+    locale: Mapped["Locale"] = relationship(back_populates="variants")
+    product_id: Mapped[UUID] = mapped_column(ForeignKey("products.id", ondelete="CASCADE"))
+    product: Mapped["Product"] = relationship(back_populates="variants")
     display_name: Mapped[str] = mapped_column(String(255))
     marketing_name: Mapped[str] = mapped_column(String(255))
     sku: Mapped[str] = mapped_column(String(100), index=True)

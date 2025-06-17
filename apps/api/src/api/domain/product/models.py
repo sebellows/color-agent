@@ -31,21 +31,17 @@ class Product(Entity, WithFullTimeAuditMixin, WithUniqueSlugMixin):
     product_type: Mapped[list["ProductTypeEnum"]] = mapped_column(ARRAY(Enum(ProductTypeEnum, inherit_schema=True)))
 
     # Relationships
-    product_line: Mapped["ProductLine"] = relationship("ProductLine", back_populates="products")
-    swatch: Mapped["ProductSwatch"] = relationship(
-        "ProductSwatch",
-        back_populates="product",
-        cascade="all, delete-orphan",
-    )
+    product_line: Mapped["ProductLine"] = relationship(back_populates="products")
+    swatch: Mapped["ProductSwatch"] = relationship(back_populates="product", cascade="all, delete-orphan")
     variants: Mapped[list["ProductVariant"]] = relationship(
-        "ProductVariant", back_populates="product", cascade="all, delete-orphan", lazy="selectin"
+        back_populates="product", cascade="all, delete-orphan", lazy="selectin"
     )
 
     # Many-to-many relationships
-    tags: Mapped[list[Tag]] = relationship(
+    tags: Mapped[list["Tag"]] = relationship(
         secondary=product_tag_association, back_populates="products", lazy="selectin"
     )
-    analogous: Mapped[list[Analogous]] = relationship(
+    analogous: Mapped[list["Analogous"]] = relationship(
         secondary=product_analogous_association, back_populates="products", lazy="selectin"
     )
 

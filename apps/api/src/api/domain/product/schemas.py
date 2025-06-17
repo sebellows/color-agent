@@ -1,17 +1,19 @@
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 from uuid import UUID
 
-from domain.analogous import AnalogousResponse
 from domain.enums import ColorRangeEnum, ProductTypeEnum
-from domain.product_swatch.schemas import ProductSwatchCreate, ProductSwatchResponse
-from domain.product_variant.schemas import ProductVariantCreate, ProductVariantResponse
-from domain.tag.schemas import TagResponse
 from pydantic import BaseModel, Field
 from schemas.mixins import (
     SoftDeletionSchema,
     TimestampSchema,
 )
-from schemas.pagination import PaginatedResponse
+
+
+if TYPE_CHECKING:
+    from domain.analogous.schemas import AnalogousResponse
+    from domain.product_swatch.schemas import ProductSwatchCreate, ProductSwatchResponse
+    from domain.product_variant.schemas import ProductVariantCreate, ProductVariantResponse
+    from domain.tag.schemas import TagResponse
 
 
 class ProductBase(BaseModel):
@@ -43,8 +45,8 @@ class ProductCreate(ProductBase):
     ]
     tags: Annotated[list[str] | None, Field(description="Tags", default_factory=list)]
     analogous: Annotated[list[str] | None, Field(description="Analogous color tags", default_factory=list)]
-    swatch: Annotated[ProductSwatchCreate, Field(description="Product swatch information")]
-    variants: Annotated[list[ProductVariantCreate], Field(description="Product variants")]
+    swatch: Annotated["ProductSwatchCreate", Field(description="Product swatch information")]
+    variants: Annotated[list["ProductVariantCreate"], Field(description="Product variants")]
 
 
 class ProductUpdate(ProductBase):
@@ -74,26 +76,20 @@ class ProductResponse(ProductBase, TimestampSchema, SoftDeletionSchema):
         str, Field(description="Unique slug for the product", examples=["nighthaunt-gloom", "screaming-skull"])
     ]
     product_line_id: Annotated[UUID, Field(description="ID of the product line")]
-    swatch: Annotated[ProductSwatchResponse, Field(description="Product swatch information")]
-    variants: Annotated[list[ProductVariantResponse], Field(description="Product variants")]
-    tags: Annotated[list[TagResponse], Field(description="Tags", default_factory=list)]
-    analogous: Annotated[list[AnalogousResponse], Field(description="Analogous colors", default_factory=list)]
+    swatch: Annotated["ProductSwatchResponse", Field(description="Product swatch information")]
+    variants: Annotated[list["ProductVariantResponse"], Field(description="Product variants")]
+    tags: Annotated[list["TagResponse"], Field(description="Tags", default_factory=list)]
+    analogous: Annotated[list["AnalogousResponse"], Field(description="Analogous colors", default_factory=list)]
 
 
-class ProductFilterParams(BaseModel):
+class ProductFilters(BaseModel):
+    id: Annotated[UUID | None, Field(description="Filter by product ID", default=None)]
     name: Annotated[str | None, Field(description="Filter by name", default=None)]
     slug: Annotated[
         str | None, Field(description="Filter by slug", examples=["nighthaunt-gloom", "screaming-skull"], default=None)
     ]
-    product_line_id: Annotated[UUID | None, Field(description="Filter by product line ID", default=None)]
-    product_type_id: Annotated[UUID | None, Field(description="Filter by product type ID", default=None)]
-    color_range_id: Annotated[UUID | None, Field(description="Filter by color range ID", default=None)]
-    tag_id: Annotated[UUID | None, Field(description="Filter by tag ID", default=None)]
-    analogous_id: Annotated[UUID | None, Field(description="Filter by analogous ID", default=None)]
+    product_type: Annotated[ProductTypeEnum | None, Field(description="Filter by product type", default=None)]
+    color_range: Annotated[ColorRangeEnum | None, Field(description="Filter by color range ID", default=None)]
+    tag: Annotated[str | None, Field(description="Filter by tag", default=None)]
+    analogous: Annotated[str | None, Field(description="Filter by analogous color tag", default=None)]
     iscc_nbs_category: Annotated[str | None, Field(description="Filter by ISCC NBS category", default=None)]
-
-
-class PaginatedProducts(PaginatedResponse[ProductResponse]):
-    """Paginated response for products."""
-
-    pass

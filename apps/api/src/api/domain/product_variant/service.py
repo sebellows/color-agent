@@ -1,4 +1,5 @@
-from typing import Annotated, AsyncGenerator, TypedDict
+# from typing import Annotated, AsyncGenerator, TypedDict
+from typing import TypedDict
 from uuid import UUID
 
 from advanced_alchemy.repository import (
@@ -6,10 +7,12 @@ from advanced_alchemy.repository import (
     SQLAlchemyAsyncSlugRepository,
 )
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
-from domain.dependencies import DatabaseSession
+
+# from domain.dependencies import DatabaseSession
 from domain.enums import ApplicationMethodEnum, OpacityEnum, PackagingTypeEnum, ViscosityEnum
-from domain.helpers import enum_has, from_dict
-from fastapi import Depends
+from domain.helpers import as_dict, enum_has
+
+# from fastapi import Depends
 from sqlalchemy import select
 
 from .models import ProductVariant
@@ -27,7 +30,7 @@ class ProductVariantEnumFields(TypedDict):
 class ProductVariantService(SQLAlchemyAsyncRepositoryService[ProductVariant]):
     """Service for managing blog posts with automatic schema validation."""
 
-    class ProductVariantRepository(
+    class Repo(
         SQLAlchemyAsyncSlugRepository[ProductVariant],
         SQLAlchemyAsyncRepository[ProductVariant],
     ):
@@ -35,11 +38,11 @@ class ProductVariantService(SQLAlchemyAsyncRepositoryService[ProductVariant]):
 
         model_type = ProductVariant
 
-    repository_type = ProductVariantRepository
+    repository_type = Repo
 
     def set_valid_enum_fields(self, data) -> None:
         """Add categories to a product."""
-        data = from_dict(data)
+        data = as_dict(data)
 
         if not isinstance(data, dict):
             data = {}
@@ -81,12 +84,12 @@ class ProductVariantService(SQLAlchemyAsyncRepositoryService[ProductVariant]):
         )
 
 
-async def provide_product_variants_service(db_session: DatabaseSession) -> AsyncGenerator[ProductVariantService, None]:
-    """This provides the default Product Variant repository."""
-    async with ProductVariantService.new(
-        session=db_session, statement=select(ProductVariant).where(ProductVariant.is_deleted.is_(False))
-    ) as service:
-        yield service
+# async def provide_product_variants_service(db_session: DatabaseSession) -> AsyncGenerator[ProductVariantService, None]:
+#     """This provides the default Product Variant repository."""
+#     async with ProductVariantService.new(
+#         session=db_session, statement=select(ProductVariant).where(ProductVariant.is_deleted.is_(False))
+#     ) as service:
+#         yield service
 
 
-ProductVariants = Annotated[ProductVariantService, Depends(provide_product_variants_service)]
+# ProductVariants = Annotated[ProductVariantService, Depends(provide_product_variants_service)]

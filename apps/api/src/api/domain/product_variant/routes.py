@@ -1,5 +1,7 @@
 from uuid import UUID
 
+from domain.dependencies import Services
+from domain.helpers import as_dict
 from fastapi import APIRouter
 from starlette.status import (
     HTTP_200_OK,
@@ -13,10 +15,9 @@ from .schemas import (
     ProductVariantResponse,
     ProductVariantUpdate,
 )
-from .service import ProductVariants
 
 
-router = APIRouter(prefix="/product-variants", tags=["product_variants"])
+product_variant_router = APIRouter(tags=["Product Variant"])
 
 
 def _set_or_update_vendor_categories(
@@ -36,67 +37,77 @@ def _set_or_update_vendor_categories(
                 product_variant.vendor_product_type.append(product_type)
 
 
-@router.post("", response_model=ProductVariantResponse, status_code=HTTP_201_CREATED)
+@product_variant_router.post("/product-variants", response_model=ProductVariantResponse, status_code=HTTP_201_CREATED)
 async def create_product_variant(
-    product_variant_in: ProductVariantCreate,
-    service: ProductVariants,
+    container: Services,
+    data: ProductVariantCreate,
 ):
     """Create a new product variant"""
-    product_variant_data = product_variant_in.model_dump(exclude_unset=True)
-    product_variant = ProductVariant(**product_variant_data)
+    product_variant_data = as_dict(data)
+    model = await container.provide_product_variants.to_model(data)
 
     # Set or update vendor categories
     _set_or_update_vendor_categories(
-        product_variant,
-        vendor_color_range=product_variant_in.vendor_color_range,
-        vendor_product_type=product_variant_in.vendor_product_type,
+        model,
+        vendor_color_range=product_variant_data["vendor_color_range"],
+        vendor_product_type=product_variant_data["vendor_product_type"],
     )
 
-    await service.create(product_variant)
-    return ProductVariantResponse.model_validate(product_variant)
+    product_variant = await container.provide_product_variants.create(model)
+    return container.provide_product_variants.to_schema(product_variant)
 
 
-@router.get(
-    "/{product_variant_id}",
+@product_variant_router.get(
+    "/product-variants/{product_variant_id}",
     response_model=ProductVariantResponse,
     status_code=HTTP_200_OK,
 )
 async def get_product_variant(
     product_variant_id: UUID,
-    service: ProductVariants,
+    container: Services,
 ):
     """Get a product variant by ID"""
-    product_variant = await service.get(
-        ProductVariant.id == product_variant_id,
-    )
-    return ProductVariantResponse.model_validate(product_variant)
+    product_variant = await container.provide_product_variants.get(product_variant_id)
+    return container.provide_product_variants.to_schema(product_variant)
 
 
-@router.put(
-    "/{product_variant_id}",
+@product_variant_router.get(
+    "/product-variants",
+    response_model=list[ProductVariantResponse],
+    status_code=HTTP_200_OK,
+)
+async def list_product_variants(
+    product_id: UUID,
+    container: Services,
+):
+    """Get all product variants for a given product by Product ID"""
+    product_variants = await container.provide_product_variants.list(ProductVariant.product_id == product_id)
+    return container.provide_product_variants.to_schema(product_variants)
+
+
+@product_variant_router.patch(
+    "/product-variants/{product_variant_id}",
     response_model=ProductVariantResponse,
     status_code=HTTP_200_OK,
 )
 async def update_product_variant(
     product_variant_id: UUID,
-    product_variant_in: ProductVariantUpdate,
-    service: ProductVariants,
+    data: ProductVariantUpdate,
+    container: Services,
 ):
     """Update a product variant"""
-    product_variant = await service.get_and_update(
-        ProductVariant.id == product_variant_id,
-        data=product_variant_in.model_dump(exclude_unset=True),
+    product_variant = await container.provide_product_variants.update(
+        data,
+        item_id=product_variant_id,
     )
+    return container.provide_product_variants.to_schema(product_variant)
 
-    return ProductVariantResponse.model_validate(product_variant)
 
-
-@router.delete("/{product_variant_id}", status_code=HTTP_204_NO_CONTENT)
+@product_variant_router.delete("/product-variants/{product_variant_id}", status_code=HTTP_204_NO_CONTENT)
 async def delete_product_variant(
     product_variant_id: UUID,
-    service: ProductVariants,
+    container: Services,
 ):
     """Delete a product variant"""
-    await service.delete(ProductVariant.id == product_variant_id)
-
+    _ = await container.provide_product_variants.delete(ProductVariant.id == product_variant_id)
     return None

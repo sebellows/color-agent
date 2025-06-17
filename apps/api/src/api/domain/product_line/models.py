@@ -30,9 +30,8 @@ class ProductLine(Entity, WithFullTimeAuditMixin, WithUniqueSlugMixin):
     #     return mapped_column(String(length=100), nullable=False)
 
     # Relationships
-    vendor: Mapped["Vendor"] = relationship("Vendor", back_populates="product_lines", default=None)
+    vendor: Mapped["Vendor"] = relationship(back_populates="product_lines", default=None)
     products: Mapped[list["Product"]] = relationship(
-        "Product",
         back_populates="product_line",
         default_factory=list,
         cascade="all, delete",

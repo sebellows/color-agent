@@ -3,15 +3,14 @@ from typing import TYPE_CHECKING
 
 from advanced_alchemy.utils.text import slugify
 from core.models import Entity, WithUniqueSlugMixin
+from domain.associations import product_analogous_association
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql.elements import ColumnElement
 
-from ..associations import product_analogous_association
-
 
 if TYPE_CHECKING:
-    from product.models import Product
+    from domain.product.models import Product
 
 
 class Analogous(Entity, WithUniqueSlugMixin):

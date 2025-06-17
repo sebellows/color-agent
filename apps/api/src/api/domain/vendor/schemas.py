@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 from uuid import UUID
 
 from domain.product_line.schemas import ProductLineResponse
@@ -7,6 +7,11 @@ from schemas.mixins import (
     SoftDeletionSchema,
     TimestampSchema,
 )
+
+
+if TYPE_CHECKING:
+    pass
+    # from api.domain.product_line.schemas import ProductLineResponse
 
 
 class VendorBase(BaseModel):
@@ -44,11 +49,13 @@ class VendorRead(VendorBase, TimestampSchema, SoftDeletionSchema):
 
 class VendorResponse(VendorBase, TimestampSchema, SoftDeletionSchema):
     id: Annotated[UUID, Field(description="Unique identifier")]
-    product_lines: Annotated[list[ProductLineResponse], Field(description="The vendor's product lines")]
+    product_lines: Annotated[
+        list[ProductLineResponse], Field(description="The vendor's product lines", default_factory=list)
+    ]
     slug: Annotated[str, Field(description="Unique identifier slug", examples=["army_painter", "monument_hobbies"])]
 
 
-class VendorFilterParams(BaseModel):
+class VendorFilters(BaseModel):
     name: Annotated[str | None, Field(description="Filter by vendor name", default=None)]
     platform: Annotated[str | None, Field(description="Filter by platform", default=None)]
     slug: Annotated[

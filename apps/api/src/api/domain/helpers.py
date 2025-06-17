@@ -2,9 +2,7 @@ from enum import Enum, EnumType
 from typing import Any, TypeVar
 
 from advanced_alchemy.base import ModelProtocol
-from advanced_alchemy.repository.typing import ModelT
 from advanced_alchemy.service.typing import ModelDictT, is_dict, is_pydantic_model, is_schema
-from pydantic import BaseModel
 
 
 T = TypeVar("T", bound=ModelProtocol)
@@ -52,7 +50,7 @@ def get_enum_values(enum_class: EnumT, datalist: list[str], default: str | None 
     return [enum_class[item] for item in items if enum_has(enum_class, item)]
 
 
-def from_dict(
+def as_dict(
     data: ModelDictT,
 ) -> dict[str, Any]:
     """Convert a dictionary to a model instance."""

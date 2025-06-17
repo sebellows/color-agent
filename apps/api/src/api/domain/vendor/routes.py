@@ -1,74 +1,81 @@
-from fastapi import APIRouter
-from schemas.pagination import PaginatedResponse, get_paginated_list
+from typing import TYPE_CHECKING
+from uuid import UUID
+
+from advanced_alchemy.filters import SearchFilter
+from advanced_alchemy.service import OffsetPagination
+from domain.dependencies import Services
+from domain.filters import PaginatedResponse
+from fastapi import APIRouter, Query
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from typing_extensions import Annotated
 
 from .models import Vendor
-from .schemas import (
-    VendorCreate,
-    VendorResponse,
-    VendorUpdate,
-)
-from .service import Vendors
+from .schemas import VendorCreate, VendorFilters, VendorResponse, VendorUpdate
 
 
-router = APIRouter(
-    prefix="/vendor",
-    tags=["vendors"],
-)
+# from .service import Vendors
 
 
-@router.post("", response_model=VendorResponse, status_code=HTTP_201_CREATED)
+if TYPE_CHECKING:
+    pass
+
+vendor_router = APIRouter(tags=["Vendor"])
+
+
+@vendor_router.post("/vendor", response_model=VendorResponse, status_code=HTTP_201_CREATED)
 async def create_vendor(
-    vendor_in: VendorCreate,
-    service: Vendors,
+    data: VendorCreate,
+    container: Services,
 ):
     """Create a new vendor"""
-    vendor_data = vendor_in.model_dump(exclude_unset=True)
-    vendor = Vendor(**vendor_data)
-    await service.create(vendor)
-    return VendorResponse.model_validate(vendor)
+    vendor = await container.provide_vendors.create(data)
+    return container.provide_vendors.to_schema(vendor)
 
 
-@router.get("/{vendor_id}", response_model=VendorResponse, status_code=HTTP_200_OK)
-async def get_vendor(vendor_id: int, service: Vendors):
+@vendor_router.get("/vendor/{vendor_id}", response_model=VendorResponse, status_code=HTTP_200_OK)
+async def get_vendor(vendor_id: UUID, container: Services):
     """Get a vendor by ID"""
-    return await service.get(
-        Vendor.id == vendor_id,
-    )
+    vendor = await container.provide_vendors.get(vendor_id)
+    return container.provide_vendors.to_schema(vendor)
 
 
-@router.get("", response_model=PaginatedResponse[VendorResponse], status_code=HTTP_200_OK)
+@vendor_router.get("/vendor", response_model=OffsetPagination[VendorResponse], status_code=HTTP_200_OK)
 async def list_vendors(
-    service: Vendors,
-    page: int = 1,
-    limit: int = 100,
-    name: str | None = None,
-    slug: str | None = None,
+    filter_query: Annotated[VendorFilters, Query()],
+    limit_offset: PaginatedResponse,
+    container: Services,
 ):
     """List vendors with filtering"""
-    return get_paginated_list(
-        service=service,
-        limit=limit,
-        page=page,
-        name=name,
-        slug=slug,
+    filters = []
+    if filter_query.name:
+        filters.append(SearchFilter("name", filter_query.name, ignore_case=True))
+    if filter_query.slug:
+        filters.append(SearchFilter("slug", filter_query.slug, ignore_case=True))
+    if filter_query.platform:
+        filters.append(SearchFilter("platform", filter_query.platform, ignore_case=True))
+
+    results, total = await container.provide_vendors.list_and_count(*filters, limit_offset)
+
+    return container.provide_vendors.to_schema(
+        results,
+        total=total,
+        filters=[limit_offset],
     )
 
 
-@router.put("/{vendor_id}", response_model=VendorResponse, status_code=HTTP_200_OK)
+@vendor_router.patch("/vendor/{vendor_id}", response_model=VendorResponse, status_code=HTTP_200_OK)
 async def update_vendor(
-    vendor_id: int,
-    vendor_in: VendorUpdate,
-    service: Vendors,
+    container: Services,
+    data: VendorUpdate,
+    vendor_id: UUID,
 ):
     """Update a vendor"""
-    vendor = await service.get_and_update(Vendor.id == vendor_id, data=vendor_in.model_dump(exclude_unset=True))
-    return VendorResponse.model_validate(vendor)
+    vendor = await container.provide_vendors.update(data, item_id=vendor_id)
+    return container.provide_vendors.to_schema(vendor)
 
 
-@router.delete("/{vendor_id}", status_code=HTTP_204_NO_CONTENT)
-async def delete_vendor(vendor_id: int, service: Vendors):
+@vendor_router.delete("/vendor/{vendor_id}", status_code=HTTP_204_NO_CONTENT)
+async def delete_vendor(vendor_id: UUID, container: Services):
     """Delete a vendor"""
-    await service.delete(Vendor.id == vendor_id)
-
+    _ = await container.provide_vendors.delete(Vendor.id == vendor_id)
     return None

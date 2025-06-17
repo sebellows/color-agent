@@ -50,8 +50,9 @@ class LocaleResponse(LocaleBase):
     id: Annotated[UUID, Field(description="Unique identifier")]
 
 
-class LocaleFilterParams(BaseModel):
+class LocaleFilters(BaseModel):
     language_code: Annotated[str | None, Field(description="Filter by language code", default=None)]
     country_code: Annotated[str | None, Field(description="Filter by country code", default=None)]
     country_name: Annotated[str | None, Field(description="Filter by country name", default=None)]
+    currency_code: Annotated[str | None, Field(description="Filter by currency code", default=None)]
     display_name: Annotated[str | None, Field(description="Filter by country endonym", default=None)]

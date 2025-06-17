@@ -1,85 +1,94 @@
 from uuid import UUID
 
-from fastapi import APIRouter
-from schemas.pagination import PaginatedResponse, get_paginated_list
+from advanced_alchemy.filters import SearchFilter
+from advanced_alchemy.service import OffsetPagination
+from domain.dependencies import Services
+from domain.filters import PaginatedResponse
+from fastapi import APIRouter, Query
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from typing_extensions import Annotated
 
 from .models import ProductLine
 from .schemas import (
     ProductLineCreate,
+    ProductLineFilters,
     ProductLineResponse,
     ProductLineUpdate,
 )
-from .service import ProductLines
 
 
-router = APIRouter(
-    prefix="/product-lines",
-    tags=["product_lines"],
-)
+product_line_router = APIRouter(tags=["Product Line"])
 
 
-@router.post("", response_model=ProductLineResponse, status_code=HTTP_201_CREATED)
+@product_line_router.post("/product-lines", response_model=ProductLineResponse, status_code=HTTP_201_CREATED)
 async def create_product_line(
-    product_line_in: ProductLineCreate,
-    service: ProductLines,
+    container: Services,
+    data: ProductLineCreate,
 ):
     """Create a new product line"""
-    product_line_data = product_line_in.model_dump(exclude_unset=True)
-    product_line = ProductLine(**product_line_data)
-    await service.create(product_line)
-    return ProductLineResponse.model_validate(product_line)
+    product_line = await container.provide_product_lines.create(data)
+    return container.provide_product_lines.to_schema(product_line)
 
 
-@router.get("/{product_line_id}", response_model=ProductLineResponse, status_code=HTTP_200_OK)
+@product_line_router.get(
+    "/product-lines/{product_line_id}", response_model=ProductLineResponse, status_code=HTTP_200_OK
+)
 async def get_product_line(
     product_line_id: UUID,
-    service: ProductLines,
+    container: Services,
 ):
     """Get a product line by ID"""
-    product_line = await service.get(ProductLine.id == product_line_id)
-    return ProductLineResponse.model_validate(product_line)
+    product_line = await container.provide_product_lines.get(ProductLine.id == product_line_id)
+    return container.provide_product_lines.to_schema(product_line)
 
 
-@router.get("", response_model=PaginatedResponse[ProductLineResponse], status_code=HTTP_200_OK)
+@product_line_router.get(
+    "/product-lines", response_model=OffsetPagination[ProductLineResponse], status_code=HTTP_200_OK
+)
 async def list_product_lines(
-    service: ProductLines,
-    page: int = 1,
-    limit: int = 100,
-    name: str | None = None,
-    product_line_type: str | None = None,
-    vendor_id: UUID | None = None,
+    filter_query: Annotated[ProductLineFilters, Query()],
+    limit_offset: PaginatedResponse,
+    container: Services,
 ):
     """List product lines with filtering"""
-    return await get_paginated_list(
-        service=service,
-        page=page,
-        limit=limit,
-        name=name,
-        product_line_type=product_line_type,
-        vendor_id=vendor_id,
+
+    filters = []
+    if filter_query.name:
+        filters.append(SearchFilter("name", filter_query.name, ignore_case=True))
+    if filter_query.slug:
+        filters.append(SearchFilter("slug", filter_query.slug, ignore_case=True))
+    if filter_query.product_line_type:
+        filters.append(SearchFilter("product_line_type", filter_query.product_line_type.value, ignore_case=True))
+    if filter_query.vendor_id:
+        filters.append(ProductLine.vendor_id == filter_query.vendor_id)
+
+    results, total = await container.provide_product_lines.list_and_count(*filters, limit_offset)
+
+    return container.provide_product_lines.to_schema(
+        results,
+        total=total,
+        filters=[limit_offset],
     )
 
 
-@router.put("/{product_line_id}", response_model=ProductLineResponse, status_code=HTTP_200_OK)
+@product_line_router.put(
+    "/product-lines/{product_line_id}", response_model=ProductLineResponse, status_code=HTTP_200_OK
+)
 async def update_product_line(
     product_line_id: UUID,
-    product_line_in: ProductLineUpdate,
-    service: ProductLines,
+    data: ProductLineUpdate,
+    container: Services,
 ):
     """Update a product line"""
-    product_line, _updated = await service.get_and_update(
-        ProductLine.id == product_line_id,
-        data=product_line_in.model_dump(exclude_unset=True),
-    )
-    return ProductLineResponse.model_validate(product_line)
+    product_line = await container.provide_product_lines.update(data, item_id=product_line_id)
+    return container.provide_product_lines.to_schema(product_line)
 
 
-@router.delete("/{product_line_id}", status_code=HTTP_204_NO_CONTENT)
+@product_line_router.delete("/product-lines/{product_line_id}", status_code=HTTP_204_NO_CONTENT)
 async def delete_product_line(
     product_line_id: UUID,
-    service: ProductLines,
+    container: Services,
 ):
     """Delete a product line"""
-    await service.delete(ProductLine.id == product_line_id)
+    _ = await container.provide_product_lines.delete(product_line_id)
     return None

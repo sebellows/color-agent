@@ -32,3 +32,10 @@ class TagRead(TagBase):
 class TagResponse(TagBase):
     id: Annotated[UUID, Field(description="Unique identifier")]
     slug: Annotated[str, Field(description="Unique identifier slug", examples=["special_effect", "terrain"])]
+
+
+class TagFilters(BaseModel):
+    id: Annotated[UUID | None, Field(description="Filter by tag ID", default=None)]
+    name: Annotated[str | None, Field(description="Filter by tag name", default=None)]
+    slug: Annotated[str | None, Field(description="Filter by tag slug", default=None)]
+    type: Annotated[str | None, Field(description="Filter by tag type", default=None)]

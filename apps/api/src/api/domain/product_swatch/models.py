@@ -1,10 +1,9 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ARRAY, UUID, Enum, Float, ForeignKey, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 from core.models import Entity
 from domain.enums import OverlayEnum
+from sqlalchemy import ARRAY, UUID, Enum, Float, ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 if TYPE_CHECKING:
@@ -15,7 +14,7 @@ class ProductSwatch(Entity):
     __tablename__ = "product_swatches"
 
     # Relationships
-    product: Mapped["Product"] = relationship("Product", back_populates="swatch")
+    product: Mapped["Product"] = relationship(back_populates="swatch")
 
     product_id: Mapped[UUID] = mapped_column(ForeignKey("products.id", ondelete="CASCADE"))
     hex_color: Mapped[str] = mapped_column(String(7))

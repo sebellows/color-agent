@@ -1,29 +1,29 @@
 from uuid import UUID
-from pydantic import BaseModel, EmailStr, Field, StringConstraints
-from typing_extensions import Annotated
 
+from pydantic import BaseModel, EmailStr, Field, StringConstraints
 from schemas.auth import UserProfile
 from schemas.mixins import (
     SoftDeletionSchema,
     TimestampSchema,
 )
+from typing_extensions import Annotated
 
 
 class FilterRole(BaseModel):
-    field = "role"
-    operator = "eq"
-    value = "role-annotator"
+    field: str = "role"
+    operator: str = "eq"
+    value: str = "role-annotator"
 
 
 class FilterUserUserID(BaseModel):
-    value: list[str]
-    field = "id"
-    operator = "in"
+    value: list[str] = Field(default_factory=list)
+    field: str = "id"
+    operator: str = "in"
 
 
 class FilterUserUserName(BaseModel):
-    field = "name"
-    operator = "like"
+    field: str = "name"
+    operator: str = "like"
     value: Annotated[str, StringConstraints(min_length=1)]  # type: ignore
 
 

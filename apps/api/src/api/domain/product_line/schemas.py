@@ -7,7 +7,6 @@ from schemas.mixins import (
     SoftDeletionSchema,
     TimestampSchema,
 )
-from schemas.pagination import PaginatedResponse
 
 
 class ProductLineBase(BaseModel):
@@ -71,16 +70,10 @@ class ProductLineResponse(ProductLineBase, TimestampSchema, SoftDeletionSchema):
     ]
 
 
-class ProductLineFilterParams(BaseModel):
+class ProductLineFilters(BaseModel):
     name: Annotated[str | None, Field(description="Filter by name", default=None)]
     product_line_type: Annotated[ProductLineTypeEnum | None, Field(description="Filter by type", default=None)]
     slug: Annotated[
         str | None, Field(description="Filter by slug", examples=["warpaints_fanatic", "game_color"], default=None)
     ]
     vendor_id: Annotated[UUID | None, Field(description="Filter by vendor ID", default=None)]
-
-
-class PaginatedProductLine(PaginatedResponse[ProductLineRead]):
-    """Paginated response for Product Lines"""
-
-    pass

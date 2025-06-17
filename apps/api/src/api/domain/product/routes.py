@@ -1,118 +1,145 @@
-from domain.locale import Locales
-from domain.product_swatch import ProductSwatches
-from domain.product_variant import ProductVariants
-from fastapi import APIRouter, HTTPException
-from schemas.pagination import PaginatedResponse, get_paginated_list
+from uuid import UUID
+
+from advanced_alchemy.filters import SearchFilter
+from advanced_alchemy.service import OffsetPagination
+from advanced_alchemy.utils.text import slugify
+from domain.dependencies import Services
+from domain.filters import PaginatedResponse
+from domain.helpers import as_dict
+from fastapi import APIRouter, HTTPException, Query
 from starlette.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND
+from typing_extensions import Annotated
 
 from .models import Product
 from .schemas import (
     ProductCreate,
+    ProductFilters,
     ProductResponse,
     ProductUpdate,
 )
-from .service import Products
 
 
-router = APIRouter(
-    prefix="/products",
-    tags=["products"],
-)
+# if TYPE_CHECKING:
+#     from domain.tag.models import Tag
 
 
-@router.post("", response_model=ProductResponse, status_code=HTTP_201_CREATED)
+product_router = APIRouter(tags=["Product"])
+
+
+@product_router.post("/products", response_model=ProductResponse, status_code=HTTP_201_CREATED)
 async def create_product(
-    product_in: ProductCreate,
-    products_service: Products,
-    swatch_service: ProductSwatches,
-    variant_service: ProductVariants,
-    locale_service: Locales,
+    container: Services,
+    data: ProductCreate,
 ):
     """Create a new product"""
-    # Extract relationship IDs
-    swatch = product_in.swatch
-    variants = product_in.variants or []
+    # Create product without relationships
+    model = as_dict(data)
+    product = await container.provide_products.to_model(model)
 
-    # # Create product without relationships
-    new_product = Product(**product_in.model_dump(exclude_unset=True))
-    product = await products_service.create_product(new_product)
+    tags: list[str] = []
+    analogous_tags: list[str] = []
+
+    if isinstance(data, dict):
+        tags = data.pop("tags", [])
+        analogous_tags = data.pop("analogous", [])
 
     # Add relationships
-    if swatch:
-        if isinstance(swatch, dict):
-            swatch["product_id"] = product.id
+    if swatch := model.get("swatch", None) is None:
+        raise HTTPException(
+            status_code=HTTP_404_NOT_FOUND,
+            detail="Swatch is required to create a product.",
+        )
+    if len(variants := model.get("variants", [])) == 0:
+        raise HTTPException(
+            status_code=HTTP_404_NOT_FOUND,
+            detail="Variants are required to create a product.",
+        )
 
-        swatch = await swatch_service.create(swatch)
-        product.swatch = swatch
+    if tags:
+        product_tags = []
+        for tag in tags:
+            tag_model = await container.provide_tags.get_or_upsert(name=tag, slug=slugify(tag))
+            product_tags.append(tag_model)
+        product.tags.extend(product_tags)
 
-    if variants:
-        for variant in variants:
-            if isinstance(variant, dict):
-                variant["product_id"] = product.id
-                variant["locale_id"] = locale_service.current_locale.id
+    if analogous_tags:
+        product_analogous_tags = []
+        for tag in product_analogous_tags:
+            tag_model = await container.provide_analogous.get_or_upsert(name=tag, slug=slugify(tag))
+            product_analogous_tags.append(tag_model)
 
-        new_variants = await variant_service.create_many(variants, auto_commit=True)
-        product.variants.extend(new_variants)
+        product.analogous.extend(product_analogous_tags)
 
-    return ProductResponse.model_validate(product)
+    swatch = as_dict(swatch)
+
+    product = await container.provide_products.create_product(model)
+    swatch["product_id"] = product.id
+    product.swatch = await container.provide_product_swatches.create(swatch)
+
+    for variant in variants:
+        variant["product_id"] = product.id
+        variant["locale_id"] = container.provide_locales.current_locale.id
+
+    product_variants = await container.provide_product_variants.create_many(variants, auto_commit=True)
+    product.variants.extend(product_variants)
+
+    product = await container.provide_products.repository.create(product, auto_commit=True)
+
+    return container.provide_products.to_schema(product)
 
 
-@router.get("/{product_id}", response_model=ProductResponse)
-async def get_product(product_id: int, service: Products):
+@product_router.get("/products/{product_id}", response_model=ProductResponse)
+async def get_product(product_id: UUID, container: Services):
     """Get a product by ID"""
-    product = await service.get(Product.id == product_id)
-    return ProductResponse.model_validate(product)
+    product = await container.provide_products.get(product_id)
+    return container.provide_products.to_schema(product)
 
 
-@router.get("", response_model=PaginatedResponse[ProductResponse])
+@product_router.get("/products", response_model=OffsetPagination[ProductResponse])
 async def list_products(
-    service: Products,
-    page: int = 1,
-    limit: int = 100,
-    name: str | None = None,
-    product_line_id: int | None = None,
-    product_type_id: int | None = None,
-    color_range_id: int | None = None,
-    tag_id: int | None = None,
-    analogous_id: int | None = None,
-    iscc_nbs_category: str | None = None,
+    container: Services,
+    filter_query: Annotated[ProductFilters, Query()],
+    limit_offset: PaginatedResponse,
 ):
     """List products with filtering"""
+
     filters = []
-    if name:
-        filters.append(Product.name.ilike(f"%{name}%"))
-    if product_line_id:
-        filters.append(Product.product_line_id == product_line_id)
-    if product_type_id:
-        filters.append(Product.product_type.any(id=product_type_id))
-    if color_range_id:
-        filters.append(Product.color_range.any(id=color_range_id))
-    if tag_id:
-        filters.append(Product.tags.any(id=tag_id))
-    if analogous_id:
-        filters.append(Product.analogous.any(id=analogous_id))
-    if iscc_nbs_category:
-        filters.append(Product.iscc_nbs_category == iscc_nbs_category)
+    if filter_query.id:
+        filters.append(Product.id == filter_query.id)
+    if filter_query.name:
+        filters.append(SearchFilter("name", filter_query.name, ignore_case=True))
+    if filter_query.slug:
+        filters.append(SearchFilter("slug", filter_query.slug, ignore_case=True))
+    if filter_query.iscc_nbs_category:
+        filters.append(SearchFilter("iscc_nbs_category", filter_query.iscc_nbs_category, ignore_case=True))
+    if filter_query.color_range:
+        filters.append(SearchFilter("color_range", filter_query.color_range.value, ignore_case=True))
+    if filter_query.product_type:
+        filters.append(SearchFilter("product_type", filter_query.product_type.value, ignore_case=True))
+    if filter_query.tag:
+        filters.append(Product.tags.any(name=filter_query.tag))
+    if filter_query.analogous:
+        filters.append(Product.analogous.any(name=filter_query.analogous))
 
-    return await get_paginated_list(
+    results, total = await container.provide_products.list_and_count(
         *filters,
-        service=service,
-        page=page,
-        limit=limit,
+        limit_offset=limit_offset,
+        order_by=Product.name.asc(),
     )
+    return container.provide_products.to_schema(results, total, filters=[limit_offset])
 
 
-@router.put("/{product_id}", response_model=ProductResponse)
+@product_router.patch("/products/{product_id}", response_model=ProductResponse)
 async def update_product(
-    product_id: int,
+    container: Services,
+    product_id: UUID,
     product_in: ProductUpdate,
-    service: Products,
 ):
     """Update a product"""
 
     # Update product without relationships
     try:
-        product, updated = await service.get_and_update(
+        product, updated = await container.provide_products.get_and_update(
             Product.id == product_id,
             data=product_in.model_dump(exclude_unset=True),
         )
@@ -125,12 +152,12 @@ async def update_product(
     if not updated:
         print(f"Product with ID {product_id} was either not found or not updated.")
 
-    return ProductResponse.model_validate(product)
+    return container.provide_products.to_schema(product)
 
 
-@router.delete("/{product_id}", status_code=HTTP_204_NO_CONTENT)
-async def delete_product(product_id: int, service: Products):
+@product_router.delete("/products/{product_id}", status_code=HTTP_204_NO_CONTENT)
+async def delete_product(product_id: UUID, container: Services):
     """Delete a product"""
-    await service.delete(Product.id == product_id)
+    _ = await container.provide_products.delete(Product.id == product_id)
 
     return None

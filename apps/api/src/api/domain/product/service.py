@@ -8,15 +8,19 @@ from advanced_alchemy.repository import (
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
 from advanced_alchemy.service.typing import ModelDictT
 from advanced_alchemy.utils.text import slugify
-from domain.analogous.models import Analogous
-from domain.dependencies import DatabaseSession
+
+# from domain.dependencies import DatabaseSession
 from domain.enums import ColorRangeEnum, ProductTypeEnum
 from domain.helpers import enum_has
-from domain.tag.models import Tag
-from fastapi import Depends
-from sqlalchemy import select
 
+# from fastapi import Depends
+# from sqlalchemy import select
 from .models import Product
+
+
+# if TYPE_CHECKING:
+#     from domain.analogous.models import Analogous
+#     from domain.tag.models import Tag
 
 
 class ProductCategoryFields(TypedDict):
@@ -29,51 +33,51 @@ class ProductCategoryFields(TypedDict):
 class ProductService(SQLAlchemyAsyncRepositoryService[Product]):
     """Service for managing blog posts with automatic schema validation."""
 
-    class ProductRepository(SQLAlchemyAsyncSlugRepository[Product], SQLAlchemyAsyncRepository[Product]):
+    class Repo(SQLAlchemyAsyncSlugRepository[Product], SQLAlchemyAsyncRepository[Product]):
         """Repository for the Product model."""
 
         model_type = Product
 
-    repository_type = ProductRepository
+    repository_type = Repo
 
     async def create_product(
         self,
         data: "ModelDictT[Product]",
         **kwargs,
-    ) -> Product:
+    ) -> "Product":
         """Create a new product with validated enum fields."""
 
-        tags: list[str] = []
-        analogous_tags: list[str] = []
+        # tags: list[str] = []
+        # analogous_tags: list[str] = []
         # swatch: ModelDictT["ProductSwatch"] = {}
         # variants: list[ModelDictT["ProductVariant"]] = []
 
         if isinstance(data, dict):
             self.set_valid_enum_fields(data)
             data["slug"] = slugify(data.get("name", ""))
-            tags = data.pop("tags", [])
-            analogous_tags = data.pop("analogous", [])
+            # tags = data.pop("tags", [])
+            # analogous_tags = data.pop("analogous", [])
             # swatch = data.pop("swatch", {})
             # variants = data.pop("variants", [])
 
         model = await self.to_model(data, "create")
 
-        if tags:
-            model.tags.extend(
-                [await Tag.as_unique_async(self.repository.session, name=tag, slug=slugify(tag)) for tag in tags]
-            )
+        # if tags:
+        #     model.tags.extend(
+        #         [await Tag.as_unique_async(self.repository.session, name=tag, slug=slugify(tag)) for tag in tags]
+        #     )
 
-        if analogous_tags:
-            model.analogous.extend(
-                [
-                    await Analogous.as_unique_async(
-                        self.repository.session,
-                        name=tag,
-                        slug=slugify(tag),
-                    )
-                    for tag in analogous_tags
-                ]
-            )
+        # if analogous_tags:
+        #     model.analogous.extend(
+        #         [
+        #             await Analogous.as_unique_async(
+        #                 self.repository.session,
+        #                 name=tag,
+        #                 slug=slugify(tag),
+        #             )
+        #             for tag in analogous_tags
+        #         ]
+        #     )
 
         # if swatch:
         #     if isinstance(swatch, dict):
@@ -98,40 +102,40 @@ class ProductService(SQLAlchemyAsyncRepositoryService[Product]):
         data: "ModelDictT[Product]",
         item_id: UUID,
         **kwargs,
-    ) -> Product:
+    ) -> "Product":
         """Update existing product."""
 
-        tags: list[str] = []
-        analogous_tags: list[str] = []
+        # tags: list[str] = []
+        # analogous_tags: list[str] = []
         # swatch: ModelDictT["ProductSwatch"] = {}
         # variants: list[ModelDictT["ProductVariant"]] = []
 
         if isinstance(data, dict):
             self.set_valid_enum_fields(data)
             data["slug"] = slugify(data.get("name", ""))
-            tags = data.pop("tags", [])
-            analogous_tags = data.pop("analogous", [])
+            # tags = data.pop("tags", [])
+            # analogous_tags = data.pop("analogous", [])
             # swatch = data.pop("swatch", {})
             # variants = data.pop("variants", [])
 
         model = await self.to_model(data, "update")
 
-        if tags:
-            model.tags.extend(
-                [await Tag.as_unique_async(self.repository.session, name=tag, slug=slugify(tag)) for tag in tags]
-            )
+        # if tags:
+        #     model.tags.extend(
+        #         [await Tag.as_unique_async(self.repository.session, name=tag, slug=slugify(tag)) for tag in tags]
+        #     )
 
-        if analogous_tags:
-            model.analogous.extend(
-                [
-                    await Analogous.as_unique_async(
-                        self.repository.session,
-                        name=tag,
-                        slug=slugify(tag),
-                    )
-                    for tag in analogous_tags
-                ]
-            )
+        # if analogous_tags:
+        #     model.analogous.extend(
+        #         [
+        #             await Analogous.as_unique_async(
+        #                 self.repository.session,
+        #                 name=tag,
+        #                 slug=slugify(tag),
+        #             )
+        #             for tag in analogous_tags
+        #         ]
+        #     )
 
         # if swatch:
         #     if isinstance(swatch, dict):
@@ -194,12 +198,12 @@ class ProductService(SQLAlchemyAsyncRepositoryService[Product]):
         }
 
 
-async def provide_products_service(db_session: DatabaseSession) -> AsyncGenerator[ProductService, None]:
-    """This provides the default Product Lines service."""
-    async with ProductService.new(
-        session=db_session, statement=select(Product).where(Product.is_deleted.is_(False))
-    ) as service:
-        yield service
+# async def provide_products_service(db_session: DatabaseSession) -> AsyncGenerator[ProductService, None]:
+#     """This provides the default Product Lines service."""
+#     async with ProductService.new(
+#         session=db_session, statement=select(Product).where(Product.is_deleted.is_(False))
+#     ) as service:
+#         yield service
 
 
-Products = Annotated[ProductService, Depends(provide_products_service)]
+# Products = Annotated[ProductService, Depends(provide_products_service)]

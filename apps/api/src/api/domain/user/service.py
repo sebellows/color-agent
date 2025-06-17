@@ -1,7 +1,8 @@
 """User service module."""
 
 import hashlib
-from typing import Annotated, AsyncGenerator
+
+# from typing import Annotated, AsyncGenerator
 from urllib.parse import urlencode
 from uuid import UUID
 
@@ -9,9 +10,9 @@ from advanced_alchemy.repository import (
     SQLAlchemyAsyncRepository,
 )
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
-from domain.dependencies import DatabaseSession
-from fastapi import Depends
 
+# from domain.dependencies import DatabaseSession
+# from fastapi import Depends
 from .models import User
 
 
@@ -43,7 +44,7 @@ def get_avatar(email: str) -> str:
 class UserService(SQLAlchemyAsyncRepositoryService[User]):
     """Service for managing blog posts with automatic schema validation."""
 
-    class UserRepository(SQLAlchemyAsyncRepository[User]):
+    class Repo(SQLAlchemyAsyncRepository[User]):
         """Repository for User model."""
 
         model_type = User
@@ -91,7 +92,7 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
                 if tenant in user_tenants:
                     user_tenants.remove(tenant)
 
-    repository_type = UserRepository
+    repository_type = Repo
 
     # async def create_user(self, user: User) -> User:
     #     user.password = hash_password(user.password)
@@ -163,10 +164,10 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
     #     return user.is_superuser
 
 
-async def provide_users_service(db_session: DatabaseSession) -> AsyncGenerator[UserService, None]:
-    """This provides the default User repository."""
-    async with UserService.new(session=db_session) as service:
-        yield service
+# async def provide_users_service(db_session: DatabaseSession) -> AsyncGenerator[UserService, None]:
+#     """This provides the default User repository."""
+#     async with UserService.new(session=db_session) as service:
+#         yield service
 
 
-Users = Annotated[UserService, Depends(provide_users_service)]
+# Users = Annotated[UserService, Depends(provide_users_service)]

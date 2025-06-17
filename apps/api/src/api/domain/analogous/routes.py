@@ -1,3 +1,6 @@
+from uuid import UUID
+
+from domain.dependencies import Services
 from fastapi import APIRouter
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
@@ -7,67 +10,67 @@ from .schemas import (
     AnalogousResponse,
     AnalogousUpdate,
 )
-from .service import AnalogousTags
 
 
-router = APIRouter(
-    prefix="/analogous",
-    tags=["analogous"],
+# from .service import AnalogousTags
+
+
+analogous_router = APIRouter(
+    tags=["Analogous"],
 )
 
 
-@router.post(
-    "/analogous/",
+@analogous_router.post(
+    "/analogous",
     response_model=AnalogousResponse,
     status_code=HTTP_201_CREATED,
 )
 async def create_analogous(
-    analogous_in: AnalogousCreate,
-    service: AnalogousTags,
+    data: AnalogousCreate,
+    container: Services,
 ):
     """Create a new analogous color"""
-    analogous_data = analogous_in.model_dump(exclude_unset=True)
-    analogous = await service.create(Analogous(**analogous_data))
-    return AnalogousResponse.model_validate(analogous)
+    analogous = await container.provide_analogous.create(data)
+    return container.provide_analogous.to_schema(analogous)
 
 
-@router.get("/analogous/{analogous_id}", response_model=AnalogousResponse, status_code=HTTP_200_OK)
+@analogous_router.get("/analogous/{analogous_id}", response_model=AnalogousResponse, status_code=HTTP_200_OK)
 async def get_analogous(
-    analogous_id: int,
-    service: AnalogousTags,
+    analogous_id: UUID,
+    container: Services,
 ):
     """Get an analogous color by ID"""
-    return await service.get(AnalogousResponse.id == analogous_id)
+    analogous = await container.provide_analogous.get(AnalogousResponse.id == analogous_id)
+    return container.provide_analogous.to_schema(analogous)
 
 
-@router.get("/analogous/", response_model=list[AnalogousResponse])
+@analogous_router.get("/analogous", response_model=list[AnalogousResponse])
 async def list_analogous(
-    service: AnalogousTags,
+    container: Services,
+    tag_name: str | None = None,
 ):
     """List all analogous colors"""
-    return await service.list()
+    analogous = await container.provide_analogous.list(Analogous.name.ilike(f"%{tag_name}%"))
+    return container.provide_analogous.to_schema(analogous)
 
 
-@router.put("/analogous/{analogous_id}", response_model=AnalogousResponse, status_code=HTTP_200_OK)
+@analogous_router.put("/analogous/{analogous_id}", response_model=AnalogousResponse, status_code=HTTP_200_OK)
 async def update_analogous(
-    analogous_id: int,
-    analogous_in: AnalogousUpdate,
-    service: AnalogousTags,
+    analogous_id: UUID,
+    data: AnalogousUpdate,
+    container: Services,
 ):
     """Update an analogous color"""
-    analogous = await service.get_and_update(
-        filters=[AnalogousResponse.id == analogous_id],
-        data=analogous_in.model_dump(exclude_unset=True),
-    )
-    return AnalogousResponse.model_validate(analogous)
+    analogous = await container.provide_analogous.update(data, item_id=analogous_id)
+    return container.provide_analogous.to_schema(analogous)
 
 
-@router.delete("/analogous/{analogous_id}", status_code=HTTP_204_NO_CONTENT)
+@analogous_router.delete("/analogous/{analogous_id}", status_code=HTTP_204_NO_CONTENT)
 async def delete_analogous(
-    analogous_id: int,
-    service: AnalogousTags,
+    analogous_id: UUID,
+    container: Services,
 ):
     """Delete an analogous color"""
-    await service.delete(AnalogousResponse.id == analogous_id)
+    _ = await container.provide_analogous.delete(AnalogousResponse.id == analogous_id)
 
     return None
