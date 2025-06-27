@@ -1,24 +1,51 @@
 {
-    "name": "@repo/ui",
+    "name": "@coloragent/ui",
     "version": "0.0.0",
-    "main": "./dist/index.js",
+    "main": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
+    "license": "MIT",
     "scripts": {
         "build": "tsup",
         "dev": "tsup --watch",
-        "clean": "rm -rf dist"
+        "clean": "rm -rf dist",
+        "storybook-generate": "sb-rn-get-stories"
     },
     "devDependencies": {
-        "@repo/eslint-config": "workspace:*",
-        "@repo/typescript-config": "workspace:*",
+        "@babel/core": "^7.27.4",
+        "@coloragent/eslint-config": "workspace:*",
+        "@coloragent/typescript-config": "workspace:*",
+        "@gorhom/bottom-sheet": "^5.1.6",
+        "@react-native-async-storage/async-storage": "^2.2.0",
+        "@react-native-community/datetimepicker": "^8.4.2",
+        "@react-native-community/slider": "^4.5.7",
+        "@rnx-kit/metro-resolver-symlinks": "^0.2.5",
+        "@storybook/addon-ondevice-actions": "^9.0.9",
+        "@storybook/addon-ondevice-controls": "^9.0.9",
+        "@storybook/react-native": "^9.0.9",
         "@types/react": "^18.2.14",
+        "babel-loader": "^8.4.1",
+        "react-dom": "^19.1.0",
+        "react-native-gesture-handler": "^2.26.0",
+        "react-native-safe-area-context": "^5.5.0",
+        "react-native-svg-transformer": "^1.5.1",
+        "storybook": "^9.0.13",
         "tsup": "^8.0.1",
+        "type-fest": "^4.41.0",
         "typescript": "5.5.4"
     },
     "dependencies": {
+        "@coloragent/utils": "workspace:*",
+        "@expo-google-fonts/space-grotesk": "^0.4.0",
         "@shopify/restyle": "^2.4.5",
-        "react": "^18.2.0",
-        "react-native": "0.76.9",
-        "react-native-svg": "^15.12.0"
+        "Feather": "link:@expo/vector-icons/Feather",
+        "colorjs.io": "^0.5.2",
+        "expo-font": "^13.3.1",
+        "expo-haptics": "^14.1.4",
+        "react": "^19.1.0",
+        "react-native": "0.79.4",
+        "react-native-reanimated": "^3.18.0",
+        "react-native-svg": "^15.12.0",
+        "use-events": "^1.4.5"
     }
 }

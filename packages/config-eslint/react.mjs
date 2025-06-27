@@ -1,41 +1,38 @@
-import js from '@eslint/js'
-import eslintConfigJsxA11y from 'eslint-plugin-jsx-a11y'
-import eslintConfigPrettier from 'eslint-config-prettier'
-import tseslint from 'typescript-eslint'
-import pluginReactHooks from 'eslint-plugin-react-hooks'
-import pluginReact from 'eslint-plugin-react'
+import { FlatCompat } from '@eslint/eslintrc'
 import globals from 'globals'
+import pluginReact from 'eslint-plugin-react'
+// import pluginReactHooks from 'eslint-plugin-react-hooks'
+
 import { config as baseConfig } from './index.js'
+
+const compat = new FlatCompat({
+    // import.meta.dirname is available after Node.js v20.11.0
+    baseDirectory: import.meta.dirname,
+})
 
 /**
  * A custom ESLint configuration for libraries that use React.
  *
  * @type {import("eslint").Linter.Config} */
 export const config = [
-  ...baseConfig,
-  js.configs.recommended,
-  eslintConfigPrettier,
-  ...tseslint.configs.recommended,
-  ...eslintConfigJsxA11y.configs.recommended,
-  pluginReact.configs.flat.recommended,
-  {
-    languageOptions: {
-      ...pluginReact.configs.flat.recommended.languageOptions,
-      globals: {
-        ...globals.serviceworker,
-        ...globals.browser,
-      },
+    {
+        languageOptions: {
+            globals: {
+                ...pluginReact.configs.flat.recommended.languageOptions,
+                ...globals.browser,
+                ...globals.node,
+                ...globals.serviceworker,
+            },
+        },
     },
-  },
-  {
-    plugins: {
-      'react-hooks': pluginReactHooks,
-    },
-    settings: { react: { version: 'detect' } },
-    rules: {
-      ...pluginReactHooks.configs.recommended.rules,
-      // React scope no longer necessary with new JSX transform.
-      'react/react-in-jsx-scope': 'off',
-    },
-  },
+    ...baseConfig,
+    ...eslintConfigJsxA11y.configs.recommended,
+    ...compat.config({
+        extends: ['plugin:react/recommended', 'plugin:react-hooks/recommended'],
+        settings: { react: { version: 'detect' } },
+        rules: {
+            // React scope no longer necessary with new JSX transform.
+            'react/react-in-jsx-scope': 'off',
+        },
+    }),
 ]

@@ -17,7 +17,7 @@ import {
 import { type BoxProps } from './box'
 import { Theme } from './theme'
 import { ReactNode } from 'react'
-import { TextProps } from './text'
+import { TextProps } from './components/text/text'
 import { overflow, OverlayColorProps, ObjectFitProps, ResizeModeProps } from './restyleFunctions'
 
 export type AnimationProps = {

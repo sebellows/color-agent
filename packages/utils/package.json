@@ -1,0 +1,32 @@
+{
+    "name": "@coloragent/utils",
+    "version": "0.1.0",
+    "main": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.mts",
+    "license": "MIT",
+    "files": [
+        "dist/**"
+    ],
+    "scripts": {
+        "build": "tsup",
+        "dev": "tsup --watch",
+        "clean": "rm -rf dist",
+        "lint": "eslint \"**/*.ts*\"",
+        "type-check": "tsc --noEmit",
+        "test": "jest",
+        "test:watch": "jest --watch"
+    },
+    "devDependencies": {
+        "@coloragent/eslint-config": "workspace:*",
+        "@coloragent/typescript-config": "workspace:*",
+        "@types/jest": "^30.0.0",
+        "jest": "^30.0.0",
+        "tsup": "^8.0.1",
+        "type-fest": "^4.41.0",
+        "typescript": "5.5.4"
+    },
+    "dependencies": {
+        "colorjs.io": "^0.5.2"
+    }
+}
