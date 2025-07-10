@@ -39,7 +39,7 @@ export function convertPressEffectRestyleValuesToRawStyles(
             return result
         }
         result[key] = {
-            // buildStyle return type, `RNStyle`, is incomplete: missing FlexStyle:
+            // buildStyle return type, 'RNStyle', is incomplete: missing FlexStyle:
             // https://github.com/Shopify/restyle/blob/5fbb3f482f2d7b8f9cd63b7a995c03890ee5282c/src/types.ts#L86
             // @ts-expect-error see details above
             to: restyleFunctions.buildStyle(

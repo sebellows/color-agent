@@ -1,3 +1,15 @@
+import {
+    BounceIn,
+    BounceOut,
+    Easing,
+    FadeIn,
+    FadeOut,
+    SlideInDown,
+    SlideOutUp,
+    StretchInX,
+    StretchOutY,
+} from 'react-native-reanimated'
+
 const defaultOptions = {
     timing: 'linear',
     duration: 1000,
@@ -7,62 +19,25 @@ const defaultOptions = {
 }
 
 const baseAnimations = {
-    fadeIn: {
-        from: { opacity: 0 },
-        to: { opacity: 1 },
-        timing: 'ease-in',
-        duration: 500,
+    fade: {
+        from: FadeIn.duration(300).easing(Easing.ease),
+        to: FadeOut.duration(300).easing(Easing.quad),
     },
-    fadeOut: {
-        from: { opacity: 1 },
-        to: { opacity: 0 },
-        timing: 'ease-out',
-        duration: 500,
+    slide: {
+        from: SlideInDown.duration(300).easing(Easing.linear),
+        to: SlideOutUp.duration(500).easing(Easing.linear),
     },
-    slideIn: {
-        from: { transform: 'translateY(-100%)' },
-        to: { transform: 'translateY(0)' },
-        ...defaultOptions,
-    },
-    slideOut: {
-        from: { transform: 'translateY(0)' },
-        to: { transform: 'translateY(-100%)' },
-        ...defaultOptions,
-    },
-    scaleIn: {
-        from: { transform: 'scale(0.95)' },
-        to: { transform: 'scale(1)' },
-        ...defaultOptions,
-    },
-    scaleOut: {
-        from: { transform: 'scale(1)' },
-        to: { transform: 'scale(0.95)' },
-        ...defaultOptions,
-    },
-    spin: {
-        from: { transform: 'rotate(0deg)' },
-        to: { transform: 'rotate(360deg)' },
-        ...defaultOptions,
+    scale: {
+        from: StretchInX.duration(300).easing(Easing.ease),
+        to: StretchOutY.duration(400).easing(Easing.quad),
     },
     bounce: {
-        from: { transform: 'translateY(0)' },
-        to: { transform: 'translateY(-20px)' },
-        ...defaultOptions,
+        from: BounceIn.duration(500).easing(Easing.bezier(0.25, 0.1, 0.25, 1)),
+        to: BounceOut.duration(500).easing(Easing.bezier(0.25, 0.1, 0.25, 1)),
     },
     pulse: {
-        from: { transform: 'scale(1)' },
-        to: { transform: 'scale(1.05)' },
-        ...defaultOptions,
-    },
-    shake: {
-        from: { transform: 'translateX(0)' },
-        to: { transform: 'translateX(-10px)' },
-        ...defaultOptions,
-    },
-    wobble: {
-        from: { transform: 'rotate(0deg)' },
-        to: { transform: 'rotate(15deg)' },
-        ...defaultOptions,
+        from: BounceIn.duration(300).easing(Easing.elastic(3.8)),
+        to: BounceOut.duration(500).easing(Easing.elastic(4.0)),
     },
 }
 

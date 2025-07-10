@@ -9,7 +9,7 @@
         ".": "./index.js",
         "./next": "./next.js",
         "./react": "./react.js",
-        "./vite": "./vite.js"
+        "./react-native": "./react-native.js"
     },
     "devDependencies": {
         "@coloragent/typescript-config": "workspace:*",

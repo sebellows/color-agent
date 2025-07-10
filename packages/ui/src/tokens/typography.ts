@@ -64,7 +64,7 @@ export function getTextVariants({ platform }: { platform: PlatformEnv }) {
      *
      * @param fontSize - The font size in pixels.
      * @param scale - Either a size in pixels or a relative multiplier for line height, default is 1.5.
-     * @returns - Returns object defining `fontSize` and `lineHeight`.
+     * @returns - Returns object defining 'fontSize' and 'lineHeight'.
      *      For web, both values are returned as a string, otherwise as numbers.
      */
     function resolveSizeProps<T extends number>(size: T, scale: number = 1.5) {

@@ -21,7 +21,7 @@ export interface AriaButtonProps {
     disabled?: boolean | undefined
 
     /**
-     * Providing a `href` will render an `<a>` element, _styled_ as a button.
+     * Providing a 'href' will render an `<a>` element, _styled_ as a button.
      */
     href?: string | undefined
 

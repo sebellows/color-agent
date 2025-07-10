@@ -1,7 +1,7 @@
 import { SpacingProps, SpacingShorthandProps, LayoutProps } from '@shopify/restyle'
 
 import { getEntries } from '@coloragent/utils'
-import { Theme } from '@ui/theme/native'
+import { Theme } from '@ui/theme'
 import { PlatformEnv } from '@ui/types'
 
 type ParsedSpacingProps = SpacingProps<Theme> & SpacingShorthandProps<Theme> & LayoutProps<Theme>

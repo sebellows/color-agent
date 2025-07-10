@@ -6,9 +6,9 @@ import { AsyncFn, Constructor, Fn } from './types'
 /**
  * @internal
  *
- * Reference to the Object prototype's built-in `toString` method.
+ * Reference to the Object prototype's built-in 'toString' method.
  * @example
- * ```
+ * ''`
  * _protoToString === {}.toString // TRUE
  *
  * const fn = () => 'hello'
@@ -26,7 +26,7 @@ import { AsyncFn, Constructor, Fn } from './types'
  *
  * console.log(fn.constructor.toString())
  * => 'function Function() { [native code] }'
- * ```
+ * ''`
  */
 export const _protoToString = Object.prototype.toString
 
@@ -124,8 +124,8 @@ export function isUndefined(value: unknown): value is undefined {
 }
 
 /**
- * Check if a value is defined, by default it checks if the value is not `null` or `undefined`.
- * If `strict` is set to true, it will also check if the value is only `undefined`.
+ * Check if a value is defined, by default it checks if the value is not 'null' or 'undefined'.
+ * If 'strict' is set to true, it will also check if the value is only 'undefined'.
  */
 export function isDefined(value: unknown, options?: { strict?: boolean }): boolean {
     if (options?.strict) {

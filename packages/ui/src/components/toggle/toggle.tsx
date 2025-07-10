@@ -1,21 +1,17 @@
-import { backgroundColor } from '@shopify/restyle'
 import React, { ReactNode, useRef } from 'react'
 import {
     Animated as RNAnimated,
     Easing,
     GestureResponderEvent,
-    NativeSyntheticEvent,
     PanResponder,
     PanResponderCallbacks,
     PanResponderGestureState,
-    TargetedEvent,
     useAnimatedValue,
     TouchableOpacityProps,
 } from 'react-native'
 
-import { Animated } from '../../animated'
-import { Pressable } from '../../pressable'
-
+import { Animated } from '@ui/components/animated/animated'
+import { Pressable } from '../pressable'
 import { Box } from '../box'
 
 export interface ToggleProps extends TouchableOpacityProps {

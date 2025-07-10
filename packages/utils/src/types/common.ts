@@ -7,8 +7,8 @@
  * @description
  * Represents a type that a Component or other object is instances of.
  *
- * An example of a `Type` is `MyCustomComponent` class, which in JavaScript is represented by
- * the `MyCustomComponent` constructor function.
+ * An example of a 'Type' is 'MyCustomComponent' class, which in JavaScript is represented by
+ * the 'MyCustomComponent' constructor function.
  */
 export const Type = Function
 
@@ -33,7 +33,7 @@ export type Fn<T = unknown, Args extends unknown[] = any[]> = (...args: Args) =>
 
 /**
  * An async closure that returns a Promise that will resolve an instance of a class.
- * Normally called from the `make` method of a class extending the HookableContract.
+ * Normally called from the 'make' method of a class extending the HookableContract.
  *
  * @example
  * resolve($engine: GameEngine, async () => {

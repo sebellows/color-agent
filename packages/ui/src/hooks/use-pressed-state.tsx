@@ -11,18 +11,18 @@ interface UsePressedStateInputProps {
  * Access pressed state of interactive elements.
  *
  * @example Basic example
- * ```tsx
+ * ''`tsx
  * const { pressed, onPressIn, onPressOut } = usePressedState()
  * return <Pressable onPressIn={onPressIn} onPressOut={onPressOut}/>
- * ```
+ * ''`
  *
  * @example Pass outer props to make sure incoming onPressIn and onPressOut are invoked.
- * ```tsx
+ * ''`tsx
  * function Button(props: ButtonProps) {
  *   const { pressed, onPressIn, onPressOut } = usePressedState(props)
  *   return <Pressable onPressIn={onPressIn} onPressOut={onPressOut}/>
  * }
- * ```
+ * ''`
  */
 export function usePressedState({ onPressIn, onPressOut }: UsePressedStateInputProps = {}) {
     const pressed = useSharedValue(false)

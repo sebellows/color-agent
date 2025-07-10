@@ -7,7 +7,7 @@ import {
     type SpacingShorthandProps,
 } from '@shopify/restyle'
 
-import { type Theme } from '@ui/theme/native'
+import { type Theme } from '@ui/theme'
 import { type PressableRestyleProps } from './pressable-core'
 
 type OmitNonAnimatableProps<Props> = Omit<
@@ -56,7 +56,7 @@ type RestylePropsToPressEffects<Props> = {
         from: ExcludesDisallowedValues<Props[K]>
         to: ExcludesDisallowedValues<Props[K]>
         settings?: AnimationSettings
-        // Ensure TS correctly reports absense of 'type' when only 'config' is specified.
+        // Ensure TS correctly reports absence of 'type' when only 'config' is specified.
         // | { type?: never; config?: never }
     }
 }

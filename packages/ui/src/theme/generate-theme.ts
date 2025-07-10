@@ -10,6 +10,7 @@ import {
     zIndices,
 } from '@ui/tokens'
 import { PlatformEnv } from '@ui/types'
+import { transitions } from '../tokens/transitions'
 
 export function generateTheme(colorScheme: ColorSchemeName) {
     const colorThemes = getThemeColors(PlatformEnv.mobile)
@@ -30,6 +31,7 @@ export function generateTheme(colorScheme: ColorSchemeName) {
         spacing: getSpacingVariants(PlatformEnv.mobile),
         breakpoints,
         sizes: getSizeVariants(PlatformEnv.mobile),
+        transitions: transitions,
         zIndices,
         buttonVariants: {
             defaults: {

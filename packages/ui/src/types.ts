@@ -104,7 +104,7 @@ type CommonRoleName = (typeof commonRoleNames)[number]
 /**
  * Defines the common accessibility properties that can be applied to
  * both web and React Native components. Basically, this is an intersection
- * of the `AriaAttributes` interface from React and the `AccessibilityProps`
+ * of the 'AriaAttributes' interface from React and the 'AccessibilityProps'
  * interface from React Native.
  */
 export interface CommonAccessibilityProps<TRole extends CommonRoleName> {
@@ -113,7 +113,7 @@ export interface CommonAccessibilityProps<TRole extends CommonRoleName> {
      * indicate the current state of an element (if that state applies to that element).
      *
      * In React Native, these `aria-*` attributes are aliased to properties
-     * defined on the `AccessibilityState` interface, and in its context,
+     * defined on the 'AccessibilityState' interface, and in its context,
      * they are relayed to users of assistive technology.
      *
      * @see {@link https://reactnative.dev/docs/accessibility#accessibilitystate}
@@ -151,7 +151,7 @@ export interface CommonAccessibilityProps<TRole extends CommonRoleName> {
     /**
      * Identifies the element that labels the element it is applied to.
      *
-     * In React Native, the value of `aria-labelledby` should match the `nativeID` of the related element.
+     * In React Native, the value of `aria-labelledby` should match the 'nativeID' of the related element.
      *
      * NOTE: Android ONLY (See https://reactnative.dev/docs/accessibility#aria-labelledby-android)
      */
@@ -175,7 +175,7 @@ export interface CommonAccessibilityProps<TRole extends CommonRoleName> {
 
     /**
      * The following properties indicate the value of a component.
-     * In React Native these are defined on the `AccessibilityValue` interface.
+     * In React Native these are defined on the 'AccessibilityValue' interface.
      */
 
     /** Defines the maximum allowed value for a range widget. */
@@ -194,14 +194,14 @@ export interface CommonAccessibilityProps<TRole extends CommonRoleName> {
      * Communicates the purpose of a component.
      *
      * NOTE:
-     * - React and React Native both define the type for `role` using a Union type of
-     *   possible role names, (`AriaRole` and `Role`, respectively). They are almost identical,
-     *   but there's enough variation to warrant using a generic type here. `AriaRole` defines
-     *   7 names not defined in `Role`, which has one not present in the former. The outliers are:
-     *       - `AriaRole`: 'gridcell', 'listbox', 'menuitemcheckbox', 'menuitemradio', 'search',
+     * - React and React Native both define the type for 'role' using a Union type of
+     *   possible role names, ('AriaRole' and 'Role', respectively). They are almost identical,
+     *   but there's enough variation to warrant using a generic type here. 'AriaRole' defines
+     *   7 names not defined in 'Role', which has one not present in the former. The outliers are:
+     *       - 'AriaRole': 'gridcell', 'listbox', 'menuitemcheckbox', 'menuitemradio', 'search',
      *             'switch', & 'textbox'
-     *       - `Role`: 'summary'
-     * - In React Native, `role` has precedence over the `accessibilityRole` prop.
+     *       - 'Role': 'summary'
+     * - In React Native, 'role' has precedence over the 'accessibilityRole' prop.
      *   See https://reactnative.dev/docs/accessibility#role
      *
      * LINKS:

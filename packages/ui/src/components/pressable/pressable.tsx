@@ -19,7 +19,7 @@ interface PressableOwnProps {
      * Configure haptic feedback
      *
      * @example
-     * // Provide a single string value to apply feedback to `onPress`.
+     * // Provide a single string value to apply feedback to 'onPress'.
      * <Pressable haptics="soft" />
      *
      * // Use an object to specify feedback type for press, long press, or both

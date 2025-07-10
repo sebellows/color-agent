@@ -1,4 +1,3 @@
-import { UnknownRecord } from 'type-fest'
 import { PALETTE_COLOR_NAMES, THEME_COLOR_SCHEMES } from '../constants'
 
 export type ThemeMode = 'dark' | 'light' | 'system'
@@ -12,7 +11,7 @@ export type PaletteColorName = keyof PaletteColorNames
 /**
  * Provides a map of color names where the generic value could be either:
  * - an array of raw color values in the form of a decimal array (see color tokens)
- * - an array of `hsl` or `oklch` formatted strings ready to be used in CSS
+ * - an array of 'hsl' or 'oklch' formatted strings ready to be used in CSS
  */
 export type PaletteColors<T = any> = Record<PaletteColorName, T[]>
 

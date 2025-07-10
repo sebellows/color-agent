@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 
-import { Box, BoxProps } from '../components/box'
 import { useFocus, useHover } from 'use-events'
+import { Box, BoxProps } from '@ui/components/box'
 
 function ItemHover({
     isFocused,
@@ -14,14 +14,14 @@ function ItemHover({
     return (
         <Box
             opacity={isFocused || isHovered ? 1 : 0}
-            transition="transition"
+            // transition="transition"
             borderRadius="xs"
             position="absolute"
             size="calc(100% + 24px)"
-            left="-12px"
-            top="-12px"
+            left={-4}
+            top={-4}
             bg="base.component-bg-hover"
-            zIndex={-1}
+            zIndex="-1"
             {...rest}
         />
     )

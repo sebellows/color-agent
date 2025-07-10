@@ -4,7 +4,7 @@
 // in config land.
 
 export const rawColorPalette = {
-    neutral: [
+    slate: [
         [99.0, 0.002, 247.022], // #fbfcfd, white
         [98.4, 0.003, 247.858], // this is `color-*-50` in Tailwind land
         [96.8, 0.007, 247.896],

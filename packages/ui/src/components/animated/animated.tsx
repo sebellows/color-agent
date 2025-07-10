@@ -1,3 +1,4 @@
+import { ReactNode } from 'react'
 import { PressableProps, Animated as RNAnimated } from 'react-native'
 import {
     createRestyleComponent,
@@ -14,11 +15,10 @@ import {
     typography,
     shadow,
 } from '@shopify/restyle'
-import { type BoxProps } from './box'
-import { Theme } from './theme'
-import { ReactNode } from 'react'
-import { TextProps } from './components/text/text'
-import { overflow, OverlayColorProps, ObjectFitProps, ResizeModeProps } from './restyleFunctions'
+import { Theme } from '@ui/theme'
+import { TextProps } from '@ui/components/text/text'
+import { overflow, OverlayColorProps, ObjectFitProps, ResizeModeProps } from '@ui/restyleFunctions'
+import { type BoxProps } from '../box'
 
 export type AnimationProps = {
     children?: ReactNode

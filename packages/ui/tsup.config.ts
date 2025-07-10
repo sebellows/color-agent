@@ -8,7 +8,7 @@ export default defineConfig((options: Options) => ({
     js: "'use client'",
   },
   clean: true,
-  format: ["cjs", "esm"],
+  format: ["esm"],
   external: ["react"],
   dts: true,
   ...options,
