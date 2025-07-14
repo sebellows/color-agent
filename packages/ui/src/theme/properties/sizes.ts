@@ -1,7 +1,7 @@
 import { DimensionValue } from 'react-native'
 import { ValueOf } from 'type-fest'
-import { THEME_BASE_UNIT_SIZE } from '../theme/constants'
-import { PlatformEnv } from '../types'
+import { THEME_BASE_UNIT_SIZE } from '@ui/theme/constants'
+import { PlatformEnv } from '@ui/types'
 
 export const sizes = [
     0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 14, 16, 20, 24, 28, 32, 36, 40, 44, 48, 56, 64, 72, 80, 96, 256,

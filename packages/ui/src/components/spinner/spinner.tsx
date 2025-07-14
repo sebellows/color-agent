@@ -8,7 +8,7 @@ import Animated, {
     withRepeat,
 } from 'react-native-reanimated'
 
-import { Theme } from '@ui/theme'
+import { Theme } from '../../../scripts'
 import { ColorProps, useTheme } from '@shopify/restyle'
 import { AnimatedBox, Box, BoxProps } from '../box/box'
 import { useThemeSize } from '../../resolvers/size-resolver'

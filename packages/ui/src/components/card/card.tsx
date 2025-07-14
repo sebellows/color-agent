@@ -1,7 +1,7 @@
 import React from 'react'
 import { createRestyleComponent, createVariant, VariantProps } from '@shopify/restyle'
 
-import { Theme } from '@ui/theme'
+import { Theme } from '../../../scripts'
 
 import { Box, BoxProps } from '../box/box'
 import { TextProps, Text } from '../text/text'

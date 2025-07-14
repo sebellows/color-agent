@@ -10,7 +10,7 @@ import {
     type TextProps as RestyleTextProps,
 } from '@shopify/restyle'
 
-import { Theme } from '@ui/theme'
+import { Theme } from '../../../scripts'
 import { Box } from '../box/box'
 
 const Text = createText<Theme>()

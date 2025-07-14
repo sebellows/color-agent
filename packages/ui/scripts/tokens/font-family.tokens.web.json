@@ -1,0 +1,25 @@
+{
+    "theme": {
+        "font-family": {
+            "$type": "fontFamily",
+            "$extensions": {
+                "com.coloragent.metadata": {
+                    "baseClassNames": ["font"],
+                    "customPropertyPrefix": "font",
+                    "directive": null,
+                    "properties": ["fontFamily"],
+                    "statePrefix": null
+                }
+            },
+            "code": {
+                "$value": ["Space Mono", "monospace"]
+            },
+            "body": {
+                "$value": ["Noto Sans", "sans-serif"]
+            },
+            "display": {
+                "$value": ["Space Grotesk", "sans-serif"]
+            }
+        }
+    }
+}

@@ -4,10 +4,10 @@ import { PlatformEnv } from '@ui/types'
 const fontMap = {
     web: {
         code: "'Space Mono', monospace",
-        body: "'Space Grotesk', sans-serif",
-        bodyMedium: "'Space Grotesk', sans-serif",
-        bodySemiBold: "'Space Grotesk', sans-serif",
-        bodyBold: "'Space Grotesk', sans-serif",
+        body: "'Noto Sans', sans-serif",
+        bodyMedium: "'Noto Sans', sans-serif",
+        bodySemiBold: "'Noto Sans', sans-serif",
+        bodyBold: "'Noto Sans', sans-serif",
         display: "'Space Grotesk', sans-serif",
         displayMedium: "'Space Grotesk', sans-serif",
         displaySemibold: "'Space Grotesk', sans-serif",

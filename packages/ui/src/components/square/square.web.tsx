@@ -1,5 +1,5 @@
 import { Box, type BoxProps } from '../box/box'
-import { Theme } from '@ui/theme'
+import { Theme } from '../../../scripts'
 import { DimensionValue } from 'react-native'
 
 type SquareProps = BoxProps & {

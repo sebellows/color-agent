@@ -8,16 +8,16 @@ import {
     getTextVariants,
     getThemeColors,
     zIndices,
-} from '@ui/tokens'
+} from '@ui/theme/properties'
 import { PlatformEnv } from '@ui/types'
-import { transitions } from '../tokens/transitions'
+import { transitions } from '@ui/theme/properties/transitions'
 
 export function generateTheme(colorScheme: ColorSchemeName) {
     const colorThemes = getThemeColors(PlatformEnv.mobile)
 
     return createTheme({
         colors: colorScheme === 'dark' ? colorThemes.dark : colorThemes.light,
-        borderRadii: {
+        rounded: {
             xs: 2,
             sm: 4,
             md: 6,

@@ -1,6 +1,6 @@
 import { createBox, type BoxProps as RestyleBoxProps } from '@shopify/restyle'
 
-import { Theme } from '@ui/theme'
+import { Theme } from '../../../scripts'
 
 type BoxProps = RestyleBoxProps<Theme>
 

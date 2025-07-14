@@ -10,7 +10,7 @@ import {
 } from 'react-native-reanimated'
 import { type AllProps, all, composeRestyleFunctions, useTheme } from '@shopify/restyle'
 
-import { Theme } from '@ui/theme'
+import { Theme } from '../../../scripts'
 import { AnimationSettings, PressEffects } from './pressable.types'
 
 const restyleFunctions = composeRestyleFunctions<Theme, AllProps<Theme>>(all)

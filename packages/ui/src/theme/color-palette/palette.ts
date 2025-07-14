@@ -35,10 +35,9 @@ export function toOklchString(values: Coords, alpha?: number): OklchValueString 
     return new Color('oklch', values, normalizeAlpha(alpha)).toString() as OklchValueString
 }
 
-export function appendColorSchemes<
-    TColorSchemes extends CustomColorSchemes,
-    // TColorSchemes extends UnknownRecord = {},
->(schemes: TColorSchemes): ThemeColorSchemes<TColorSchemes> {
+export function appendColorSchemes<TColorSchemes extends CustomColorSchemes>(
+    schemes: TColorSchemes,
+): ThemeColorSchemes<TColorSchemes> {
     return { ...THEME_COLOR_SCHEMES, ...schemes } as ThemeColorSchemes<TColorSchemes>
 }
 
@@ -87,42 +86,6 @@ export function whenStateColor<T>(state: StateColor, match: Record<StateColor, T
     }
 }
 
-function generateOklchPalette<TColorSchemes extends CustomColorSchemes = {}>(
-    themeColors: ThemeColorSchemes<TColorSchemes>,
-): PaletteColors<OklchValueString> {
-    return getEntries(rawColorPalette).reduce((acc, [colorName, colorValues]) => {
-        acc[colorName] = colorValues.map(color => toOklchString(color))
-        return acc
-    }, {} as PaletteColors<OklchValueString>)
-}
-
-function generateHslPalette<TColorSchemes extends CustomColorSchemes = {}>(
-    themeColors: ThemeColorSchemes<TColorSchemes>,
-): PaletteColors<HslValueString> {
-    return getEntries(rawColorPalette).reduce((acc, [colorName, colorValues]) => {
-        acc[colorName] = colorValues.map(color => toHslString(color))
-        return acc
-    }, {} as PaletteColors<HslValueString>)
-}
-
-function generateOklchColorScheme<TColorSchemes extends CustomColorSchemes = {}>(
-    themeColors: ThemeColorSchemes<TColorSchemes>,
-): PaletteColors<OklchValueString> {
-    return getEntries(rawColorPalette).reduce((acc, [colorName, colorValues]) => {
-        acc[colorName] = colorValues.map(color => toOklchString(color))
-        return acc
-    }, {} as PaletteColors<OklchValueString>)
-}
-
-function generateHslColorScheme<TColorSchemes extends CustomColorSchemes = {}>(
-    themeColors: ThemeColorSchemes<TColorSchemes>,
-): PaletteColors<HslValueString> {
-    return getEntries(rawColorPalette).reduce((acc, [colorName, colorValues]) => {
-        acc[colorName] = colorValues.map(color => toHslString(color))
-        return acc
-    }, {} as PaletteColors<HslValueString>)
-}
-
 export function useColorPalette<TColorSchemes extends CustomColorSchemes = {}>(
     space: 'hsl' | 'oklch',
     themeColors: ThemeColorSchemes<TColorSchemes>,
@@ -152,15 +115,6 @@ export function useColorPalette<TColorSchemes extends CustomColorSchemes = {}>(
         return (index = 6, alpha = defaultAlpha) => _getColor(color, index, alpha)
     }
 
-    // function _stateColorResolver(
-    //     defaultColor: keyof PaletteColors,
-    //     defaultStep = 0,
-    //     defaultAlpha?: number,
-    // ) {
-    //     return (color = defaultColor, index: number, step = defaultStep, alpha = defaultAlpha) =>
-    //         _getColor(color, index + step, alpha)
-    // }
-
     const colorSchemes = {
         secondary: _colorResolver(themeColors.secondary),
         critical: _colorResolver(themeColors.critical),
@@ -171,20 +125,9 @@ export function useColorPalette<TColorSchemes extends CustomColorSchemes = {}>(
         warning: _colorResolver(themeColors.warning),
     }
 
-    // const colorStates = {
-    //     default: _stateColorResolver(stateColors.default, defaultStateSteps.default),
-    //     focus: _stateColorResolver(stateColors.focus, defaultStateSteps.focus),
-    //     hover: _stateColorResolver(stateColors.hover, defaultStateSteps.hover),
-    //     active: _stateColorResolver(stateColors.active, defaultStateSteps.active),
-    //     disabled: _stateColorResolver(stateColors.disabled, defaultStateSteps.disabled, 80),
-    //     invalid: _stateColorResolver(stateColors.invalid, defaultStateSteps.invalid),
-    //     valid: _stateColorResolver(stateColors.valid, defaultStateSteps.valid),
-    // }
-
     return {
         palette,
         colorSchemes,
-        // colorStates,
         toString,
     }
 }

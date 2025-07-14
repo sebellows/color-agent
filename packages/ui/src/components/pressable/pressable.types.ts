@@ -7,7 +7,7 @@ import {
     type SpacingShorthandProps,
 } from '@shopify/restyle'
 
-import { type Theme } from '@ui/theme'
+import { type Theme } from '../../../scripts'
 import { type PressableRestyleProps } from './pressable-core'
 
 type OmitNonAnimatableProps<Props> = Omit<

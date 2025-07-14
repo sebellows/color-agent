@@ -1,23 +1,6 @@
-import { getEntries } from '@coloragent/utils'
-import { type HslValueString, toHslString } from '@ui/lib/color'
-import { THEME_COLOR_SCHEMES } from '../theme'
-import {
-    CustomColorSchemes,
-    PaletteColors,
-    rawColorPalette,
-    ThemeColorSchemes,
-    useColorPalette,
-} from '../theme/color-palette'
-import { PlatformEnv } from '../types'
-
-function generateHslColorScheme<TColorSchemes extends CustomColorSchemes = {}>(
-    themeColors: ThemeColorSchemes<TColorSchemes>,
-): PaletteColors<HslValueString> {
-    return getEntries(rawColorPalette).reduce((acc, [colorName, colorValues]) => {
-        acc[colorName] = colorValues.map(color => toHslString(color))
-        return acc
-    }, {} as PaletteColors<HslValueString>)
-}
+import { PlatformEnv } from '@ui/types'
+import { useColorPalette } from '../color-palette'
+import { THEME_COLOR_SCHEMES } from '../constants'
 
 export const colors = {}
 
@@ -67,6 +50,7 @@ export function getThemeColors(platform: PlatformEnv) {
     }
 
     return {
+        colors: colorSchemes,
         light: {
             'base.fg-primary': dark,
             'base.fg-inverted': colorSchemes.neutral(2),

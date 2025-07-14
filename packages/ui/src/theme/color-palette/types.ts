@@ -35,10 +35,6 @@ export type CustomColorSchemes<TColorScheme extends ColorSchemeMap = ColorScheme
     TColorScheme,
     ThemeColorScheme
 >
-type ExtendedColorSchemes<TColorSchemes = unknown> =
-    TColorSchemes extends ColorSchemeMap ? SimpleMerge<ThemeBaseColorSchemes, TColorSchemes>
-    :   ThemeBaseColorSchemes
-
 export type ThemeColorSchemes<TColorSchemes extends ColorSchemeMap = ColorSchemeMap> = SimpleMerge<
     ThemeBaseColorSchemes,
     Exclude<TColorSchemes, ThemeColorScheme>
@@ -48,11 +44,6 @@ export type ThemeColorSchemeMap<
     TColorValue,
     TColorSchemes extends ColorSchemeMap = ColorSchemeMap,
 > = Mapped<ThemeColorSchemes<TColorSchemes>, TColorValue>
-
-// export type ThemeColors<
-//     TColors extends Record<string, any>,
-//     TExtendedColorSchemes extends ExtendedColorSchemes = {},
-// > = Record<keyof ThemeColorSchemes<string, TExtendedColorSchemes>, keyof TColors>
 
 export type OklchValueString = `oklch(${number}% ${number} ${number}${string}`
 export type HslValueString = `hsl(${number} ${number}% ${number}%${string}`

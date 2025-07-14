@@ -25,7 +25,7 @@ import {
     visible,
 } from '@shopify/restyle'
 
-import { Theme } from '@ui/theme'
+import { Theme } from '../../../scripts'
 
 export type PressableRestyleProps = OpacityProps<Theme> &
     VisibleProps<Theme> &

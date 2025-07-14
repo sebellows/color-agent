@@ -1,0 +1,28 @@
+{
+    "theme": {
+        "font-weight": {
+            "$type": "fontWeight",
+            "$extensions": {
+                "com.coloragent.metadata": {
+                    "baseClassNames": ["font-weight"],
+                    "customPropertyPrefix": "font-weight",
+                    "directive": null,
+                    "properties": ["fontWeight"],
+                    "statePrefix": null
+                }
+            },
+            "normal": {
+                "$value": 400
+            },
+            "medium": {
+                "$value": 500
+            },
+            "semibold": {
+                "$value": 600
+            },
+            "bold": {
+                "$value": 700
+            }
+        }
+    }
+}

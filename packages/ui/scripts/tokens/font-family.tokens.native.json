@@ -1,0 +1,40 @@
+{
+    "theme": {
+        "font-family": {
+            "$type": "fontFamily",
+            "$extensions": {
+                "com.coloragent.metadata": {
+                    "baseClassNames": ["font"],
+                    "customPropertyPrefix": "font",
+                    "directive": null,
+                    "properties": ["fontFamily"],
+                    "statePrefix": null
+                }
+            },
+            "code": {
+                "$value": "SpaceMono-Regular"
+            },
+            "body": {
+                "$value": "Noto-Regular",
+                "$extensions": {
+                    "com.coloragent.variants": {
+                        "font-weight-medium": "Noto-Medium",
+                        "font-weight-semiBold": "Noto-SemiBold",
+                        "font-weight-bold": "Noto-Bold"
+                    }
+                }
+            },
+            "display": {
+                "$value": "SpaceGrotesk-Regular",
+                "$extensions": {
+                    "com.coloragent.variants": {
+                        "font-weight-light": "SpaceGrotesk-Light",
+                        "font-weight-medium": "SpaceGrotesk-Medium",
+                        "font-weight-semiBold": "SpaceGrotesk-SemiBold",
+                        "font-weight-bold": "SpaceGrotesk-Bold"
+                    }
+                }
+            }
+        }
+    }
+}

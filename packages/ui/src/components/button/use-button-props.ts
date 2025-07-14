@@ -32,7 +32,7 @@ import {
 } from '@shopify/restyle'
 
 import { ThemeColorScheme, appendColorSchemes, whenColorScheme } from '@ui/theme/color-palette'
-import { Theme } from '@ui/theme'
+import { Theme } from '../../../scripts'
 
 import { Text } from '../text/text'
 

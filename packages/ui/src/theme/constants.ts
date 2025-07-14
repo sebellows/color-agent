@@ -1,12 +1,12 @@
 export const THEME_BASE_UNIT_SIZE = 4 as const
 
 export const PALETTE_COLOR_NAMES = {
-    amber: 'violet',
-    emerald: 'orange',
+    amber: 'amber',
+    emerald: 'emerald',
     slate: 'slate',
-    orange: 'emerald',
-    rose: 'amber',
-    violet: 'rose',
+    orange: 'orange',
+    rose: 'rose',
+    violet: 'violet',
 } as const
 
 export const THEME_COLOR_SCHEMES = {

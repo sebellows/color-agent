@@ -15,7 +15,7 @@ import {
     typography,
     shadow,
 } from '@shopify/restyle'
-import { Theme } from '@ui/theme'
+import { Theme } from '../../../scripts'
 import { TextProps } from '@ui/components/text/text'
 import { overflow, OverlayColorProps, ObjectFitProps, ResizeModeProps } from '@ui/restyleFunctions'
 import { type BoxProps } from '../box'

@@ -7,23 +7,17 @@ import {
     Appearance,
 } from 'react-native'
 import { useAccessibilityInfo, useDeviceOrientation } from '@react-native-community/hooks'
-import { create } from './tailwind/create-tailwind'
-import { AppContext, BaseTheme, Style, Utilities } from './tailwind/types'
-import { useResponsive } from './tailwind/lib/useResponsive'
-import { generateTheme } from './generate-theme'
+import { create } from './create-tailwind'
+import { AppContext, BaseTheme, Style, Utilities } from './types'
+import { useResponsive } from './lib/useResponsive'
 
-const lightTheme = generateTheme('light')
-const darkTheme = generateTheme('dark')
-
-export type ThemeVariant = 'light' | 'dark'
-
-export const ThemeContext = createContext((_classNames: string): Style => ({}))
+export const TailwindContext = createContext((_classNames: string): Style => ({}))
 
 interface Props extends AppContext {
     utilities: Utilities
 }
 
-export const ThemeProvider = <Theme extends BaseTheme>({
+export const TailwindProvider = <Theme extends BaseTheme>({
     utilities,
     theme,
     children,
@@ -70,37 +64,13 @@ export const ThemeProvider = <Theme extends BaseTheme>({
         return () => subscription.remove()
     }, [setColorScheme])
 
-    return <ThemeContext.Provider value={tailwind}>{children}</ThemeContext.Provider>
+    return <TailwindContext.Provider value={tailwind}>{children}</TailwindContext.Provider>
 }
 
 export const useTailwind = () => {
-    const context = React.useContext(ThemeContext)
+    const context = React.useContext(TailwindContext)
     if (!context) {
-        throw new Error('useTheme must be used within a ThemeProvider')
+        throw new Error('useTailwind must be used within a TailwindProvider')
     }
     return context
 }
-
-// import React from 'react'
-// import { ThemeProvider as RestyleProvider } from '@shopify/restyle'
-
-// import { generateTheme } from './generate-theme'
-
-// const lightTheme = generateTheme('light')
-// const darkTheme = generateTheme('dark')
-
-// export type ThemeVariant = 'light' | 'dark'
-
-// export function ThemeProvider({
-//     children,
-//     themeVariant,
-// }: {
-//     children: React.ReactNode
-//     themeVariant?: ThemeVariant
-// }) {
-//     return (
-//         <RestyleProvider theme={themeVariant === 'dark' ? darkTheme : lightTheme}>
-//             {children}
-//         </RestyleProvider>
-//     )
-// }

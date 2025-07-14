@@ -1,8 +1,8 @@
 import React from 'react'
 import { DimensionValue } from 'react-native'
 import { isPercentageString } from '@coloragent/utils'
-import { THEME_BASE_UNIT_SIZE } from '@ui/theme'
-import { sizes } from '@ui/tokens/sizes'
+import { THEME_BASE_UNIT_SIZE } from '../../scripts'
+import { sizes } from '@ui/theme/properties/sizes'
 import { PlatformEnv } from '../types'
 
 type SizeMap = Record<string, DimensionValue>

@@ -1,0 +1,29 @@
+{
+    "theme": {
+        "font-weight": {
+            "$type": "fontWeight",
+            "$extensions": {
+                "com.coloragent.metadata": {
+                    "baseClassNames": ["font-weight"],
+                    "customPropertyPrefix": "font-weight",
+                    "directive": null,
+                    "properties": ["fontWeight"],
+                    "statePrefix": null
+                }
+            },
+            "$description": "On native apps, font weight for custom fonts must be normal. Font weight is build into what ever font-face is being used.",
+            "normal": {
+                "$value": "normal"
+            },
+            "medium": {
+                "$value": "normal"
+            },
+            "semibold": {
+                "$value": "normal"
+            },
+            "bold": {
+                "$value": "normal"
+            }
+        }
+    }
+}
