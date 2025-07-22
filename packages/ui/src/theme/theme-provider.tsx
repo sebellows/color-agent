@@ -23,6 +23,21 @@ interface Props extends AppContext {
     utilities: Utilities
 }
 
+/**
+ * To select a component based on the current platform, use the `Platform.select` method.
+ * This method allows you to define different components for different platforms.
+ *
+ * For example:
+ * ```ts
+ * const MyComponent = Platform.select({
+ *   ios: () => <IOSComponent />,
+ *   android: () => <AndroidComponent />,
+ *   native: () => <ComponentForNative />,
+ *   default: () => <ComponentForWeb />,
+ * })()
+ * ```
+ */
+
 export const ThemeProvider = <Theme extends BaseTheme>({
     utilities,
     theme,

@@ -65,7 +65,7 @@ export function hasTokenType(obj: object): obj is Token {
  * Check if the object is a token.
  * Reference: https://tr.designtokens.org/format/#additional-group-properties
  */
-export function isToken(obj: object): obj is Token {
+export function isToken(obj: any): obj is Token {
     return obj.hasOwnProperty('$value')
 }
 

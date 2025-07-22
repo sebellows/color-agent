@@ -8,7 +8,7 @@
                     "customPropertyPrefix": "aspect",
                     "directive": null,
                     "properties": ["aspectRatio"],
-                    "statePrefix": null
+                    "parentSelector": null
                 }
             },
             "square": {

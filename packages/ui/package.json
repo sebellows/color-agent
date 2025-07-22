@@ -10,7 +10,8 @@
         "dev": "tsup --watch",
         "clean": "rm -rf dist",
         "storybook-generate": "sb-rn-get-stories",
-        "generate": "node dist/index.js"
+        "generate": "ts-node scripts/cli.ts",
+        "flatten": "ts-node scripts/flatten-tokens.ts"
     },
     "devDependencies": {
         "@babel/core": "^7.27.4",
@@ -32,6 +33,7 @@
         "react-native-safe-area-context": "^5.5.0",
         "react-native-svg-transformer": "^1.5.1",
         "storybook": "^9.0.13",
+        "ts-node": "^10.9.2",
         "tsup": "^8.0.1",
         "type-fest": "^4.41.0",
         "typescript": "5.5.4"

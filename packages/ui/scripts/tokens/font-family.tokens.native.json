@@ -8,32 +8,38 @@
                     "customPropertyPrefix": "font",
                     "directive": null,
                     "properties": ["fontFamily"],
-                    "statePrefix": null
+                    "parentSelector": null
                 }
             },
             "code": {
                 "$value": "SpaceMono-Regular"
             },
             "body": {
-                "$value": "Noto-Regular",
-                "$extensions": {
-                    "com.coloragent.variants": {
-                        "font-weight-medium": "Noto-Medium",
-                        "font-weight-semiBold": "Noto-SemiBold",
-                        "font-weight-bold": "Noto-Bold"
-                    }
-                }
+                "$value": "Noto-Regular"
+            },
+            "body-medium": {
+                "$value": "Noto-Medium"
+            },
+            "body-semibold": {
+                "$value": "Noto-SemiBold"
+            },
+            "body-bold": {
+                "$value": "Noto-Bold"
             },
             "display": {
-                "$value": "SpaceGrotesk-Regular",
-                "$extensions": {
-                    "com.coloragent.variants": {
-                        "font-weight-light": "SpaceGrotesk-Light",
-                        "font-weight-medium": "SpaceGrotesk-Medium",
-                        "font-weight-semiBold": "SpaceGrotesk-SemiBold",
-                        "font-weight-bold": "SpaceGrotesk-Bold"
-                    }
-                }
+                "$value": "SpaceGrotesk-Regular"
+            },
+            "display-light": {
+                "$value": "SpaceGrotesk-Light"
+            },
+            "display-medium": {
+                "$value": "SpaceGrotesk-Medium"
+            },
+            "display-semibold": {
+                "$value": "SpaceGrotesk-SemiBold"
+            },
+            "display-bold": {
+                "$value": "SpaceGrotesk-Bold"
             }
         }
     }

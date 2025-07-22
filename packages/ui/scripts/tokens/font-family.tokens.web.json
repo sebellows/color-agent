@@ -8,7 +8,7 @@
                     "customPropertyPrefix": "font",
                     "directive": null,
                     "properties": ["fontFamily"],
-                    "statePrefix": null
+                    "parentSelector": null
                 }
             },
             "code": {
@@ -17,7 +17,28 @@
             "body": {
                 "$value": ["Noto Sans", "sans-serif"]
             },
+            "body-medium": {
+                "$value": ["Noto Sans", "sans-serif"]
+            },
+            "body-semibold": {
+                "$value": ["Noto Sans", "sans-serif"]
+            },
+            "body-bold": {
+                "$value": ["Noto Sans", "sans-serif"]
+            },
             "display": {
+                "$value": ["Space Grotesk", "sans-serif"]
+            },
+            "display-light": {
+                "$value": ["Space Grotesk", "sans-serif"]
+            },
+            "display-medium": {
+                "$value": ["Space Grotesk", "sans-serif"]
+            },
+            "display-semibold": {
+                "$value": ["Space Grotesk", "sans-serif"]
+            },
+            "display-bold": {
                 "$value": ["Space Grotesk", "sans-serif"]
             }
         }

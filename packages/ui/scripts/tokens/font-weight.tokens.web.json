@@ -8,7 +8,7 @@
                     "customPropertyPrefix": "font-weight",
                     "directive": null,
                     "properties": ["fontWeight"],
-                    "statePrefix": null
+                    "parentSelector": null
                 }
             },
             "normal": {

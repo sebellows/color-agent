@@ -8,7 +8,7 @@
                     "customPropertyPrefix": "font-weight",
                     "directive": null,
                     "properties": ["fontWeight"],
-                    "statePrefix": null
+                    "parentSelector": null
                 }
             },
             "$description": "On native apps, font weight for custom fonts must be normal. Font weight is build into what ever font-face is being used.",

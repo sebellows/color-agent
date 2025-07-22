@@ -13,7 +13,7 @@
                     "letterSpacing",
                     "lineHeight"
                 ],
-                "statePrefix": null
+                "parentSelector": null
             },
             "display1": {
                 "$value": {

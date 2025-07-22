@@ -23,7 +23,48 @@ export const strokePredefinedValues = [
     'outset',
     'inset',
 ] as const
+export type LineStyle = (typeof strokePredefinedValues)[number]
 export const lineCapPredefinedValues = ['butt', 'round', 'square'] as const
+export type LineCap = (typeof lineCapPredefinedValues)[number]
+
+/**
+ * Values come from React Native's TextStyle fontWeight property.
+ *
+ * @see {@link https://reactnative.dev/docs/text-style-props#fontweight}
+ */
+export const fontWeightPredefinedValues = [
+    'normal',
+    'bold',
+    '100',
+    '200',
+    '300',
+    '400',
+    '500',
+    '600',
+    '700',
+    '800',
+    '900',
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    'ultralight',
+    'thin',
+    'light',
+    'medium',
+    'regular',
+    'semibold',
+    'condensedBold',
+    'condensed',
+    'heavy',
+    'black',
+] as const
+export type FontWeight = (typeof fontWeightPredefinedValues)[number]
 
 export type BaseTokenProperties<$Type> = {
     $type?: $Type
@@ -51,7 +92,7 @@ export type DimensionTokenValue =
 
 export type FontFamilyTokenValue = string | (string | ReferenceValue)[] | ReferenceValue
 
-export type FontWeightTokenValue = string | number | ReferenceValue
+export type FontWeightTokenValue = FontWeight | ReferenceValue
 
 export type DurationTokenValue =
     | {
@@ -71,40 +112,39 @@ export type CubicBezierTokenValue =
 
 export type NumberTokenValue = number | ReferenceValue
 
-export type StrokeStyleTokenValue =
-    | (typeof strokePredefinedValues)[number]
-    | {
-          dashArray: DimensionToken['$value'][]
-          lineCap: (typeof lineCapPredefinedValues)[number]
-      }
-    | ReferenceValue
+export type StrokeStyleObjectValue = {
+    dashArray: DimensionToken['$value'][]
+    lineCap: LineCap
+}
+
+export type StrokeStyleTokenValue = LineStyle | StrokeStyleObjectValue | ReferenceValue
 
 export type BorderTokenValue =
     | {
           width: DimensionToken['$value']
-          style: StrokeStyleToken['$value']
+          style: LineStyle
           color: ColorToken['$value']
       }
     | ReferenceValue
 
-export type TransitionTokenValue =
-    | {
-          duration: DurationToken['$value']
-          delay: DurationToken['$value']
-          timingFunction: CubicBezierToken['$value']
-      }
-    | ReferenceValue
+export type TransitionTokenObjectValue = {
+    duration: DurationToken['$value']
+    delay: DurationToken['$value']
+    timingFunction: CubicBezierToken['$value']
+}
 
-type ShadowValue =
-    | {
-          color: ColorToken['$value']
-          offsetX: DimensionToken['$value']
-          offsetY: DimensionToken['$value']
-          blur: DimensionToken['$value']
-          spread: DimensionToken['$value']
-          inset?: boolean
-      }
-    | ReferenceValue
+export type TransitionTokenValue = TransitionTokenObjectValue | ReferenceValue
+
+export type ShadowTokenObjectValue = {
+    color: ColorToken['$value']
+    offsetX: DimensionToken['$value']
+    offsetY: DimensionToken['$value']
+    blur: DimensionToken['$value']
+    spread: DimensionToken['$value']
+    inset?: boolean
+}
+
+type ShadowValue = ShadowTokenObjectValue | ReferenceValue
 
 export type ShadowTokenValue = ShadowValue | ShadowValue[] | ReferenceValue
 
@@ -118,38 +158,37 @@ export type GradientTokenValue =
       )[]
     | ReferenceValue
 
-export type TypographyTokenValue =
-    | {
-          fontFamily: FontFamilyToken['$value']
-          fontSize: DimensionToken['$value']
-          fontWeight: FontWeightToken['$value']
-          letterSpacing: DimensionToken['$value']
-          lineHeight: NumberToken['$value']
-      }
-    | ReferenceValue
+export type TypographyTokenObjectValue = {
+    fontFamily: FontFamilyToken['$value']
+    fontSize: DimensionToken['$value']
+    fontWeight: FontWeightToken['$value']
+    letterSpacing: DimensionToken['$value']
+    lineHeight: NumberToken['$value']
+}
+export type TypographyTokenValue = TypographyTokenObjectValue | ReferenceValue
 
-export type RatioTokenValue =
-    | {
-          x: number
-          y: number
-      }
-    | ReferenceValue
+export type RatioTokenObjectValue = {
+    x: NumberToken['$value']
+    y: NumberToken['$value']
+}
+
+export type RatioTokenValue = RatioTokenObjectValue | ReferenceValue
 
 type TokenValueMap = {
+    border: BorderTokenValue
     color: ColorTokenValue
+    cubicBezier: CubicBezierTokenValue
     dimension: DimensionTokenValue
+    duration: DurationTokenValue
     fontFamily: FontFamilyTokenValue
     fontWeight: FontWeightTokenValue
-    duration: DurationTokenValue
-    cubicBezier: CubicBezierTokenValue
-    number: NumberTokenValue
-    transition: TransitionTokenValue
-    shadow: ShadowTokenValue
     gradient: GradientTokenValue
-    typography: TypographyTokenValue
-    strokeStyle: StrokeStyleTokenValue
-    border: BorderTokenValue
+    number: NumberTokenValue
     ratio: RatioTokenValue
+    shadow: ShadowTokenValue
+    strokeStyle: StrokeStyleTokenValue
+    transition: TransitionTokenValue
+    typography: TypographyTokenValue
 }
 
 export type DesignToken<$Type extends keyof TokenValueMap> = BaseTokenProperties<$Type> & {
@@ -243,7 +282,7 @@ export type TokenCompositeValue = Exclude<
 >
 
 export type TokenGroup = BaseTokenProperties<TokenType> & {
-    [key: string]: Token | TokenGroup | string
+    [key: string]: Token | TokenGroup
 }
 
 /**
@@ -304,5 +343,10 @@ export type MetadataExtension = {
     customPropertyPrefix: 'string'
     directive: 'theme' | 'utility' | null
     properties: string[]
-    statePrefix: string | null
+    parentSelector?: string | null
+    // statePrefix: string | null
+}
+
+export type TokenJSON = {
+    theme: { [key: string]: TokenGroup }
 }
