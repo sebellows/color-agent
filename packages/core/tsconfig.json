@@ -1,0 +1,14 @@
+{
+    "extends": "@coloragent/typescript-config/tsconfig.base.json",
+    "include": ["."],
+    "exclude": ["dist", "build", "node_modules"],
+    "compilerOptions": {
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+        "baseUrl": ".",
+        "strict": true,
+        "paths": {
+            "@core/*": ["src/*"]
+        }
+    }
+}
