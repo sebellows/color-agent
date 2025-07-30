@@ -974,24 +974,43 @@
                 "$description": "The primary background color of the application"
             },
             "primary-subtle": {
-                "$value": "{theme.color.violet-100}",
+                "$value": "{theme.color.violet-800}",
                 "$description": "The primary subtle background color of the application"
             },
             "primary-inverse": {
                 "$value": "{theme.color.violet-100}",
                 "$description": "The primary foreground color to stand out on a primary background"
             },
-            "primary-emphasis": {
+            "primary-fg": {
+                "$value": "{theme.color.violet-100}",
+                "$description": "The primary foreground color to stand out on a primary background"
+            },
+            "primary-fg-emphasis": {
                 "$value": "{theme.color.violet-50}",
                 "$description": "A bolder primary foreground color to stand out on a primary background"
             },
-            "primary-rim": {
-                "$value": {
-                    "colorSpace": "oklch",
-                    "components": [28.3, 0.141, 291.089],
-                    "alpha": 0.33,
-                    "hex": "#2F0D68"
-                },
+            "primary-fg-subtle": {
+                "$value": "{theme.color.violet-200}",
+                "$description": "A bolder primary foreground color to stand out on a primary background"
+            },
+            "primary-fg-inverse": {
+                "$value": "{theme.color.violet-500}",
+                "$description": "A bolder primary foreground color to stand out on a primary background"
+            },
+            "primary-border": {
+                "$value": "{theme.color.violet-800}",
+                "$description": "The border color for primary colored elements"
+            },
+            "primary-outline": {
+                "$value": "{theme.color.violet-400}",
+                "$description": "The primary color for an outline style"
+            },
+            "primary-ring": {
+                "$value": "{theme.color.violet-300}",
+                "$description": "The accent color for a focus-ring style"
+            },
+            "primary-overlay": {
+                "$value": "{theme.color.violet-800}",
                 "$description": "The border color for primary colored elements"
             },
             "accent": {
@@ -1014,18 +1033,33 @@
                 "$value": "{theme.color.orange-100}",
                 "$description": "A foreground color to stand out against an accent background"
             },
-            "accent-emphasis": {
-                "$value": "{theme.color.orange-50}",
-                "$description": "A bolder foreground color to stand out against an accent background"
+            "accent-fg": {
+                "$value": "{theme.color.orange-100}",
+                "$description": "The accent foreground color to stand out on a accent background"
             },
-            "accent-rim": {
-                "$value": {
-                    "colorSpace": "oklch",
-                    "components": [26.6, 0.079, 36.259],
-                    "alpha": 0.33,
-                    "hex": "#441306"
-                },
+            "accent-fg-emphasis": {
+                "$value": "{theme.color.orange-50}",
+                "$description": "A bolder accent foreground color to stand out on a accent background"
+            },
+            "accent-fg-subtle": {
+                "$value": "{theme.color.orange-200}",
+                "$description": "A bolder accent foreground color to stand out on a accent background"
+            },
+            "accent-fg-inverse": {
+                "$value": "{theme.color.orange-500}",
+                "$description": "A bolder accent foreground color to stand out on a accent background"
+            },
+            "accent-border": {
+                "$value": "{theme.color.orange-800}",
                 "$description": "The border color for accent colored elements"
+            },
+            "accent-outline": {
+                "$value": "{theme.color.orange-400}",
+                "$description": "The accent color for an outline style"
+            },
+            "accent-ring": {
+                "$value": "{theme.color.orange-300}",
+                "$description": "The accent color hue for a focus ring style"
             },
             "neutral": {
                 "$value": "{theme.color.slate-400}",
@@ -1047,13 +1081,33 @@
                 "$value": "{theme.color.slate-100}",
                 "$description": "A foreground color to stand out against a neutral background"
             },
-            "neutral-emphasis": {
-                "$value": "{theme.color.slate-50}",
-                "$description": "A bolder foreground color to stand out against a neutral background"
+            "neutral-fg": {
+                "$value": "{theme.color.slate-100}",
+                "$description": "The neutral foreground color to stand out on a neutral background"
             },
-            "neutral-rim": {
-                "$value": "{theme.color.slate-950_33}",
+            "neutral-fg-emphasis": {
+                "$value": "{theme.color.slate-50}",
+                "$description": "A bolder neutral foreground color to stand out on a neutral background"
+            },
+            "neutral-fg-subtle": {
+                "$value": "{theme.color.slate-200}",
+                "$description": "A bolder neutral foreground color to stand out on a neutral background"
+            },
+            "neutral-fg-inverse": {
+                "$value": "{theme.color.slate-500}",
+                "$description": "A bolder neutral foreground color to stand out on a neutral background"
+            },
+            "neutral-border": {
+                "$value": "{theme.color.slate-800}",
                 "$description": "The border color for neutral colored elements"
+            },
+            "neutral-outline": {
+                "$value": "{theme.color.slate-400}",
+                "$description": "The neutral color for an outline style"
+            },
+            "neutral-ring": {
+                "$value": "{theme.color.slate-300}",
+                "$description": "The neutral color hue for a focus ring style"
             },
             "critical": {
                 "$value": "{theme.color.rose-500}",
@@ -1075,18 +1129,33 @@
                 "$value": "{theme.color.rose-100}",
                 "$description": "A foreground color to stand out against a critical background"
             },
-            "critical-emphasis": {
-                "$value": "{theme.color.rose-50}",
-                "$description": "A bolder foreground color to stand out against a critical background"
+            "critical-fg": {
+                "$value": "{theme.color.rose-100}",
+                "$description": "The critical foreground color to stand out on a critical background"
             },
-            "critical-rim": {
-                "$value": {
-                    "colorSpace": "oklch",
-                    "components": [27.1, 0.105, 12.094],
-                    "alpha": 0.33,
-                    "hex": "#4D0218"
-                },
+            "critical-fg-emphasis": {
+                "$value": "{theme.color.rose-50}",
+                "$description": "A bolder critical foreground color to stand out on a critical background"
+            },
+            "critical-fg-subtle": {
+                "$value": "{theme.color.rose-200}",
+                "$description": "A bolder critical foreground color to stand out on a critical background"
+            },
+            "critical-fg-inverse": {
+                "$value": "{theme.color.rose-500}",
+                "$description": "A bolder critical foreground color to stand out on a critical background"
+            },
+            "critical-border": {
+                "$value": "{theme.color.rose-800}",
                 "$description": "The border color for critical colored elements"
+            },
+            "critical-outline": {
+                "$value": "{theme.color.rose-400}",
+                "$description": "The critical color for an outline style"
+            },
+            "critical-ring": {
+                "$value": "{theme.color.rose-300}",
+                "$description": "The critical color hue for a focus ring style"
             },
             "positive": {
                 "$value": "{theme.color.emerald-500}",
@@ -1108,18 +1177,33 @@
                 "$value": "{theme.color.emerald-100}",
                 "$description": "A foreground color to stand out against a positive background"
             },
-            "positive-emphasis": {
-                "$value": "{theme.color.emerald-50}",
-                "$description": "A bolder foreground color to stand out against a positive background"
+            "positive-fg": {
+                "$value": "{theme.color.emerald-100}",
+                "$description": "The positive foreground color to stand out on a positive background"
             },
-            "positive-rim": {
-                "$value": {
-                    "colorSpace": "oklch",
-                    "components": [26.2, 0.051, 172.552],
-                    "alpha": 0.33,
-                    "hex": "#002C22"
-                },
+            "positive-fg-emphasis": {
+                "$value": "{theme.color.emerald-50}",
+                "$description": "A bolder positive foreground color to stand out on a positive background"
+            },
+            "positive-fg-subtle": {
+                "$value": "{theme.color.emerald-200}",
+                "$description": "A bolder positive foreground color to stand out on a positive background"
+            },
+            "positive-fg-inverse": {
+                "$value": "{theme.color.emerald-500}",
+                "$description": "A bolder positive foreground color to stand out on a positive background"
+            },
+            "positive-border": {
+                "$value": "{theme.color.emerald-800}",
                 "$description": "The border color for positive colored elements"
+            },
+            "positive-outline": {
+                "$value": "{theme.color.emerald-400}",
+                "$description": "The positive color for an outline style"
+            },
+            "positive-ring": {
+                "$value": "{theme.color.emerald-300}",
+                "$description": "The positive color hue for a focus ring style"
             },
             "warning": {
                 "$value": "{theme.color.amber-500}",
@@ -1141,18 +1225,33 @@
                 "$value": "{theme.color.amber-100}",
                 "$description": "A foreground color to stand out against a warning background"
             },
-            "warning-emphasis": {
-                "$value": "{theme.color.amber-50}",
-                "$description": "A bolder foreground color to stand out against a warning background"
+            "warning-fg": {
+                "$value": "{theme.color.amber-100}",
+                "$description": "The warning foreground color to stand out on a warning background"
             },
-            "warning-rim": {
-                "$value": {
-                    "colorSpace": "oklch",
-                    "components": [27.9, 0.077, 45.635],
-                    "alpha": 0.33,
-                    "hex": "#461901"
-                },
+            "warning-fg-emphasis": {
+                "$value": "{theme.color.amber-50}",
+                "$description": "A bolder warning foreground color to stand out on a warning background"
+            },
+            "warning-fg-subtle": {
+                "$value": "{theme.color.amber-200}",
+                "$description": "A bolder warning foreground color to stand out on a warning background"
+            },
+            "warning-fg-inverse": {
+                "$value": "{theme.color.amber-500}",
+                "$description": "A bolder warning foreground color to stand out on a warning background"
+            },
+            "warning-border": {
+                "$value": "{theme.color.amber-800}",
                 "$description": "The border color for warning colored elements"
+            },
+            "warning-outline": {
+                "$value": "{theme.color.amber-400}",
+                "$description": "The warning color for an outline style"
+            },
+            "warning-ring": {
+                "$value": "{theme.color.amber-300}",
+                "$description": "The warning color hue for a focus ring style"
             }
         },
         "light": {
@@ -1174,35 +1273,47 @@
                 }
             },
             "$description": "Light mode base colors",
-            "base": {
-                "$value": "{theme.color.slate-100}",
+            "surface": {
+                "$value": "{theme.color.slate-50}",
                 "$description": "A neutral color to use as a default background"
             },
-            "base-intent": {
+            "surface-intent": {
+                "$value": "{theme.color.slate-100}",
+                "$description": "A subdued neutral background color for callouts and other section highlights"
+            },
+            "surface-active": {
                 "$value": "{theme.color.slate-200}",
                 "$description": "A subdued neutral background color for callouts and other section highlights"
             },
-            "base-active": {
-                "$value": "{theme.color.slate-300}",
+            "surface-subtle": {
+                "$value": "{theme.color.slate-400}",
                 "$description": "A subdued neutral background color for callouts and other section highlights"
             },
-            "base-subtle": {
-                "$value": "{theme.color.slate-50}",
-                "$description": "A subdued neutral background color for callouts and other section highlights"
-            },
-            "base-emphasis": {
-                "$value": "{theme.color.slate-800}",
-                "$description": "A bolder neutral color for foreground elements that need to stand out more"
-            },
-            "base-inverse": {
+            "surface-inverse": {
                 "$value": "{theme.color.slate-950}",
                 "$description": "A contrasting darker neutral color to use for foreground elements in light mode"
             },
-            "base-border": {
+            "fg": {
+                "$value": "{theme.color.slate-950}",
+                "$description": "A contrasting darker neutral color to use for foreground elements in light mode"
+            },
+            "fg-emphasis": {
+                "$value": "{theme.color.slate-1000}",
+                "$description": "A bolder neutral color for foreground elements that need to stand out more"
+            },
+            "fg-subtle": {
+                "$value": "{theme.color.slate-800}",
+                "$description": "A contrasting darker neutral color to use for foreground elements in light mode"
+            },
+            "fg-inverse": {
+                "$value": "{theme.color.slate-100}",
+                "$description": "A contrasting darker neutral color to use for foreground elements in light mode"
+            },
+            "border": {
                 "$value": "{theme.color.slate-950_33}",
                 "$description": "A neutral color to use as a default for borders"
             },
-            "base-rim": {
+            "ring": {
                 "$value": "{theme.color.slate-950_12}",
                 "$description": "A neutral color to use as a default for borders"
             },
@@ -1226,40 +1337,52 @@
                         "outlineColor",
                         "stroke"
                     ],
-                    "parentSelector": ":root"
+                    "parentSelector": ".dark"
                 }
             },
             "$description": "Dark mode base colors",
-            "base": {
+            "surface": {
                 "$value": "{theme.color.slate-950}",
                 "$description": "A neutral color to use as a default background in dark mode"
             },
-            "base-intent": {
+            "surface-intent": {
                 "$value": "{theme.color.slate-900}",
                 "$description": "A subdued neutral background color for callouts and other section highlights"
             },
-            "base-active": {
+            "surface-active": {
                 "$value": "{theme.color.slate-800}",
                 "$description": "A subdued neutral background color for callouts and other section highlights"
             },
-            "base-subtle": {
+            "surface-subtle": {
                 "$value": "{theme.color.slate-600}",
-                "$description": "A bolder neutral color for foreground elements that need to stand out more in dark mode"
+                "$description": "A subdued neutral background color for callouts and other section highlights"
             },
-            "base-emphasis": {
-                "$value": "{theme.color.slate-50}",
-                "$description": "A bolder neutral color for foreground elements that need to stand out more"
+            "surface-inverse": {
+                "$value": "{theme.color.slate-100}",
+                "$description": "A contrasting darker neutral color to use for foreground elements in light mode"
             },
-            "base-inverse": {
+            "fg": {
                 "$value": "{theme.color.slate-100}",
                 "$description": "A contrasting lighter neutral color to use for foreground elements in dark mode"
             },
-            "base-border": {
-                "$value": "{theme.color.slate-300_12}",
+            "fg-emphasis": {
+                "$value": "{theme.color.slate-50}",
+                "$description": "A bolder neutral color for foreground elements that need to stand out more"
+            },
+            "fg-subtle": {
+                "$value": "{theme.color.slate-300}",
+                "$description": "A contrasting darker neutral color to use for foreground elements in light mode"
+            },
+            "fg-inverse": {
+                "$value": "{theme.color.slate-950}",
+                "$description": "A contrasting darker neutral color to use for foreground elements in light mode"
+            },
+            "border": {
+                "$value": "{theme.color.slate-300_33}",
                 "$description": "A neutral color to use as a default for borders"
             },
-            "base-rim": {
-                "$value": "{theme.color.slate-300_33}",
+            "ring": {
+                "$value": "{theme.color.slate-300_12}",
                 "$description": "A neutral color to use as a default for borders"
             },
             "overlay": {

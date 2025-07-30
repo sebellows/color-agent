@@ -1,5 +1,6 @@
 import { FlatCompat } from '@eslint/eslintrc'
 import globals from 'globals'
+import jsxA11yPlugin from 'eslint-plugin-jsx-a11y'
 
 import { config as baseConfig } from './index.js'
 
@@ -23,6 +24,7 @@ export const config = [
     },
     // NOTE: The base config already includes recommended configs for core eslint, typescript, and prettier.
     ...baseConfig,
+    ...jsxA11yPlugin.configs.recommended,
     ...compat.config({
         // The Next.js plugin's recommended config comes with rules for react, react-hooks,
         // import, and jsx-a11y out-of-the-box.

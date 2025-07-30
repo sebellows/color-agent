@@ -1,11 +1,12 @@
 import eslint from '@eslint/js'
-import eslintConfigPrettier from 'eslint-config-prettier'
+import prettier from 'eslint-plugin-prettier/recommended'
 import importPlugin from 'eslint-plugin-import'
-import turboPlugin from 'eslint-plugin-turbo'
+import turbo from 'eslint-plugin-turbo'
 import tseslint from 'typescript-eslint'
 // Unicorn plugin defines lots of rules and opinions on general typescript
 // styling outside of conventions covered by framework-specific plugins.
-import pluginUnicorn from 'eslint-plugin-unicorn'
+import unicorn from 'eslint-plugin-unicorn'
+import { globalIgnores } from 'eslint/config'
 
 /**
  * A shared ESLint configuration for the repository.
@@ -15,33 +16,53 @@ import pluginUnicorn from 'eslint-plugin-unicorn'
 export const config = [
     eslint.configs.recommended,
     ...tseslint.configs.recommendedTypeChecked,
-    eslintConfigPrettier,
     importPlugin.flatConfigs.recommended,
-    pluginUnicorn.configs['recommended'],
+    unicorn.configs['recommended'],
+    turbo,
+    prettier,
     {
-        ignores: ['dist/**', 'build/**'],
-    },
-    {
-        plugins: {
-            turbo: turboPlugin,
-        },
         languageOptions: {
             parserOptions: {
                 projectService: true,
                 tsconfigRootDir: import.meta.dirname,
             },
         },
+    },
+    globalIgnores([
+        'node_modules/',
+        'dist/',
+        'build/',
+        'coverage/',
+        'public/',
+        '.turbo/',
+        '.next/',
+        '.expo/',
+        '.expo-shared/',
+        '.cache/',
+        '.vscode/',
+        '**/eslint.config.[cm]js',
+        '**/babel.config.[m]js',
+        '**/metro.config.[m]js',
+    ]),
+    {
         rules: {
+            'prefer-const': [
+                'error',
+                {
+                    destructuring: 'all',
+                },
+            ],
             'no-duplicate-imports': ['error'],
+            'no-unused-vars': 'off',
             'turbo/no-undeclared-env-vars': 'warn',
             '@typescript-eslint/no-empty-interface': 'off',
             '@typescript-eslint/no-unsafe-function-type': 'error',
             '@typescript-eslint/no-unused-vars': [
                 'warn',
                 {
+                    args: 'after-used',
+                    ignoreRestSiblings: true,
                     argsIgnorePattern: '^_',
-                    varsIgnorePattern: 'none',
-                    caughtErrorsIgnorePattern: '^_',
                     destructuredArrayIgnorePattern: '^_',
                 },
             ],

@@ -2,7 +2,8 @@
 // For monorepo support, see https://docs.expo.dev/guides/monorepos/#modify-the-metro-config
 const path = require('path')
 const { getDefaultConfig } = require('expo/metro-config')
-const MetroSymlinksResolver = require('@rnx-kit/metro-resolver-symlinks')
+// const MetroSymlinksResolver = require('@rnx-kit/metro-resolver-symlinks')
+const { withReactNativeCSS } = require('@coloragent/core')
 
 // Find the project and workspace directories
 const projectRoot = __dirname
@@ -24,4 +25,6 @@ config.resolver.nodeModulesPaths = [
     path.resolve(workspaceRoot, 'node_modules', '.pnpm', 'node_modules'),
 ]
 
-module.exports = config
+module.exports = withReactNativeCSS(config, {
+    globalClassNamePolyfill: true,
+})

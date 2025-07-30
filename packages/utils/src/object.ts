@@ -1,6 +1,16 @@
-import { Get, Paths, ValueOf } from 'type-fest'
-import { isEmpty, isNil, isNumber, isPlainObject, isPrimitive, isString, isUndefined } from './lang'
-import { ToString } from 'type-fest/source/internal'
+import { Get, ValueOf } from 'type-fest'
+
+import {
+    isEmpty,
+    isNil,
+    isNumber,
+    isObject,
+    isPlainObject,
+    isPrimitive,
+    isString,
+    isSymbol,
+} from './lang'
+import { toKeyPath } from './path'
 
 export function getKeys<T extends object>(obj: T): (keyof T)[] {
     return Object.keys(obj) as (keyof T)[]
@@ -61,14 +71,6 @@ export function getEntries<T extends object, Options extends ObjectOptions = Obj
 
 const withArrayIndexRE = /(?<=\[)\d+(?=\])/
 
-/**
- * NOTE:
- * The below is taken from `@types/lodash` because the `Get` type in type-fest could
- * not account for the setting of default value.
- */
-
-type NumericRecord<T> = { [key: number]: T }
-
 type GetIndexedField<T, K> =
     K extends keyof T ? T[K]
     : K extends `${number}` ?
@@ -121,7 +123,7 @@ export function get<
     TObject,
     Path extends string | readonly string[],
     TDefault extends unknown = unknown,
->(obj: any, path: PropertyKey, defaultValue?: TDefault): Get<TObject, Path> | TDefault | undefined {
+>(obj: any, path: Path, defaultValue?: TDefault): Get<TObject, Path> | TDefault | undefined {
     // return early if the value is a primitive
     if (isNil(obj) || isPrimitive(obj)) return defaultValue
 
@@ -176,4 +178,45 @@ export function get<
     return currObj ?? defaultValue
 }
 
-// export { get }
+/**
+ * Sets the value at `path` of `object`. If a portion of `path` doesn't exist,
+ * it's created. Arrays are created for missing index properties while objects
+ * are created for all other missing properties.
+ */
+export function set<T>(
+    obj: T,
+    path: string | Symbol | string[],
+    value: any,
+    customizer?: Function,
+): T {
+    if (!isObject(obj) || isNil(obj)) return obj
+
+    const paths =
+        isString(path) ? toKeyPath(path)
+        : Array.isArray(path) ? toKeyPath(path.join('.'))
+        : [path]
+
+    let i = -1
+    let nested: Record<string, any> = obj
+
+    while (!isNil(nested) && ++i < paths.length) {
+        let key = String(paths[i]) as keyof typeof nested
+        let newValue = value
+
+        if (i !== paths.length - 1) {
+            const objValue = nested[key]
+            newValue = customizer ? customizer(objValue, key, nested) : undefined
+            if (isNil(newValue)) {
+                newValue =
+                    isObject(objValue) ? objValue
+                    : isNumber(paths[i + 1]) ? []
+                    : {}
+            }
+        }
+
+        nested[key] = newValue
+        nested = nested[key]
+    }
+
+    return obj
+}

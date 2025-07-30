@@ -20,26 +20,8 @@ import {
 import { METADATA_EXTENSION, PARSED_TOKENS_FILE_PATH, TOKENS_OUTPUT_FILE_PATH } from './constants'
 import { TokenMap } from './token.utils'
 import Color, { Coords } from 'colorjs.io'
-// import yargs from 'yargs/yargs' // For parsing command-line arguments
-// import { hideBin } from 'yargs/helpers'
 
-// Command-Line Argument Parsing
-// const argv = yargs(hideBin(process.argv))
-//     .option('input', {
-//         alias: 'i',
-//         type: 'string',
-//         description: 'Path to the token JSON file directory',
-//         default: DEFAULT_INPUT_DIR_PATH,
-//     })
-//     .option('output', {
-//         alias: 'o',
-//         type: 'string',
-//         description: 'Path to the output theme.ts file',
-//         default: DEFAULT_OUTPUT_FILE_PATH,
-//     })
-//     .help().argv
-
-function isPlainObject<T extends Record<string, any>>(value: any): value is T {
+function isPlainObject<T extends Record<PropertyKey, any>>(value: any): value is T {
     return Object.prototype.toString.call(value) === '[object Object]'
 }
 
@@ -297,13 +279,6 @@ function parseFontFamilyTokenValue(value: TokenValue<'fontFamily'>, tokenMap: To
     if (typeof value == 'string') {
         if (isReference(value)) {
             return referenceToCustomProperty(value)
-            // const referencedToken = findReferencedToken<'fontFamily'>(value, tokenMap)
-            // if (Array.isArray(referencedToken)) {
-            //     return referencedToken
-            //         .map(v => (isReference(v) ? unwrapReference(v) : v))
-            //         .join(', ')
-            // }
-            // return isReference(referencedToken) ? unwrapReference(referencedToken) : referencedToken
         }
         return value
     } else if (Array.isArray(value)) {
@@ -321,8 +296,6 @@ function parseFontWeightTokenValue(
 
     if (isReference(value)) {
         return referenceToCustomProperty(value)
-        // const referencedToken = findReferencedToken<'fontWeight'>(value, tokenMap)
-        // tokenValue = referencedToken
     } else if (fontWeightPredefinedValues.includes(value)) {
         tokenValue = value
     } else {
@@ -394,7 +367,7 @@ function parseTransitionTokenValue(
     return tokenProperties
 }
 
-type ShadowTokenProperties = { [key in keyof ShadowTokenObjectValue]?: string | number }
+// type ShadowTokenProperties = { [key in keyof ShadowTokenObjectValue]?: string | number }
 
 function toShadowString(shadow: ShadowTokenObjectValue, tokenMap: TokenMap): string {
     const { offsetX, offsetY, blur, spread, color, inset } = shadow
@@ -550,14 +523,224 @@ const flattenGroupUtility = (currentGroup: TokenGroup, init: Record<string, any>
     }
 }
 
+const globalStyles = `
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+    ::selection {
+        @apply bg-selection text-selection-foreground;
+    }
+    html {
+        @apply scroll-smooth;
+    }
+    body {
+        font-synthesis-weight: none;
+        text-rendering: optimizeLegibility;
+    }
+
+    @supports (font: -apple-system-body) and (-webkit-appearance: none) {
+        [data-wrapper] {
+            @apply min-[1800px]:border-t;
+        }
+    }
+
+    a:active,
+    button:active {
+        @apply opacity-60 md:opacity-100;
+    }
+}
+
+@utility border-grid {
+    @apply border-border/50 dark:border-border;
+}
+
+@utility section-soft {
+    @apply from-background to-surface/40 dark:bg-background 3xl:fixed:bg-none bg-gradient-to-b;
+}
+
+@utility theme-container {
+    @apply font-sans;
+}
+
+@utility container-wrapper {
+    @apply 3xl:fixed:max-w-[calc(var(--breakpoint-2xl)+2rem)] mx-auto w-full px-2;
+}
+
+@utility container {
+    @apply 3xl:max-w-screen-2xl mx-auto max-w-[1400px] px-4 lg:px-8;
+}
+
+@utility no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+@utility border-ghost {
+    @apply after:border-border relative after:absolute after:inset-0 after:border after:mix-blend-darken dark:after:mix-blend-lighten;
+}
+
+@utility step {
+    counter-increment: step;
+    @apply relative;
+
+    &:before {
+        @apply text-muted-foreground right-0 mr-2 hidden size-7 items-center justify-center rounded-full text-center -indent-px font-mono text-sm font-medium md:absolute;
+        content: counter(step);
+    }
+}
+
+@utility extend-touch-target {
+    @media (pointer: coarse) {
+        @apply relative touch-manipulation after:absolute after:-inset-2;
+    }
+}
+
+@layer components {
+    .steps {
+        &:first-child {
+            @apply !mt-0;
+        }
+
+        &:first-child > h3:first-child {
+            @apply !mt-0;
+        }
+
+        > h3 {
+            @apply !mt-16;
+        }
+
+        > h3 + p {
+            @apply !mt-2;
+        }
+    }
+
+    [data-rehype-pretty-code-figure] {
+        background-color: var(--color-code);
+        color: var(--color-code-foreground);
+        border-radius: var(--radius-lg);
+        border-width: 0px;
+        border-color: var(--border);
+        margin-top: calc(var(--spacing) * 6);
+        overflow: hidden;
+        font-size: var(--text-sm);
+        outline: none;
+        position: relative;
+        @apply md:-mx-1;
+
+        &:has([data-rehype-pretty-code-title]) [data-slot="copy-button"] {
+            top: calc(var(--spacing) * 1.5) !important;
+        }
+    }
+
+    [data-rehype-pretty-code-title] {
+        border-bottom: color-mix(in oklab, var(--border) 30%, transparent);
+        border-bottom-width: 1px;
+        border-bottom-style: solid;
+        padding-block: calc(var(--spacing) * 2.5);
+        padding-inline: calc(var(--spacing) * 4);
+        font-size: var(--text-sm);
+        font-family: var(--font-mono);
+        color: var(--color-code-foreground);
+    }
+
+    [data-line-numbers] {
+        display: grid;
+        min-width: 100%;
+        white-space: pre;
+        border: 0;
+        background: transparent;
+        padding: 0;
+        counter-reset: line;
+        box-decoration-break: clone;
+    }
+
+    [data-line-numbers] [data-line]::before {
+        font-size: var(--text-sm);
+        counter-increment: line;
+        content: counter(line);
+        display: inline-block;
+        width: calc(var(--spacing) * 16);
+        padding-right: calc(var(--spacing) * 6);
+        text-align: right;
+        color: var(--color-code-number);
+        background-color: var(--color-code);
+        position: sticky;
+        left: 0;
+    }
+
+    [data-line-numbers] [data-highlighted-line][data-line]::before {
+        background-color: var(--color-code-highlight);
+    }
+
+    [data-line] {
+        padding-top: calc(var(--spacing) * 0.5);
+        padding-bottom: calc(var(--spacing) * 0.5);
+        min-height: calc(var(--spacing) * 1);
+        width: 100%;
+        display: inline-block;
+    }
+
+    [data-line] span {
+        color: var(--shiki-light);
+
+        @variant dark {
+            color: var(--shiki-dark) !important;
+        }
+    }
+
+    [data-highlighted-line],
+    [data-highlighted-chars] {
+        position: relative;
+        background-color: var(--color-code-highlight);
+    }
+
+    [data-highlighted-line] {
+        &:after {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 2px;
+            height: 100%;
+            content: "";
+            background-color: color-mix(
+                in oklab,
+                var(--muted-foreground) 50%,
+                transparent
+            );
+        }
+    }
+
+    [data-highlighted-chars] {
+        border-radius: var(--radius-sm);
+        padding-inline: 0.3rem;
+        padding-block: 0.1rem;
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+    }
+}
+`
+
+const TAB = '    '
+
 function main() {
     const themeTokens: TokenJSON = JSON.parse(fs.readFileSync(PARSED_TOKENS_FILE_PATH, 'utf-8'))
 
     const tokenMap = toTokenMap(themeTokens)
 
-    const tab = '    '
+    let outputContent = `/**\n * This file is auto-generated from the theme tokens.\n */
+    
+@import "tailwindcss";
+@import "tw-animate-css";
 
-    let outputContent = `/**\n * This file is auto-generated from the theme tokens.\n */\n\n@import "tailwindcss";\n\n`
+@custom-variant dark (&:is(.dark *));
+
+@custom-variant fixed (&:is(.layout-fixed *));\n\n
+`
 
     const flattenGroup = (currentGroup: TokenGroup, init: Record<string, any>) => {
         const { $type, $extensions = {} } = currentGroup
@@ -643,7 +826,6 @@ function main() {
         }
     }
 
-    // const customProperties: Record<string, Record<string, any>> = {}
     const customProperties: {
         theme: Record<string, Record<string, any>>
         directives: Record<string, Record<string, any>>
@@ -652,8 +834,6 @@ function main() {
         theme: {},
         directives: {},
     }
-    // const directives: Record<string, Record<string, any>> = {}
-    // const selectorSpecific: Record<string, Record<string, any>> = {}
 
     for (const tokenGroup of Object.values(themeTokens.theme)) {
         if (!isTokenGroup(tokenGroup)) {
@@ -677,7 +857,6 @@ function main() {
             flattenGroup(tokenGroup, themeCustomProps)
         } else {
             let selectorSpecific = customProperties?.[parentSelector]
-            // const parentSelector = metadata.parentSelector
             if (!customProperties?.[parentSelector]) {
                 customProperties[parentSelector] = {}
                 selectorSpecific = customProperties[parentSelector]
@@ -696,16 +875,15 @@ function main() {
     const { theme, directives, ...selectorSpecific } = customProperties
     const utils = {
         theme: [] as [string, [string, string]][],
-        root: [] as [string, [string, string]][],
+        // root: [] as [string, [string, string]][],
         inline: [] as [string, [string, string]][],
     }
     const entries = Object.entries(customProperties.theme).map(([$type, tokens]) => {
         const entry = [$type, Object.entries(tokens)] as [string, [string, string][]]
         return entry
     })
-    // console.info('Entries 1:', entries)
+
     entries.forEach(([varName, varValue]) => {
-        // console.info('VarName:', varName, 'VarValue:', varValue)
         varValue.forEach(([vkey, vvalue]) => {
             if (vvalue.startsWith('var(--')) {
                 utils.inline.push([varName, [vkey, vvalue]])
@@ -714,41 +892,42 @@ function main() {
             }
         })
     })
+
+    // Tailwind prefers that any custom CSS Custom Properties be added within the
+    // `@theme` directive rather than the `:root` selector.
+    //! NOTE: There should never be any custom properties assigned here that are references
+    //! to other properties defined within the `@theme` directive.
     outputContent += `@theme {\n`
     outputContent += utils.theme.reduce((acc, [$type, tokens], idx) => {
         if (idx === 0 && $type) {
-            acc += `${tab}/* ${titleCase($type)} Tokens */\n`
+            acc += `${TAB}/* ${titleCase($type)} Tokens */\n`
         }
-        acc += `${tab}${tokens[0]}: ${tokens[1]};\n`
+        acc += `${TAB}${tokens[0]}: ${tokens[1]};\n`
         return acc
     }, '')
     outputContent += `}\n`
 
+    // Any CSS Custom Properties that reference other CSS Custom Properties should be
+    // defined as `inline` in the `@theme` directive to avoid circular references.
     outputContent += `@theme inline {\n`
     outputContent += utils.inline.reduce((acc, [$type, tokens], idx) => {
         if (idx === 0 && $type) {
-            acc += `${tab}/* ${titleCase($type)} Tokens */\n`
+            acc += `${TAB}/* ${titleCase($type)} Tokens */\n`
         }
-        acc += `${tab}${tokens[0]}: ${tokens[1]};\n`
+        acc += `${TAB}${tokens[0]}: ${tokens[1]};\n`
         return acc
     }, '')
     outputContent += `}\n`
 
-    // Write any additional directives defined in the tokens, such as `@utility`
-    // and `@layer components`
+    // Format any selector-specific custom properties under their provided parent selector
+    // e.g. `:root`, `.dark`, etc.
     const selectorKeys = Object.keys(selectorSpecific)
     if (selectorKeys.length > 0) {
         for (const selector of selectorKeys) {
             outputContent += `\n${selector} {\n`
             outputContent += Object.entries(selectorSpecific[selector]).reduce(
                 (acc, [key, value]) => {
-                    // console.info('Selector:', selector, 'Key:', key, 'Value:', value)
-                    acc += `${tab}${key}: ${value};\n`
-                    // acc += `${tab}${key}: {\n`
-                    // for (const [prop, propValue] of Object.entries(value)) {
-                    //     acc += `${tab}${tab}${prop}: ${propValue};\n`
-                    // }
-                    // acc += `${tab}}\n`
+                    acc += `${TAB}${key}: ${value};\n`
                     return acc
                 },
                 '',
@@ -765,11 +944,11 @@ function main() {
             outputContent += `\n${directive} {\n`
             outputContent += Object.entries(customProperties.directives[directive]).reduce(
                 (acc, [key, value]) => {
-                    acc += `${tab}${key}: {\n`
+                    acc += `${TAB}${key}: {\n`
                     for (const [prop, propValue] of Object.entries(value)) {
-                        acc += `${tab}${tab}${prop}: ${propValue};\n`
+                        acc += `${TAB}${TAB}${prop}: ${propValue};\n`
                     }
-                    acc += `${tab}}\n`
+                    acc += `${TAB}}\n`
                     return acc
                 },
                 '',
@@ -777,6 +956,8 @@ function main() {
             outputContent += `}\n`
         }
     }
+
+    outputContent += globalStyles
 
     fs.writeFileSync(TOKENS_OUTPUT_FILE_PATH, outputContent, 'utf-8')
 }

@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import type { TokenGroup } from './types'
-import { TOKENS_INPUT_DIR_PATH, PARSED_TOKENS_FILE_PATH } from './constants'
+import { TOKENS_INPUT_DIR_PATH, PARSED_TOKENS_FILE_PATH, TEMP_DIR_PATH } from './constants'
 // import yargs from 'yargs/yargs' // For parsing command-line arguments
 // import { hideBin } from 'yargs/helpers'
 
@@ -159,6 +159,10 @@ function main() {
             } else {
                 console.warn(`Skipping non-JSON file: ${filePath}`)
             }
+        }
+
+        if (!fs.existsSync(TEMP_DIR_PATH)) {
+            fs.mkdirSync(TEMP_DIR_PATH)
         }
 
         fs.writeFileSync(PARSED_TOKENS_FILE_PATH, JSON.stringify(tokens, null, 4), 'utf8')
