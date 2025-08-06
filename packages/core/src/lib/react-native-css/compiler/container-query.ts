@@ -3,9 +3,9 @@ import type {
     QueryFeatureFor_ContainerSizeFeatureId,
 } from 'lightningcss'
 
-import type { MediaCondition } from './compiler.types'
 import { parseMediaFeatureOperator, parseMediaFeatureValue } from './media-query'
 import type { StyleSheetBuilder } from './stylesheet'
+import type { MediaCondition } from './types'
 
 export function parseContainerCondition(
     condition: CSSContainerCondition,

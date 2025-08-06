@@ -4,12 +4,13 @@ import type {
     MediaFeatureComparison as CSSMediaFeatureComparison,
     MediaFeatureValue as CSSMediaFeatureValue,
     MediaQuery as CSSMediaQuery,
+    MediaCondition,
     QueryFeatureFor_MediaFeatureId,
 } from 'lightningcss'
 
-import type { MediaCondition, MediaFeatureComparison, StyleDescriptor } from './compiler.types'
 import { parseLength } from './declarations'
 import type { StyleSheetBuilder } from './stylesheet'
+import type { MediaFeatureComparison, StyleDescriptor } from './types'
 
 export function parseMediaQuery(query: CSSMediaQuery, builder: StyleSheetBuilder) {
     let platformCondition: MediaCondition | undefined

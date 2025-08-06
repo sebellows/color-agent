@@ -11,15 +11,21 @@ import {
 } from 'lightningcss'
 
 import { maybeMutateReactNativeOptions, parsePropAtRule } from './atRules'
-import type { CompilerOptions, ContainerQuery, ReactNativeCssStyleSheet } from './compiler.types'
 import { parseContainerCondition } from './container-query'
 import { parseDeclaration } from './declarations'
 import { extractKeyFrames } from './keyframes'
 import { parseMediaQuery } from './media-query'
 import { getSelectors, normalizeTokenSelector } from './selectors'
 import { StyleSheetBuilder } from './stylesheet'
+import type { CompilerOptions, ContainerQuery, ReactNativeCssStyleSheet } from './types'
 
 const defaultLogger = debug('react-native-css:compiler')
+
+const initialCustomAtRules: CustomAtRules = {
+    'react-native': {
+        body: 'declaration-list',
+    },
+}
 
 /**
  * Converts a CSS file to a collection of style declarations that can be used with the StyleSheet API
@@ -36,28 +42,21 @@ export function compile(
     const { logger = defaultLogger } = options
     const features = Object.assign({}, options.features)
 
-    options.selectorPrefix = normalizeTokenSelector(options.selectorPrefix, '.')
-    // if (options.selectorPrefix && options.selectorPrefix.startsWith('.')) {
-    //     options.selectorPrefix = options.selectorPrefix.slice(1)
-    // }
+    if (options.selectorPrefix) {
+        options.selectorPrefix = normalizeTokenSelector(options.selectorPrefix, '.')
+    }
 
     logger(`Features ${JSON.stringify(features)}`)
 
-    if (process.env.NODE_ENV !== 'production') {
-        if (defaultLogger.enabled) {
-            defaultLogger(code.toString())
-        }
+    if (process.env.NODE_ENV !== 'production' && defaultLogger.enabled) {
+        defaultLogger(code.toString())
     }
 
     const builder = new StyleSheetBuilder(options)
 
     logger(`Start lightningcss`)
 
-    const customAtRules: CustomAtRules = {
-        'react-native': {
-            body: 'declaration-list',
-        },
-    }
+    const customAtRules = initialCustomAtRules
 
     /**
      * Custom transforms are implemented by passing a `visitor` object. A visitor includes
@@ -168,17 +167,19 @@ function extractRule(rule: Rule, builder: StyleSheetBuilder) {
             const selectors = getSelectors(rule.value.selectors, false, builder.getOptions())
 
             if (declarationBlock) {
-                if (declarationBlock.declarations) {
+                const { declarations = [], importantDeclarations = [] } = declarationBlock
+
+                if (declarations.length) {
                     builder.newRule(mapping)
-                    for (const declaration of declarationBlock.declarations) {
+                    for (const declaration of declarations) {
                         parseDeclaration(declaration, builder)
                     }
                     builder.applyRuleToSelectors(selectors)
                 }
 
-                if (declarationBlock.importantDeclarations) {
+                if (importantDeclarations.length) {
                     builder.newRule(mapping, { important: true })
-                    for (const declaration of declarationBlock.importantDeclarations) {
+                    for (const declaration of importantDeclarations) {
                         parseDeclaration(declaration, builder)
                     }
                     builder.applyRuleToSelectors(selectors)
@@ -191,27 +192,27 @@ function extractRule(rule: Rule, builder: StyleSheetBuilder) {
                 extractRule(layerRule, builder)
             }
             break
-        case 'custom':
-        case 'font-face':
-        case 'font-palette-values':
-        case 'font-feature-values':
-        case 'namespace':
-        case 'layer-statement':
-        case 'property':
-        case 'view-transition':
-        case 'ignored':
-        case 'unknown':
-        case 'import':
-        case 'page':
-        case 'supports':
-        case 'counter-style':
-        case 'moz-document':
-        case 'nesting':
-        case 'nested-declarations':
-        case 'viewport':
-        case 'custom-media':
-        case 'scope':
-        case 'starting-style':
+        // case 'custom':
+        // case 'font-face':
+        // case 'font-palette-values':
+        // case 'font-feature-values':
+        // case 'namespace':
+        // case 'layer-statement':
+        // case 'property':
+        // case 'view-transition':
+        // case 'ignored':
+        // case 'unknown':
+        // case 'import':
+        // case 'page':
+        // case 'supports':
+        // case 'counter-style':
+        // case 'moz-document':
+        // case 'nesting':
+        // case 'nested-declarations':
+        // case 'viewport':
+        // case 'custom-media':
+        // case 'scope':
+        // case 'starting-style':
         default:
             break
     }

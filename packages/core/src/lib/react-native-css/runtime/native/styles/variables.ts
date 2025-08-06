@@ -1,7 +1,8 @@
-import type { StyleFunction } from '../../../compiler'
+import type { ResolveValueOptions, SimpleResolveValue, StyleFunction } from '../../../compiler'
 import { VAR_SYMBOL } from '../../constants'
 import { rootVariables, universalVariables, type Getter } from '../reactivity'
-import type { ResolveValueOptions, SimpleResolveValue } from './resolve'
+
+// import type { ResolveValueOptions, SimpleResolveValue } from './resolve'
 
 export function varResolver(
     resolve: SimpleResolveValue,
@@ -10,7 +11,7 @@ export function varResolver(
     options: ResolveValueOptions,
 ) {
     const {
-        renderGuards,
+        renderGuards = [],
         inheritedVariables: variables = { [VAR_SYMBOL]: true },
         inlineVariables,
         variableHistory = new Set(),
@@ -30,13 +31,15 @@ export function varResolver(
     }
 
     if (name in variables) {
-        renderGuards?.push(['vars', name, variables[name]])
+        renderGuards.push({ type: 'var', name, value: variables[name] })
         return variables[name]
     }
 
     variableHistory.add(name)
 
-    let value = resolve(inlineVariables?.[name])
+    let value: any = undefined
+
+    // let value = resolve(inlineVariables?.[name])
     if (value !== undefined) {
         options.inlineVariables ??= { [VAR_SYMBOL]: 'inline' }
         options.inlineVariables[name] = value
@@ -46,21 +49,14 @@ export function varResolver(
 
     value = resolve(variables[name])
     if (value !== undefined) {
-        renderGuards?.push(['vars', name, value])
+        renderGuards.push({ type: 'var', name, value: variables[name] })
         options.inlineVariables ??= { [VAR_SYMBOL]: 'inline' }
         options.inlineVariables[name] = value
 
         return value
     }
 
-    value = resolve(get(universalVariables(name)))
-    if (value !== undefined) {
-        options.inlineVariables ??= { [VAR_SYMBOL]: 'inline' }
-        options.inlineVariables[name] = value
-        return value
-    }
-
-    value = resolve(get(rootVariables(name)))
+    value = resolve(get(universalVariables(name))) ?? resolve(get(rootVariables(name)))
     if (value !== undefined) {
         options.inlineVariables ??= { [VAR_SYMBOL]: 'inline' }
         options.inlineVariables[name] = value

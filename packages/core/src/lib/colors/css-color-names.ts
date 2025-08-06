@@ -1,3 +1,5 @@
+import { LiteralStringUnion } from 'type-fest/source/literal-union'
+
 export const cssColorNames = [
     'aliceblue',
     'antiquewhite',
@@ -146,4 +148,6 @@ export const cssColorNames = [
     'yellowgreen',
 ] as const
 
-export const cssColorNamesSet = new Set(cssColorNames)
+type CssColorName = (typeof cssColorNames)[number]
+
+export const cssColorNamesSet = new Set<LiteralStringUnion<CssColorName>>(cssColorNames)

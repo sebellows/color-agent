@@ -38,15 +38,14 @@ export function testRule(
 }
 
 function pseudoClasses(query: PseudoClassesQuery, effect: Effect) {
-    if (query.hover && !hoverFamily(effect).get(effect)) {
+    if (
+        (query.hover && !hoverFamily(effect).get(effect)) ||
+        (query.active && !activeFamily(effect).get(effect)) ||
+        (query.focus && !focusFamily(effect).get(effect))
+    ) {
         return false
     }
-    if (query.active && !activeFamily(effect).get(effect)) {
-        return false
-    }
-    if (query.focus && !focusFamily(effect).get(effect)) {
-        return false
-    }
+
     return true
 }
 

@@ -1,9 +1,10 @@
 import { TokenOrValue, UnresolvedColor } from "lightningcss"
 import { StyleSheetBuilder } from "../stylesheet"
-import { StyleDescriptor, StyleDescriptorGroup, StyleDescriptorToken, StyleFunction } from "../compiler.types"
-import { Booleanish, getType, isNil, isPlainObject, variadic } from "@coloragent/utils"
+import { StyleDescriptor, StyleFunction, StyleFunctionDescriptor } from "../compiler.types"
+import { getType, isNil, isPlainObject, variadic } from "@coloragent/utils"
 import { isBooleanish, round } from "../../../../utils"
 import { COMMA_SEPARATOR } from "../../runtime/constants"
+import { toStyleFunctionDescriptor } from "../../runtime/utils"
 
 class Unknown {}
 
@@ -19,64 +20,64 @@ function isTokenOrValue(
     return isPlainObject(tokenOrValue) && 'type' in tokenOrValue
 }
 
-function isStyleDescriptorToken(
-    tokenOrValue: unknown
-): tokenOrValue is StyleDescriptorToken {
-    return isPlainObject(tokenOrValue) && '$type' in tokenOrValue && '$value' in tokenOrValue
-}
+// function isStyleDescriptorToken(
+//     tokenOrValue: unknown
+// ): tokenOrValue is StyleDescriptorToken {
+//     return isPlainObject(tokenOrValue) && '$type' in tokenOrValue && '$value' in tokenOrValue
+// }
 
-function isStyleDescriptorGroup(
-    tokenOrValue: unknown
-): tokenOrValue is StyleDescriptorGroup {
-    return isPlainObject(tokenOrValue) && !Object.keys(tokenOrValue).some(key => key === '$value') && Object.values(tokenOrValue).some(isStyleDescriptorToken)
-}
+// function isStyleDescriptorGroup(
+//     tokenOrValue: unknown
+// ): tokenOrValue is StyleDescriptorGroup {
+//     return isPlainObject(tokenOrValue) && !Object.keys(tokenOrValue).some(key => key === '$value') && Object.values(tokenOrValue).some(isStyleDescriptorToken)
+// }
 
-function toTokenFormat(
-    tokenOrValue: TokenOrValue | TokenOrValue[] | string | number | undefined,
-    $type?: string,
-): StyleDescriptor | undefined {
-    if (isNil(tokenOrValue)) return
-    let t = getType(tokenOrValue)
-    if (isStyleDescriptorToken(tokenOrValue)) {
-        return tokenOrValue as StyleDescriptorToken
-    }
-    if (isTokenOrValue(tokenOrValue)) {
-        return {
-            $type: (tokenOrValue as TokenOrValue).type,
-            $value: 'value' in tokenOrValue ? (tokenOrValue as TokenOrValue).value : UNKNOWN,
-        }
-    }
-    if (Array.isArray(tokenOrValue)) {
-        return tokenOrValue.map(item => toTokenFormat(item, $type)).filter(v => v !== undefined) as StyleDescriptorToken[]
-    }
-    switch (t) {
-        case 'string':
-            if (isBooleanish(tokenOrValue)) {
-                return {
-                    $type: 'boolean',
-                    $value: tokenOrValue === 'true',
-                }
-            } else {
-                return {
-                    $type: 'string',
-                    $value: tokenOrValue,
-                }
-            }
-        case 'number':
-            return {
-                $type: 'number',
-                $value: round(tokenOrValue as number),
-            }
-        case 'array':
-            const args = reduceParseUnparsed(tokenOrValue as TokenOrValue[], builder)
-            if (!args) return
-            return variadic(args)
-        case 'object':
-            const token = tokenOrValue as TokenOrValue
-            switch (token.type) {
-                case 'unresolved-color':
-    }
-}
+// function toTokenFormat(
+//     tokenOrValue: TokenOrValue | TokenOrValue[] | string | number | undefined,
+//     $type?: string,
+// ): StyleDescriptor | undefined {
+//     if (isNil(tokenOrValue)) return
+//     let t = getType(tokenOrValue)
+//     if (isStyleDescriptorToken(tokenOrValue)) {
+//         return tokenOrValue as StyleDescriptorToken
+//     }
+//     if (isTokenOrValue(tokenOrValue)) {
+//         return {
+//             $type: (tokenOrValue as TokenOrValue).type,
+//             $value: 'value' in tokenOrValue ? (tokenOrValue as TokenOrValue).value : UNKNOWN,
+//         }
+//     }
+//     if (Array.isArray(tokenOrValue)) {
+//         return tokenOrValue.map(item => toTokenFormat(item, $type)).filter(v => v !== undefined) as StyleDescriptorToken[]
+//     }
+//     switch (t) {
+//         case 'string':
+//             if (isBooleanish(tokenOrValue)) {
+//                 return {
+//                     $type: 'boolean',
+//                     $value: tokenOrValue === 'true',
+//                 }
+//             } else {
+//                 return {
+//                     $type: 'string',
+//                     $value: tokenOrValue,
+//                 }
+//             }
+//         case 'number':
+//             return {
+//                 $type: 'number',
+//                 $value: round(tokenOrValue as number),
+//             }
+//         case 'array':
+//             const args = reduceParseUnparsed(tokenOrValue as TokenOrValue[], builder)
+//             if (!args) return
+//             return variadic(args)
+//         case 'object':
+//             const token = tokenOrValue as TokenOrValue
+//             switch (token.type) {
+//                 case 'unresolved-color':
+//     }
+// }
 
 export function reduceParseUnparsed(
     tokenOrValues: TokenOrValue[],
@@ -106,9 +107,9 @@ export function reduceParseUnparsed(
 export function unparsedFunction(
     token: Extract<TokenOrValue, { type: 'function' }>,
     builder: StyleSheetBuilder,
-): StyleFunction {
+): StyleFunctionDescriptor {
     const args = reduceParseUnparsed(token.value.arguments, builder)
-    return [{}, token.value.name, args]
+    return toStyleFunctionDescriptor({ type: 'function', func: token.value.name, value: args })
 }
 
 /**

@@ -1,6 +1,7 @@
-import type { StyleDescriptor } from '../../../compiler'
+import { variadic } from '@coloragent/utils'
+
+import type { StyleDescriptor, StyleFunctionResolver } from '../../../compiler'
 import { defaultValues } from './defaults'
-import type { StyleFunctionResolver } from './resolve'
 
 type ShorthandType = 'string' | 'number' | 'length' | 'color' | Readonly<string[]>
 
@@ -20,12 +21,10 @@ export function shorthandHandler(
     mappings: ShorthandRequiredValue[][],
     defaults: ShorthandDefaultValue[],
 ) {
-    const resolveFn: StyleFunctionResolver = (resolveValue, func, _, { castToArray }) => {
-        const args = func[2] || []
+    const resolveFn: StyleFunctionResolver = (resolveValue, descriptor, _, { castToArray }) => {
+        const args = variadic(descriptor.value) || []
 
-        const resolved = args.flatMap(value => {
-            return resolveValue(value, castToArray)
-        })
+        const resolved = args.flatMap(value => resolveValue(value, castToArray))
 
         const match = mappings.find(mapping => {
             return (
@@ -73,7 +72,7 @@ export function shorthandHandler(
 
                     return [value, map[0]]
                 }),
-                ...Array.from(seenDefaults).map((map): StyleDescriptor => {
+                ...Array.from(seenDefaults).map(map => {
                     let value = defaultValues[map[2]] ?? map[2]
                     if (castToArray && value && !Array.isArray(value)) {
                         value = [value]

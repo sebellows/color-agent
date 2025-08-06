@@ -8,7 +8,8 @@
         "baseUrl": ".",
         "strict": true,
         "paths": {
-            "@core/*": ["src/*"]
+            "@core/*": ["src/lib/*"],
+            "@core/utils": ["src/utils"]
         }
     }
 }

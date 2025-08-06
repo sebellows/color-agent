@@ -1,9 +1,13 @@
 import type { ComponentType } from 'react'
 
-import type { StyleDescriptor } from '../../../compiler'
+import type {
+    SimpleResolveValue,
+    StyleDescriptor,
+    StyleFunctionResolver,
+} from '@core/react-native-css/compiler'
+
 import { StyleCollection } from '../injection'
 import { observable, weakFamily, type Getter } from '../reactivity'
-import type { SimpleResolveValue, StyleFunctionResolver } from './resolve'
 import { shorthandHandler } from './shorthand'
 
 const name = ['name', 'string', 'none'] as const
@@ -36,25 +40,68 @@ export const animationShorthand = shorthandHandler(
     [name, delay, direction, duration, fill, iteration, playState, easing],
 )
 
-export const animation: StyleFunctionResolver = (
-    resolveValue,
-    value,
-    get,
-    { inheritedVariables },
-) => {
-    const name = resolveValue(value[2])
+export const animatedComponentFamily = weakFamily((component: ComponentType) => {
+    if ('displayName' in component && component.displayName?.startsWith('Animated.')) {
+        return component
+    }
 
-    /**
-     * Get a stable reference to the StyleProp observer.
-     * We can use that as a WeakKey
-     */
-    return get(
-        animationFamily(get, {
-            name,
-            resolveValue,
-            inheritedVariables,
-        }),
-    )
+    const createAnimatedComponent = require('react-native-reanimated').createAnimatedComponent
+
+    return createAnimatedComponent(component)
+})
+
+export const animation: StyleFunctionResolver<'animation-name'> = (
+    resolveValue,
+    descriptor,
+    get,
+    options,
+) => {
+    const animationShortHandTuples = animationShorthand(resolveValue, descriptor, get, options)
+
+    if (!Array.isArray(animationShortHandTuples)) return
+
+    animationShortHandTuples.pop()
+
+    const nameTuple = animationShortHandTuples.find(tuple => tuple[1] === 'animationName')
+
+    const name = nameTuple?.[0]
+
+    if (!nameTuple || typeof name !== 'string') {
+        return
+    }
+
+    const keyframes = get(StyleCollection.keyframes(name))
+
+    const animation: Record<string, any> = {}
+    for (const [progress, declarations] of keyframes) {
+        animation[progress] ??= {}
+
+        const props = options.calculateProps?.(
+            get,
+            // Cast this into a StyleRule[]
+            [{ s: [0], d: declarations }],
+            options.renderGuards,
+            options.inheritedVariables,
+            options.inlineVariables,
+        )
+
+        if (!props) {
+            continue
+        }
+
+        if (props.normal) {
+            Object.assign(animation[progress], props.normal)
+        }
+        if (props.important) {
+            Object.assign(animation[progress], props.important)
+        }
+
+        animation[progress] = animation[progress].style
+    }
+
+    nameTuple[0] = animation
+
+    return applyShorthand(animationShortHandTuples)
 }
 
 type AnimationFamilyOptions = {
@@ -120,14 +167,4 @@ const animationFamily = weakFamily((_: Getter, options: AnimationFamilyOptions) 
             return animation
         })
     })
-})
-
-export const animatedComponentFamily = weakFamily((component: ComponentType) => {
-    if ('displayName' in component && component.displayName?.startsWith('Animated.')) {
-        return component
-    }
-
-    const createAnimatedComponent = require('react-native-reanimated').createAnimatedComponent
-
-    return createAnimatedComponent(component)
 })

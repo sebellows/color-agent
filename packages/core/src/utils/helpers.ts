@@ -11,3 +11,19 @@ export function round(number: number) {
 export function ensureArray<T>(value: T | T[]): T[] {
     return Array.isArray(value) ? value : [value]
 }
+
+export function stripUnit(value: unknown): number {
+    if (typeof value !== 'string' && typeof value !== 'number') {
+        throw new Error('Value must be a string or number')
+    }
+
+    if (typeof value === 'number') {
+        return value
+    }
+
+    if (/\B(px|em|rem)$/.test(value)) {
+        return parseInt(value.replace(/(px|em|rem)$/, ''))
+    }
+
+    return parseInt(value)
+}

@@ -1,5 +1,6 @@
 export * from './array'
 export * from './errors'
+export * from './function'
 export * from './lang'
 export * from './misc'
 export * from './number'

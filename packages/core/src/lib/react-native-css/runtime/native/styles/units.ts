@@ -1,45 +1,38 @@
-import { round } from '../../../../../utils'
-import { RN_CSS_EM_PREFIX } from '../../constants'
-import { rem as remObs, vh as vhObs, vw as vwObs } from '../reactivity'
-import type { StyleFunctionResolver } from './resolve'
+import type { StyleFunctionResolver } from '@core/react-native-css/compiler'
+import { RN_CSS_EM_PREFIX } from '@core/react-native-css/runtime/constants'
+import { round } from '@core/utils'
 
-export const em: StyleFunctionResolver = (resolve, func) => {
-    let value = func[2]?.[0]
+import { rem as rem$, vh as vh$, vw as vw$ } from '../reactivity'
 
-    if (!value) {
-        return
-    }
+export const em: StyleFunctionResolver = (resolve, descriptor) => {
+    const { value } = descriptor
 
-    const emValue = resolve([{}, 'var', [RN_CSS_EM_PREFIX]])
+    if (!value) return
+
+    const emValue = resolve('var', [RN_CSS_EM_PREFIX])
     return round(Number(value) * emValue)
 }
 
-export const vw: StyleFunctionResolver = (_, func, get) => {
-    const value = func[2]?.[0]
+export const vw: StyleFunctionResolver = (_, descriptor, get) => {
+    const { value } = descriptor
 
-    if (typeof value !== 'number') {
-        return
-    }
+    if (typeof value !== 'number') return
 
-    return round(get(vwObs) * (value / 100))
+    return round(get(vw$) * (value / 100))
 }
 
-export const vh: StyleFunctionResolver = (_, func, get) => {
-    const value = func[2]?.[0]
+export const vh: StyleFunctionResolver = (_, descriptor, get) => {
+    const { value } = descriptor
 
-    if (typeof value !== 'number') {
-        return
-    }
+    if (typeof value !== 'number') return
 
-    return round((value / 100) * get(vhObs))
+    return round((value / 100) * get(vh$))
 }
 
-export const rem: StyleFunctionResolver = (_, func, get) => {
-    const value = func[2]?.[0]
+export const rem: StyleFunctionResolver = (_, descriptor, get) => {
+    const { value } = descriptor
 
-    if (typeof value !== 'number') {
-        return
-    }
+    if (typeof value !== 'number') return
 
-    return round(value * get(remObs))
+    return round(value * get(rem$))
 }

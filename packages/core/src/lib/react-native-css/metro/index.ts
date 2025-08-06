@@ -17,11 +17,12 @@ import { setupTypeScript } from './typescript'
 export interface WithReactNativeCSSOptions extends CompilerOptions {
     /* Specify the path to the TypeScript environment file. Defaults types-env.d.ts */
     typescriptEnvPath?: string
+
     /* Disable generation of the types-env.d.ts file. Defaults false */
     disableTypeScriptGeneration?: boolean
+
     /** Add className to all React Native primitives. Defaults false */
     globalClassNamePolyfill?: boolean
-    hexColors?: boolean
 }
 
 const defaultLogger = debug(DEFAULT_LOGGER_NAME)
@@ -48,7 +49,7 @@ export function withReactNativeCSS<T extends MetroConfig | (() => Promise<MetroC
         disableTypeScriptGeneration,
         typescriptEnvPath,
         globalClassNamePolyfill = false,
-        hexColors = false,
+        ...compilerOptions
     } = options || {}
 
     if (disableTypeScriptGeneration !== true) {
@@ -170,9 +171,7 @@ export function withReactNativeCSS<T extends MetroConfig | (() => Promise<MetroC
                                 if (next && next !== last) {
                                     nativeCSSFiles.set(filePath, [
                                         next,
-                                        compile(next, {
-                                            hexColors: options?.hexColors,
-                                        }),
+                                        compile(next, compilerOptions),
                                     ])
 
                                     watcher.emit('change', {

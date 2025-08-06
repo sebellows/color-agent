@@ -88,7 +88,7 @@ export function useNativeVariable(name: string) {
         return { ...effect, get }
     })
 
-    return resolveValue([{}, 'var', [name]], effect.get, { inheritedVariables })
+    return resolveValue({ type: 'var', value: 'name' }, effect.get, { inheritedVariables })
 }
 
 export function vars(variables: Record<string, StyleDescriptor>) {

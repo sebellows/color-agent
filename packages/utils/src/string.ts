@@ -1,3 +1,5 @@
+import { CamelCase, KebabCase, PascalCase, SnakeCase } from 'type-fest'
+
 function cached<T>(fn: (str: string, ...args: any[]) => T) {
     const cache = Object.create(null)
     return function cachedFn(str: string, ...args: any[]): T {
@@ -80,15 +82,16 @@ export const capitalize = cached(
  * camelCase('foo-bar') // 'fooBar'
  * camelCase('IPAddress', ['IP']) // 'ipAddress'
  */
-export const camelCase = cached((str: string, ...omit: ExtraRegExpParam[]): string =>
-    resolveRegExps(
-        [
-            s => s.replace(upperStartRE, (_, c) => (c ? c.toLowerCase() : '')),
-            s => s.replace(afterSeparatorRE, (_, c) => (c ? c.toUpperCase() : '')),
-            s => s.replace(seperatorRE, ''),
-        ],
-        ...omit,
-    )(str),
+export const camelCase = cached(
+    <Str extends string>(str: Str, ...omit: ExtraRegExpParam[]): CamelCase<Str> =>
+        resolveRegExps(
+            [
+                s => s.replace(upperStartRE, (_, c) => (c ? c.toLowerCase() : '')),
+                s => s.replace(afterSeparatorRE, (_, c) => (c ? c.toUpperCase() : '')),
+                s => s.replace(seperatorRE, ''),
+            ],
+            ...omit,
+        )(str) as CamelCase<Str>,
 )
 
 /**
@@ -98,11 +101,12 @@ export const camelCase = cached((str: string, ...omit: ExtraRegExpParam[]): stri
  * kebabCase('fooBar') // 'foo-bar'
  * kebabCase('IPAddress', ['IP']) // 'ip-address'
  */
-export const kebabCase = cached((str: string, ...omit: ExtraRegExpParam[]): string =>
-    resolveRegExps(
-        [s => s.replace(beforeLowerRE, '-$1'), s => s.replace(seperatorRE, '-')],
-        ...omit,
-    )(str).toLowerCase(),
+export const kebabCase = cached(
+    <Str extends string>(str: Str, ...omit: ExtraRegExpParam[]): KebabCase<Str> =>
+        resolveRegExps(
+            [s => s.replace(beforeLowerRE, '-$1'), s => s.replace(seperatorRE, '-')],
+            ...omit,
+        )(str).toLowerCase() as KebabCase<Str>,
 )
 
 /**
@@ -112,11 +116,12 @@ export const kebabCase = cached((str: string, ...omit: ExtraRegExpParam[]): stri
  * snakeCase('fooBar') // 'foo_bar'
  * snakeCase('IPAddress', ['IP']) // 'ip_address'
  */
-export const snakeCase = cached((str: string, ...omit: ExtraRegExpParam[]): string =>
-    resolveRegExps(
-        [s => s.replace(beforeLowerRE, '_$1'), s => s.replace(seperatorRE, '_')],
-        ...omit,
-    )(str).toLowerCase(),
+export const snakeCase = cached(
+    <Str extends string>(str: Str, ...omit: ExtraRegExpParam[]): SnakeCase<Str> =>
+        resolveRegExps(
+            [s => s.replace(beforeLowerRE, '_$1'), s => s.replace(seperatorRE, '_')],
+            ...omit,
+        )(str).toLowerCase() as SnakeCase<Str>,
 )
 
 /**
@@ -126,17 +131,17 @@ export const snakeCase = cached((str: string, ...omit: ExtraRegExpParam[]): stri
  * pascalCase('fooBar') // 'FooBar'
  * pascalCase('ipAddress', ['IP']) // 'IPAddress'
  */
-export const pascalCase = cached((str: string, ...omit: ExtraRegExpParam[]) => {
-    return resolveRegExps(
-        [
-            s => s.replace(lowerStartRE, (_, c) => (c ? c.toUpperCase() : '')),
-            s => s.replace(afterSeparatorRE, (_, c) => (c ? c.toUpperCase() : '')),
-            s => s.replace(seperatorRE, ''),
-        ],
-        ...omit,
-    )(str)
-})
+export const pascalCase = cached(
+    <Str extends string>(str: Str, ...omit: ExtraRegExpParam[]): PascalCase<Str> => {
+        return resolveRegExps(
+            [
+                s => s.replace(lowerStartRE, (_, c) => (c ? c.toUpperCase() : '')),
+                s => s.replace(afterSeparatorRE, (_, c) => (c ? c.toUpperCase() : '')),
+                s => s.replace(seperatorRE, ''),
+            ],
+            ...omit,
+        )(str) as PascalCase<Str>
+    },
+)
 
-export const titleCase = cached((str: string): string => {
-    return str.split('-').map(capitalize).join(' ')
-})
+export const titleCase = cached((str: string): string => str.split('-').map(capitalize).join(' '))

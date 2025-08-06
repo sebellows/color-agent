@@ -1,6 +1,6 @@
 import Color, { Coords } from 'colorjs.io'
 
-export type ThemeMode = 'dark' | 'light' | 'system'
+// export type ThemeMode = 'dark' | 'light' | 'system'
 
 export type OklchValueString = `oklch(${number}% ${number} ${number}${string}`
 export type HslValueString = `hsl(${number} ${number}% ${number}%${string}`

@@ -1,16 +1,18 @@
-import type { Selector, SelectorList } from 'lightningcss'
+import { camelCase } from '@coloragent/utils'
+import type { MediaCondition, Selector, SelectorList } from 'lightningcss'
 import { CamelCase } from 'type-fest'
 
+import { RNStyleProperty } from '../../restyle/restyle.types'
 import { Specificity } from '../runtime/utils/specificity'
 import type {
     AttributeQuery,
     CompilerOptions,
     ContainerQuery,
-    MediaCondition,
+    // MediaCondition,
     PseudoClassesQuery,
     SpecificityArray,
-} from './compiler.types'
-import { AttrSelectorOperatorMap } from './compiler.types'
+} from './types'
+import { AttrSelectorOperatorMap } from './types'
 
 export type NormalizeSelector =
     | ClassNameSelector
@@ -72,7 +74,7 @@ export function getSelectors(
     return selectors
 }
 
-export function normalizeTokenSelector(selector: string | undefined, prefix: string) {
+export function normalizeTokenSelector(selector: string, prefix: string) {
     if (selector && selector.startsWith(prefix)) {
         selector = selector.slice(prefix.length)
     }
@@ -172,7 +174,7 @@ function classNameSelector(selector: Selector, options: CompilerOptions): ClassN
                         break
                     }
                     case 'disabled': {
-                        getAttributeQuery().push(['attr', 'disabled'])
+                        getAttributeQuery().push({ type: 'attr', value: 'disabled' })
                         break
                     }
                     case 'empty': {
@@ -194,10 +196,16 @@ function classNameSelector(selector: Selector, options: CompilerOptions): ClassN
 
                 // [data-*] are turned into `dataSet` queries
                 // Everything else is turned into `attribute` queries
-                const attributeQuery: AttributeQuery =
-                    component.name.startsWith('data-') ?
-                        ['dataSet', toRNProperty(component.name.replace('data-', ''))]
-                    :   ['attr', toRNProperty(component.name)]
+                // let attr: AttributeQuery['type'] | undefined
+                const isDataSet = component.name.startsWith('data-')
+                const prop = isDataSet ? component.name.replace('data-', '') : component.name
+                const attributeQuery: AttributeQuery = {
+                    type: component.name.startsWith('data-') ? 'dataSet' : 'attr',
+                    property: toRNProperty(prop),
+                }
+                // component.name.startsWith('data-') ?
+                //     ['dataSet', toRNProperty(component.name.replace('data-', ''))]
+                // :   ['attr', toRNProperty(component.name)]
 
                 if (component.operation) {
                     const operator = AttrSelectorOperatorMap.get(component.operation.operator)
@@ -287,6 +295,8 @@ function isRootDarkVariableSelector([first, second]: Selector) {
     )
 }
 
-export function toRNProperty<T extends string>(prop: T) {
-    return prop.replace(/^-rn-/, '').replace(/-./g, x => x[1]!.toUpperCase()) as CamelCase<T>
+export function toRNProperty<T extends string>(prop: T): RNStyleProperty {
+    // TODO: ixnay on the explicit coersion
+    return camelCase(prop) as RNStyleProperty
+    // return prop.replace(/^-rn-/, '').replace(/-./g, x => x[1]!.toUpperCase()) as CamelCase<T>
 }

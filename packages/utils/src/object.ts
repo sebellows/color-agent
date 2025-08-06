@@ -1,14 +1,15 @@
-import { Get, ValueOf } from 'type-fest'
+import { Entries, Get, ValueOf } from 'type-fest'
 
 import {
+    isDefined,
     isEmpty,
+    isIterable,
     isNil,
     isNumber,
     isObject,
     isPlainObject,
     isPrimitive,
     isString,
-    isSymbol,
 } from './lang'
 import { toKeyPath } from './path'
 
@@ -24,12 +25,6 @@ type ObjectOptions = {
      */
     strict?: boolean
 }
-
-type Keys<BaseType extends object> = keyof BaseType[]
-
-type Entries<BaseType extends object> =
-    Keys<BaseType> extends infer Key extends keyof BaseType ? [Key, ValueOf<BaseType, Key>][]
-    :   never
 
 type PickEntries<
     BaseType extends object,
@@ -70,45 +65,6 @@ export function getEntries<T extends object, Options extends ObjectOptions = Obj
 }
 
 const withArrayIndexRE = /(?<=\[)\d+(?=\])/
-
-type GetIndexedField<T, K> =
-    K extends keyof T ? T[K]
-    : K extends `${number}` ?
-        'length' extends keyof T ?
-            number extends T['length'] ?
-                number extends keyof T ?
-                    T[number]
-                :   undefined
-            :   undefined
-        :   undefined
-    :   undefined
-
-type FieldWithPossiblyUndefined<T, Key> =
-    | GetFieldType<Exclude<T, undefined>, Key>
-    | Extract<T, undefined>
-
-type IndexedFieldWithPossiblyUndefined<T, Key> =
-    | GetIndexedField<Exclude<T, undefined>, Key>
-    | Extract<T, undefined>
-
-export type GetFieldType<T, P> =
-    P extends `${infer Left}.${infer Right}` ?
-        Left extends keyof Exclude<T, undefined> ?
-            FieldWithPossiblyUndefined<Exclude<T, undefined>[Left], Right> | Extract<T, undefined>
-        : Left extends `${infer FieldKey}[${infer IndexKey}]` ?
-            FieldKey extends keyof T ?
-                FieldWithPossiblyUndefined<
-                    IndexedFieldWithPossiblyUndefined<T[FieldKey], IndexKey>,
-                    Right
-                >
-            :   undefined
-        :   undefined
-    : P extends keyof T ? T[P]
-    : P extends `${infer FieldKey}[${infer IndexKey}]` ?
-        FieldKey extends keyof T ?
-            IndexedFieldWithPossiblyUndefined<T[FieldKey], IndexKey>
-        :   undefined
-    :   IndexedFieldWithPossiblyUndefined<T, P>
 
 /**
  * Gets the property value at path of object. If the resolved value is undefined the
@@ -219,4 +175,93 @@ export function set<T>(
     }
 
     return obj
+}
+
+export const deepMergeObjects = <T extends { [key: PropertyKey]: any }>(...sources: Array<T>) => {
+    const target = {} as T
+
+    sources.filter(isDefined).forEach(source => {
+        Object.keys(source).forEach(key => {
+            const sourceValue = source[key]
+            const targetValue = target[key]
+
+            if (Object(sourceValue) === sourceValue && Object(targetValue) === targetValue) {
+                Object.assign(target, { [key]: deepMergeObjects(targetValue, sourceValue) })
+
+                return
+            }
+
+            Object.assign(target, { [key]: sourceValue })
+        })
+    })
+
+    return target
+}
+
+/**
+ * Taken from Zustand's vanilla implementation
+ * @see {@link https://github.com/pmndrs/zustand/blob/main/src/vanilla/shallow}
+ */
+export function shallow<T>(valueA: T, valueB: T): boolean {
+    if (Object.is(valueA, valueB)) {
+        return true
+    }
+    if (!isObject(valueA) || isNil(valueA) || !isObject(valueB) || isNil(valueB)) {
+        return false
+    }
+    if (Object.getPrototypeOf(valueA) !== Object.getPrototypeOf(valueB)) {
+        return false
+    }
+    if (isIterable(valueA) && isIterable(valueB)) {
+        if (hasIterableEntries(valueA) && hasIterableEntries(valueB)) {
+            return compareEntries(valueA, valueB)
+        }
+        return compareIterables(valueA, valueB)
+    }
+    // assume plain objects
+    return compareEntries(
+        { entries: () => Object.entries(valueA) },
+        { entries: () => Object.entries(valueB) },
+    )
+}
+
+const hasIterableEntries = (
+    value: Iterable<unknown>,
+): value is Iterable<unknown> & {
+    entries(): Iterable<[unknown, unknown]>
+} =>
+    // HACK: avoid checking entries type
+    'entries' in value
+
+const compareEntries = (
+    valueA: { entries(): Iterable<[unknown, unknown]> },
+    valueB: { entries(): Iterable<[unknown, unknown]> },
+) => {
+    const mapA = valueA instanceof Map ? valueA : new Map(valueA.entries())
+    const mapB = valueB instanceof Map ? valueB : new Map(valueB.entries())
+    if (mapA.size !== mapB.size) {
+        return false
+    }
+    for (const [key, value] of mapA) {
+        if (!Object.is(value, mapB.get(key))) {
+            return false
+        }
+    }
+    return true
+}
+
+// Ordered iterables
+const compareIterables = (valueA: Iterable<unknown>, valueB: Iterable<unknown>) => {
+    const iteratorA = valueA[Symbol.iterator]()
+    const iteratorB = valueB[Symbol.iterator]()
+    let nextA = iteratorA.next()
+    let nextB = iteratorB.next()
+    while (!nextA.done && !nextB.done) {
+        if (!Object.is(nextA.value, nextB.value)) {
+            return false
+        }
+        nextA = iteratorA.next()
+        nextB = iteratorB.next()
+    }
+    return !!nextA.done && !!nextB.done
 }

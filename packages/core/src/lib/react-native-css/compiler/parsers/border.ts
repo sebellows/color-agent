@@ -1,3 +1,23 @@
+import { BorderSideWidth } from 'lightningcss'
+
+import { StyleSheetBuilder } from '../stylesheet'
+
+export function parseBorderSideWidthDeclaration(
+    declaration: { value: BorderSideWidth },
+    builder: StyleSheetBuilder,
+) {
+    return parseBorderSideWidth(declaration.value, builder)
+}
+
+export function parseBorderSideWidth(value: BorderSideWidth, builder: StyleSheetBuilder) {
+    if (value.type === 'length') {
+        return parseLength(value.value, builder)
+    }
+
+    builder.addWarning('value', value.type)
+    return undefined
+}
+
 function parseBorderRadius(
     { value }: DeclarationType<'border-radius'>,
     builder: StyleSheetBuilder,

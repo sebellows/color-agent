@@ -1,5 +1,6 @@
-import { FilterFunction, FlexAlignType, FlexStyle } from 'react-native'
+import { FilterFunction, FlexStyle } from 'react-native'
 
+import { Prefix } from 'lightningcss'
 import { ArraySlice, KeysOfUnion, LiteralUnion } from 'type-fest'
 
 function arraySlice<
@@ -331,6 +332,142 @@ export const mediaFeatureIdentValues = new Set(mediaFeatureIdentValuesList)
 
 /**************************************************
  *
+ * MISCELLANEOUS PROPERTIES - units, values, etc.
+ *
+ **************************************************/
+
+const vendorPrefixList = ['webkit', 'moz', 'ms', 'o', 'none'] as const
+export const vendorPrefixes = new Set<Prefix>(vendorPrefixList)
+
+// Properties conforming to lightningcss' `Size` token type
+// See node_modules/lightningcss/node/ast.d.ts
+const sizeList = [
+    'auto',
+    'contain',
+    'fill',
+    'fit-content',
+    'fit-content-function',
+    'length-percentage',
+    'max-content',
+    'min-content',
+    'stretch',
+] as const
+export const sizes = new Set(sizeList)
+
+// Properties conforming to lightningcss' `MaxSize` token type
+// See node_modules/lightningcss/node/ast.d.ts
+const maxSizeList = [
+    'none',
+    'contain',
+    'fit-content',
+    'fit-content-function',
+    'length-percentage',
+    'max-content',
+    'min-content',
+    'stretch',
+] as const
+export const maxSizes = new Set(maxSizeList)
+
+/** UNITS - used for properties dealing with size/dimension */
+const unitsList = [
+    'px',
+    'em',
+    'rem',
+    'vw',
+    'vh',
+    'in',
+    'cm',
+    'mm',
+    'q',
+    'pt',
+    'pc',
+    'ex',
+    'rex',
+    'ch',
+    'rch',
+    'cap',
+    'rcap',
+    'ic',
+    'ric',
+    'lh',
+    'rlh',
+    'lvw',
+    'svw',
+    'dvw',
+    'cqw',
+    'lvh',
+    'svh',
+    'dvh',
+    'cqh',
+    'vi',
+    'svi',
+    'lvi',
+    'dvi',
+    'cqi',
+    'vb',
+    'svb',
+    'lvb',
+    'dvb',
+    'cqb',
+    'vmin',
+    'svmin',
+    'lvmin',
+    'dvmin',
+    'cqmin',
+    'vmax',
+    'svmax',
+    'lvmax',
+    'dvmax',
+    'cqmax',
+] as const
+export const unitValues = new Set(unitsList)
+const nativeUnits = arraySlice(unitsList, 0, 5)
+type SupportedUnits = LiteralUnion<(typeof nativeUnits)[number], string>
+export const supportedUnits = new Set<SupportedUnits>(nativeUnits)
+
+/** ANGLE-UNITS - used in transforms */
+const angleUnitsList = ['deg', 'rad', 'grad', 'turn'] as const
+export const angleUnits = new Set(angleUnitsList)
+export const supportedAngleUnits = angleUnits
+
+/** TIME-UNITS - coming from AST */
+const timeUnitsList = ['seconds', 'milliseconds'] as const
+export const timeUnits = new Set(timeUnitsList)
+export const supportedTimeUnits = timeUnits
+
+/**
+ * COLOR SPACES
+ *
+ * NOTE: We can support other color spaces, but we prefer these ones the most on the web.
+ * Order of preference is: oklch, rgb, hex
+ */
+const colorSpacesList = [
+    'hex',
+    'rgb',
+    'rgba',
+    'hsl',
+    'hsla',
+    'hwb',
+    'lab',
+    'oklab',
+    'lch',
+    'oklch',
+    'srgb',
+    'display-p3',
+    'a98-rgb',
+    'prophoto-rgb',
+    'rec2020',
+    'xyz-d50',
+    'xyz-d65',
+    'light-dark',
+] as const
+export const colorSpaceValues = new Set<(typeof colorSpacesList)[number] | string>(colorSpacesList)
+export const unsupportedColorSpaces = new Set(arraySlice(colorSpacesList, 5))
+// NOTE: Native does not support oklch, so we opt for hsl(a), rgb(a), and hex (in that order).
+export const supportedColorSpaces = new Set(arraySlice(colorSpacesList, 0, 5))
+
+/**************************************************
+ *
  * GRADIENT PROPERTIES
  *
  **************************************************/
@@ -400,131 +537,6 @@ export const supportedBackgroundClipValues = new Set([]) // Not supported in RN
 
 /**************************************************
  *
- * MISCELLANEOUS PROPERTIES
- *
- **************************************************/
-
-const vendorPrefixList = ['webkit', 'moz', 'ms', 'o', 'none'] as const
-export const vendorPrefixes = new Set(vendorPrefixList)
-
-const sizeList = [
-    'auto',
-    'contain',
-    'fill',
-    'fit-content',
-    'max-content',
-    'min-content',
-    'stretch',
-] as const
-export const sizes = new Set(sizeList)
-
-const maxSizeList = [
-    'none',
-    'contain',
-    'max-content',
-    'min-content',
-    'fit-content',
-    'stretch',
-] as const
-export const maxSizes = new Set(maxSizeList)
-
-const visibilityList = ['visible', 'hidden', 'collapse'] as const
-export const visibilityValues = new Set(visibilityList)
-export const supportedVisibilityValues = visibilityValues
-
-const unitsList = [
-    'px',
-    'em',
-    'rem',
-    'vw',
-    'vh',
-    'in',
-    'cm',
-    'mm',
-    'q',
-    'pt',
-    'pc',
-    'ex',
-    'rex',
-    'ch',
-    'rch',
-    'cap',
-    'rcap',
-    'ic',
-    'ric',
-    'lh',
-    'rlh',
-    'lvw',
-    'svw',
-    'dvw',
-    'cqw',
-    'lvh',
-    'svh',
-    'dvh',
-    'cqh',
-    'vi',
-    'svi',
-    'lvi',
-    'dvi',
-    'cqi',
-    'vb',
-    'svb',
-    'lvb',
-    'dvb',
-    'cqb',
-    'vmin',
-    'svmin',
-    'lvmin',
-    'dvmin',
-    'cqmin',
-    'vmax',
-    'svmax',
-    'lvmax',
-    'dvmax',
-    'cqmax',
-] as const
-export const unitValues = new Set(unitsList)
-const nativeUnits = arraySlice(unitsList, 0, 5)
-type SupportedUnits = LiteralUnion<(typeof nativeUnits)[number], string>
-export const supportedUnits = new Set<SupportedUnits>(nativeUnits)
-
-const angleUnitsList = ['deg', 'rad', 'grad', 'turn'] as const
-export const angleUnits = new Set(angleUnitsList)
-export const supportedAngleUnits = angleUnits
-
-const timeUnitsList = ['seconds', 'milliseconds'] as const
-export const timeUnits = new Set(timeUnitsList)
-export const supportedTimeUnits = timeUnits
-
-// NOTE: We can support other color spaces, but we prefer these ones the most on the web.
-// Order of preference is: oklch, rgb, hex
-const colorSpacesList = [
-    'hex',
-    'rgb',
-    'rgba',
-    'hsl',
-    'hsla',
-    'hwb',
-    'lab',
-    'oklab',
-    'lch',
-    'oklch',
-    'srgb',
-    'display-p3',
-    'a98-rgb',
-    'prophoto-rgb',
-    'rec2020',
-    'xyz-d50',
-    'xyz-d65',
-    'light-dark',
-] as const
-export const colorSpaceValues = new Set<(typeof colorSpacesList)[number] | string>(colorSpacesList)
-export const unsupportedColorSpaces = new Set(arraySlice(colorSpacesList, 5))
-// NOTE: Native does not support oklch, so we opt for hsl(a), rgb(a), and hex (in that order).
-export const supportedColorSpaces = new Set(arraySlice(colorSpacesList, 0, 5))
-
-/**************************************************
- *
  * LAYOUT PROPERTIES
  *
  **************************************************/
@@ -536,7 +548,8 @@ export const supportedBoxSizingValues = boxSizingValues
 
 /**
  * DIRECTION
- * NOTE: `direction` supported on iOS only
+ *
+ * ! iOS ONLY
  */
 const directionValuesList = ['ltr', 'rtl', 'inherit'] as const
 export const directionValues = new Set(directionValuesList)
@@ -588,20 +601,34 @@ const positionValuesList = ['absolute', 'relative', 'static', 'fixed', 'sticky']
 export const positionValues = new Set(positionValuesList)
 export const supportedPositionValues = new Set(arraySlice(positionValuesList, 0, 3))
 
+/** VISIBILITY */
+const visibilityList = ['visible', 'hidden', 'collapse'] as const
+export const visibilityValues = new Set(visibilityList)
+export const supportedVisibilityValues = visibilityValues
+
 /**************************************************
  *
  * FLEXBOX PROPERTIES
  *
  **************************************************/
 
+/**
+ * Flexbox Flex-Direction
+ */
 const flexDirectionValuesList = ['row', 'row-reverse', 'column', 'column-reverse'] as const
 export const flexDirectionValues = new Set(flexDirectionValuesList)
 export const supportedFlexDirectionValues = flexDirectionValues
 
+/**
+ * Flexbox Flex-Wrap
+ */
 const flexWrapValuesList = ['wrap', 'nowrap', 'wrap-reverse'] as const
 export const flexWrapValues = new Set(flexWrapValuesList)
 export const supportedFlexWrapValues = flexWrapValues
 
+/**
+ * Flexbox Justify-Content
+ */
 const justifyContentValuesList = [
     'flex-start',
     'flex-end',
@@ -613,7 +640,11 @@ const justifyContentValuesList = [
 export const justifyContentValues = new Set(justifyContentValuesList)
 export const supportedJustifyContentValues = justifyContentValues
 
-// NOTE: `justify-self` is not supported in RN
+/**
+ * Flexbox Justify-Self
+ *
+ * NOTE: Not supported in RN
+ */
 const justifySelfValuesList = [
     'auto',
     'normal',
@@ -627,8 +658,11 @@ const justifySelfValuesList = [
 export const justifySelfValues = new Set(justifySelfValuesList)
 export const supportedJustifySelfValues = new Set([]) // Not supported in RN
 
-// NOTE: Native does not support `first baseline`, `last baseline`, `safe center`,
-//     `unsafe center`, `revert`, `revert-layer`, `unset`, `inherit`, or `initial`
+/**
+ * Flexbox Align-Content
+ * NOTE: Native does not support `first baseline`, `last baseline`, `safe center`,
+ * `unsafe center`, `revert`, `revert-layer`, `unset`, `inherit`, or `initial`
+ */
 const alignContentValuesList = [
     'flex-start',
     'flex-end',
@@ -641,10 +675,16 @@ const alignContentValuesList = [
 export const alignContentValues = new Set(alignContentValuesList)
 export const supportedAlignContentValues = alignContentValues
 
+/**
+ * Flexbox Align-Items
+ */
 const alignItemsValuesList = ['flex-start', 'flex-end', 'center', 'baseline', 'stretch'] as const
 export const alignItemsValues = new Set(alignItemsValuesList)
 export const supportedAlignItemsValues = alignItemsValuesList
 
+/**
+ * Flexbox Align-Self
+ */
 const alignSelfValuesList = [
     'auto',
     'flex-start',
@@ -663,6 +703,7 @@ export const supportedAlignSelfValues = alignSelfValues
  *
  **************************************************/
 
+/** FONT-FAMILY */
 const fontFamilyKeywordsList = [
     'serif',
     'sans-serif',
@@ -687,10 +728,12 @@ const fontFamilyKeywordsList = [
 export const fontFamilyKeywords = new Set(fontFamilyKeywordsList)
 export const supportedFontFamilyKeywords = new Set([])
 
+/** FONT-STYLE */
 const fontStyleValuesList = ['oblique', 'normal', 'italic'] as const
 export const fontStyleValues = new Set(fontStyleValuesList)
 export const supportedFontStyleValues = new Set(arraySlice(fontStyleValuesList, 1))
 
+/** FONT-VARIANTS */
 const fontVariantValues__webOnly = [
     /** keyword values */
     'normal',
@@ -759,6 +802,7 @@ export const supportedFontVariantValues = new Set(
     [fontVariantValuesShared, fontVariantValues__rnOnly].flat(),
 )
 
+/** FONT-WEIGHT */
 const fontWeightsList = ['normal', 'bold', 100, 200, 300, 400, 500, 600, 700, 800, 900] as const
 const fontWeightKeywords__web = ['bolder', 'lighter'] as const
 const fontWeightsList__rn = [
@@ -785,6 +829,11 @@ const fontWeightsList__rn = [
 export const fontWeightValues = new Set([fontWeightsList, fontWeightKeywords__web].flat())
 export const supportedFontWeightValues = new Set([fontWeightsList, fontWeightsList__rn].flat())
 
+/**
+ * FONT-STRETCH
+ *
+ * ! NOT SUPPORTED IN REACT-NATIVE
+ */
 const fontStretchKeywordsList = [
     'normal',
     'ultra-condensed',
@@ -799,6 +848,7 @@ const fontStretchKeywordsList = [
 export const fontStretchKeywords = new Set(fontStretchKeywordsList)
 export const supportedFontStretchKeywords = new Set([]) // Not supported in RN
 
+/** LINE-HEIGHT */
 const lineHeightKeywordsList = ['normal'] as const
 export const lineHeightKeywords = new Set(lineHeightKeywordsList)
 export const supportedLineHeightKeywords = new Set([]) // Not supported in RN
@@ -807,11 +857,16 @@ const textAlignValuesList = ['auto', 'left', 'right', 'center', 'justify'] as co
 export const textAlignValues = new Set(textAlignValuesList)
 export const supportedTextAlignValues = textAlignValues
 
-// NOTE: iOS ONLY
+/**
+ * VISIBILITY
+ *
+ * ! iOS ONLY
+ */
 const textAlignVerticalValuesList = ['auto', 'top', 'bottom', 'center'] as const
 export const textAlignVerticalValues = new Set(textAlignVerticalValuesList)
 export const supportedTextAlignVerticalValues = textAlignVerticalValues
 
+/** TEXT-DECORATION */
 const textDecorationLineValuesList = [
     'underline line-through',
     'none',
@@ -826,13 +881,18 @@ export const supportedTextDecorationLineValues = new Set(
     arraySlice(textDecorationLineValuesList, 0, 4),
 )
 
-// NOTE: iOS ONLY
+/**
+ * TEXT-DECORATION
+ *
+ * ! iOS ONLY
+ */
 const textDecorationStyleValuesList = ['solid', 'double', 'dotted', 'dashed', 'wavy'] as const
 export const textDecorationStyleValues = new Set(textDecorationStyleValuesList)
 export const supportedTextDecorationStyleValues = new Set(
     arraySlice(textDecorationStyleValuesList, 0, 4),
 )
 
+/** TEXT-TRANSFORM */
 const textTransformValuesList = [
     'none',
     'uppercase',
@@ -846,10 +906,12 @@ const textTransformValuesList = [
 export const textTransformValues = new Set(textTransformValuesList)
 export const supportedTextTransformValues = new Set(arraySlice(textTransformValuesList, 0, 4))
 
+/** USER-SELECT */
 const userSelectValuesList = ['contain', 'auto', 'none', 'text', 'all'] as const
 export const userSelectValues = new Set(arraySlice(userSelectValuesList, 1)) // `contain` is RN ONLY!
 export const supportedUserSelectValues = new Set(userSelectValuesList)
 
+/** VERTICAL-ALIGN */
 const verticalAlignValuesList = [
     'auto', // not part of web spec
     'top',
@@ -864,8 +926,13 @@ const verticalAlignValuesList = [
 export const verticalAlignValues = new Set(arraySlice(verticalAlignValuesList, 1))
 export const supportedVerticalAlignValues = new Set(arraySlice(verticalAlignValuesList, 0, 4))
 
-// NOTE: The closest equivalent for `writingDirection` in CSS is the `direction` property,
-//    which is discouraged in favor of using the `dir` HTML attribute instead.
+/**
+ * WRITING-DIRECTION
+ *
+ * ! REACT-NATIVE ONLY
+ * The closest equivalent for `writingDirection` in CSS is the `direction` property,
+ * which is discouraged in favor of using the `dir` HTML attribute instead.
+ */
 const writingDirectionValuesList = ['auto', 'ltr', 'rtl'] as const
 export const writingDirectionValues = new Set(arraySlice(writingDirectionValuesList, 1))
 export const supportedWritingDirectionValues = new Set(writingDirectionValuesList)
@@ -928,11 +995,16 @@ export const supportedBlendModeValues = blendModeValues
  *
  **************************************************/
 
-// NOTE: Shared with ImageStyle properties.
+/**
+ * BACKFACE-VISIBILITY
+ *
+ * NOTE: Also applies to ImageStyle
+ */
 const backfaceVisibilityValuesList = ['visible', 'hidden'] as const
 export const backfaceVisibilityValues = new Set(backfaceVisibilityValuesList)
 export const supportedBackfaceVisibilityValues = backfaceVisibilityValues
 
+/** BORDER-STYLE */
 const borderStyleValuesList = [
     'dotted',
     'dashed',
@@ -948,10 +1020,12 @@ const borderStyleValuesList = [
 export const borderStyleValues = new Set(borderStyleValuesList)
 export const supportedBorderStyleValues = new Set(arraySlice(borderStyleValuesList, 0, 3))
 
+/** BORDER-WIDTH */
 const borderWidthValuesList = ['thin', 'medium', 'thick'] as const
 export const borderWidthValues = new Set(borderWidthValuesList)
 export const supportedBorderWidthValues = new Set([]) // Not supported in RN
 
+/** CURSOR TYPE */
 const cursorValuesList = [
     'auto',
     'pointer',
@@ -993,6 +1067,7 @@ const cursorValuesList = [
 export const cursorValues = new Set(cursorValuesList)
 export const supportedCursorValues = new Set(arraySlice(cursorValuesList, 0, 2))
 
+/** OUTLINE-STYLE */
 const outlineStyleValuesList = [
     'solid',
     'dotted',
@@ -1008,6 +1083,7 @@ const outlineStyleValuesList = [
 export const outlineStyleValues = new Set(outlineStyleValuesList)
 export const supportedOutlineStyleValues = new Set(arraySlice(outlineStyleValuesList, 0, 3))
 
+/** POINTER-EVENTS */
 const pointerEventsValuesList = [
     // RN-specific value
     'box-none',
@@ -1032,11 +1108,18 @@ export const pointerEventsValues = new Set(arraySlice(pointerEventsValuesList, 2
 export const supportedPointerEventsValues = new Set(arraySlice(pointerEventsValuesList, 0, 4))
 
 /**************************************************
+ *
  * Image Style Properties
+ *
  **************************************************/
 
-// NOTE: This is the RN equivalent to both `background-repeat` and `background-size`.
-//    This property does not exist in CSS.
+/**
+ * RESIZE-MODEL
+ *
+ * ! REACT-NATIVE ONLY
+ *
+ * NOTE: This is the RN equivalent to both `background-repeat` and `background-size`.
+ */
 const resizeModeValuesList = [
     'repeat',
     'cover',
@@ -1049,9 +1132,16 @@ export const resizeModeValues = new Set([]) // Not supported in CSS
 export const supportedResizeModeValues = new Set(resizeModeValuesList)
 
 /**************************************************
+ *
  * Animation Style Properties
+ *
  **************************************************/
 
+const animationProps = {
+    //
+}
+
+/** ANIMATION-/TRANSITION-TIMING-FUNCTION */
 const timingFunctionValuesList = [
     'linear',
     'ease',

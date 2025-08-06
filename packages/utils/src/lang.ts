@@ -1,7 +1,9 @@
 import { ValueOf } from 'type-fest'
+import { AsyncFunction as TAsyncFunction } from 'type-fest/source/async-return-type'
+
 import { hasOwn } from './misc'
 import { isDecimal } from './number'
-import { AsyncFn, Constructor, Fn } from './types'
+import { AsyncFunction, Constructor, Fn, Type } from './types'
 
 /**
  * @internal
@@ -30,12 +32,47 @@ import { AsyncFn, Constructor, Fn } from './types'
  */
 export const _protoToString = Object.prototype.toString
 
-export function getType(value: unknown): string {
+const TypeMap = {
+    Array,
+    ArrayBuffer,
+    AsyncFunction,
+    BigInt,
+    Boolean,
+    Date,
+    DOMException,
+    Error,
+    Function,
+    Map,
+    Null: null,
+    Number,
+    Object,
+    Set,
+    String,
+    Symbol,
+    undefined,
+} as const
+
+const TypeRegistry = {} as { [key: string]: Function }
+const typeMap: typeof TypeMap & { [key: string]: Function } = Object.assign(TypeRegistry, TypeMap)
+
+type StringKeyOf<T, K extends keyof T = keyof T> = K extends string ? K : never
+type TypeMapKey = StringKeyOf<typeof typeMap>
+type TypeMapValue<K extends TypeMapKey> = (typeof typeMap)[K]
+
+export function getType(value: unknown) {
     if (value === null) {
         return 'Null'
     }
 
-    return _protoToString.call(value).slice(8, -1)
+    const protoName = _protoToString.call(value).slice(8, -1)
+    let typ = protoName as TypeMapKey
+    if (!(protoName in typeMap) && value && value.constructor) {
+        typeMap[protoName] = value.constructor
+        typ = protoName as TypeMapKey
+    }
+    const v = typeMap[typ] as TypeMapValue<TypeMapKey>
+
+    return (v satisfies TypeMapValue<TypeMapKey>) ? typ : (typ satisfies TypeMapKey)
 }
 
 /**
@@ -127,11 +164,8 @@ export function isUndefined(value: unknown): value is undefined {
  * Check if a value is defined, by default it checks if the value is not 'null' or 'undefined'.
  * If 'strict' is set to true, it will also check if the value is only 'undefined'.
  */
-export function isDefined(value: unknown, options?: { strict?: boolean }): boolean {
-    if (options?.strict) {
-        !isUndefined(value)
-    }
-    return !isNil(value)
+export function isDefined(value: unknown): boolean {
+    return !isUndefined(value)
 }
 
 /**
@@ -181,7 +215,7 @@ export function isFunction(value: unknown): value is Fn {
     return is(value, 'function')
 }
 
-export function isAsync(value: unknown): value is AsyncFn {
+export function isAsync(value: unknown): value is TAsyncFunction {
     return is(value, 'asyncfunction')
 }
 
@@ -193,8 +227,8 @@ export function isIterator<T>(value: unknown): value is Iterator<T> {
     return isObject(value) && !isNil(value) && isFunction((value as Iterator<T>).next)
 }
 
-export function isIterable<T>(value: unknown): value is Iterable<T> {
-    return isObject(value) && !isNil(value) && isFunction((value as Iterable<any>)[Symbol.iterator])
+export function isIterable<T = unknown>(value: unknown): value is Iterable<T> {
+    return isObject(value) && !isNil(value) && Symbol.iterator in value
 }
 
 export function isAsyncIterator<T>(value: unknown): value is AsyncIterator<T> {

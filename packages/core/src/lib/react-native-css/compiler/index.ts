@@ -4,5 +4,5 @@
  */
 
 export * from './compiler'
-export type * from './compiler.types'
+export type * from './types'
 export * from './compiler.utils'

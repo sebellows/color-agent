@@ -1,3 +1,5 @@
+import { LiteralUnion } from 'type-fest'
+
 /**
  * Function Type
  *
@@ -32,15 +34,82 @@ export type Booleanish = boolean | 'true' | 'false'
 export type Fn<T = unknown, Args extends unknown[] = any[]> = (...args: Args) => T
 
 /**
- * An async closure that returns a Promise that will resolve an instance of a class.
- * Normally called from the 'make' method of a class extending the HookableContract.
+ * The constructor for an async function.
+ *
+ * While currently `[object AsyncFunction]` is returned when examining
+ * the constructor of an async function. The actual object type is
+ * really just `Function`. AsyncFunction is not an actual global object
+ * that can be referenced. For the sake of type checking here, we'll
+ * safely make AsyncFunction a real boy and guard against a possible
+ * future where it really exists.
  *
  * @example
- * resolve($engine: GameEngine, async () => {
- *   const instance = new Promise(new GameRelatedClass())
- *   return instance
+ * async function getProducts() {
+ *     try {
+ *         const response = await fetch(https://example.org/products.json)
+ *         if (!response.ok) {
+ *             throw new Error(`Response status: ${response.status}`)
+ *         }
+ *         return await response.json()
+ *     } catch (error) {
+ *         console.error(error.message)
+ *     }
  * })
+ *
+ * assert(getProducts instanceof AsyncFunction) // true
  */
-export type AsyncFn<T = unknown, Args extends unknown[] = any[]> = (
-    ...args: Args
-) => Promise<T | never>
+export const AsyncFunction = async function () {}.constructor as AsyncFunctionConstructor
+
+export interface AsyncFunction {
+    (...args: any[]): Promise<unknown>
+    readonly length: number
+    readonly name: string
+}
+
+export interface AsyncFunctionConstructor {
+    new (...args: any[]): AsyncFunction
+    (...args: any[]): AsyncFunction
+    readonly length: number
+    readonly name: string
+    readonly prototype: AsyncFunction
+    toString(): string
+}
+
+/**
+ * Allows creating a union type by combining primitive types and literal types without
+ * sacrificing auto-completion in IDEs for the literal type part of the union.
+ *
+ * Currently, when a union type of a primitive type is combined with literal types,
+ * TypeScript loses all information about the combined literals. Thus, when such type
+ * is used in an IDE with autocompletion, no suggestions are made for the declared literals.
+ *
+ * This type is a workaround for [Microsoft/TypeScript#29729](https://github.com/Microsoft/TypeScript/issues/29729).
+ * It will be removed as soon as it's not needed anymore.
+ *
+ * NOTE: Taken from `type-fest`, which doesn't publicly export the utility...
+ * out of spite, I bet 😠
+ *
+ * Use-cases:
+ * - Get string keys from a type which may have number keys.
+ * - Makes it possible to index using strings retrieved from template types.
+ *
+ * @example
+ * ```
+ * const colors = [
+ *     'blue',
+ *     'red',
+ *     'green',
+ * ] as const
+ *
+ * type Color = (typeof colors)[number]
+ *
+ * const colorSet = new Set<Color>(colors)
+ * const hasBlue = colorSet.has('blue')
+ * \// 'blue' will be flagged as error in VS Code
+ *
+ * const colorSet = new Set<LiteralStringUnion<Color>>(colors)
+ * const hasBlue = colorSet.has('blue')
+ * \// 'blue' will no longer be flagged
+ * ```
+ */
+export type LiteralStringUnion<BaseType> = LiteralUnion<BaseType, string>

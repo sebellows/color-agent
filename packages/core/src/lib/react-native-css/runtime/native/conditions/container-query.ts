@@ -38,7 +38,7 @@ export function testContainerQuery(
     const name = query.name ?? DEFAULT_CONTAINER_NAME
     const container = inheritedContainers[name]!
 
-    guards.push(['containers', name, container])
+    guards.push({ type: 'container', name, value: container })
 
     if (
         !container &&

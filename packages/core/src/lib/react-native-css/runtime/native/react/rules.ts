@@ -1,4 +1,4 @@
-import { get, isObject } from '@coloragent/utils'
+import { get, getEntries, isObject } from '@coloragent/utils'
 
 import { isInlineVariable, type InlineVariable, type StyleRule } from '../../../compiler'
 import { DEFAULT_CONTAINER_NAME, INLINE_RULE_SYMBOL, VAR_SYMBOL } from '../../constants'
@@ -102,8 +102,8 @@ export function updateRules(
                     variables ??= { ...inheritedVariables }
                 }
 
-                for (const v of rule.vars) {
-                    variables![v[0]] = v[1]
+                for (const [varKey, varValue] of getEntries(rule.vars)) {
+                    variables[varKey] = varValue
                 }
             }
 

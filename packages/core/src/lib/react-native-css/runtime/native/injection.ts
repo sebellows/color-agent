@@ -1,12 +1,7 @@
 import { getEntries } from '@coloragent/utils'
-import { Entries, UnknownRecord } from 'type-fest'
+import { UnknownRecord } from 'type-fest'
 
-import type {
-    Animation_V2,
-    AnimationKeyframesRecord_V2,
-    ReactNativeCssStyleSheet,
-    StyleRuleSet,
-} from '../../compiler'
+import type { AnimationKeyframes_V2, ReactNativeCssStyleSheet, StyleRuleSet } from '../../compiler'
 import { family, observable, observableBatch, rootVariables, type Observable } from './reactivity'
 
 export function StyleCollection() {
@@ -18,16 +13,8 @@ export const inlineStylesMap = new WeakMap()
 StyleCollection.styles = family<string, Observable<StyleRuleSet>>(() => {
     return observable([], isDeepEqual)
 })
-// export type AnimationRecord_V2 = Record<string, AnimationKeyframesRecord_V2>
-// export type AnimationKeyframesRecord_V2 = Record<string | number, StyleDeclaration[]>
 
-// export type Animation_V2 = [string, AnimationKeyframes_V2[]]
-// export type AnimationKeyframes_V2 = [string | number, StyleDeclaration[]]
-
-// StyleCollection.keyframes = family<string, Observable<Animation_V2[1]>>(() => {
-//     return observable([], isDeepEqual)
-// })
-StyleCollection.keyframes = family<string, Observable<Entries<AnimationKeyframesRecord_V2>>>(() => {
+StyleCollection.keyframes = family<string, Observable<AnimationKeyframes_V2[]>>(() => {
     return observable([], isDeepEqual)
 })
 

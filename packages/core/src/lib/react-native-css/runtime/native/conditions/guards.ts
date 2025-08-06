@@ -1,11 +1,16 @@
+import { StyleDescriptor } from '../../../compiler'
 import type { ComponentState } from '../react/use-native-css'
 import type { ContainerContextValue, Effect, VariableContextValue } from '../reactivity'
 
 export type RenderGuard =
-    | ['attr', string, any]
-    | ['dataSet', string, any]
-    | ['vars', string, any]
-    | ['containers', string, Effect]
+    | { type: 'attr'; name: string; value: string }
+    | { type: 'dataSet'; name: string; value: string }
+    | { type: 'var'; name: string; value: StyleDescriptor }
+    | { type: 'container'; name: string; value: Effect }
+// | ['attr', string, any]
+// | ['dataSet', string, any]
+// | ['vars', string, any]
+// | ['containers', string, Effect]
 
 export function testGuards(
     state: ComponentState,
@@ -16,27 +21,27 @@ export function testGuards(
     return state.guards?.some(guard => {
         let result = false
 
-        switch (guard[0]) {
+        switch (guard.type) {
             case 'attr':
                 // Attribute
-                result = currentProps?.[guard[1]] !== guard[2]
+                result = currentProps?.[guard.name] !== guard.value
                 break
             case 'dataSet':
                 // DataSet
-                result = currentProps?.dataSet?.[guard[1]] !== guard[2]
+                result = currentProps?.dataSet?.[guard.name] !== guard.value
                 break
-            case 'vars':
+            case 'var':
                 // Variables
-                result = inheritedVariables[guard[1]] !== guard[2]
+                result = inheritedVariables[guard.name] !== guard.value
                 break
-            case 'containers':
+            case 'container':
                 // Containers
-                result = inheritedContainers[guard[1]] !== guard[2]
+                result = inheritedContainers[guard.name] !== guard.value
                 break
         }
 
         if (result) {
-            console.log(`[guards.ts]: Guard ${guard[0]}:${guard[1]} failed`)
+            console.log(`[guards.ts]: Guard ${guard.name}:${guard.value} failed`)
         }
 
         return result

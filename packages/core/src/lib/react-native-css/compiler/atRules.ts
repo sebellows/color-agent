@@ -9,10 +9,10 @@ import type {
 } from 'lightningcss'
 
 import { isBooleanish } from '../../../utils'
-import type { StyleRuleMapping } from './compiler.types'
 import { toRNProperty } from './selectors'
 import { splitByDelimiter } from './split-by-delimiter'
 import type { StyleSheetBuilder } from './stylesheet'
+import type { StyleRuleMapping } from './types'
 
 type UnknownAtRuleValue = Omit<UnknownAtRule, 'prelude' | 'block'> & {
     prelude: Extract<TokenOrValue, { type: 'token' }>[]

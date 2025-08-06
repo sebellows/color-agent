@@ -1,78 +1,183 @@
+import { getEntries, isEmpty, isObject } from '@coloragent/utils'
+import { MediaCondition } from 'lightningcss'
+
 import { RN_CSS_EM_PREFIX, ROOT_FONT_SIZE } from '../runtime/constants'
-import { isStyleDescriptorArray, Specificity, specificityCompareFn } from '../runtime/utils'
+import {
+    isStyleDescriptorArray,
+    isStyleFunctionDescriptor,
+    Specificity,
+    specificityCompareFn,
+} from '../runtime/utils'
+import { toRNProperty, type NormalizeSelector } from './selectors'
 import type {
-    // AnimationKeyframes_V2,
     AnimationKeyframesRecord_V2,
     AnimationRecord_V2,
     CompilerOptions,
     ContainerQuery,
-    MediaCondition,
     ReactNativeCssStyleSheet,
     StyleDeclaration,
     StyleDescriptor,
-    StyleFunction,
     StyleRule,
     StyleRuleMapping,
     StyleRuleSet,
     VariableRecord,
-} from './compiler.types'
-import { toRNProperty, type NormalizeSelector } from './selectors'
+} from './types'
 
 type BuilderMode = 'style' | 'media' | 'container' | 'keyframes'
 
-type StyleRuleSetRecord = Record<string, StyleRuleSet>
-
-type SharedStyleSheetConfig = {
-    ruleSets: StyleRuleSetRecord
-    rootVariables?: VariableRecord
-    universalVariables?: VariableRecord
-    animations?: AnimationRecord_V2
+interface StyleSheetConfig {
+    ruleSets: Record<string, StyleRuleSet>
+    rootVariables: VariableRecord
+    universalVariables: VariableRecord
+    animations: AnimationRecord_V2
     rem: number
     ruleOrder: number
 }
 
-const defaultSharedConfig: SharedStyleSheetConfig = {
-    ruleSets: {},
-    rem: ROOT_FONT_SIZE,
-    ruleOrder: 0,
+type SetStateInternal<T> = {
+    _(partial: T | Partial<T> | { _(state: T): T | Partial<T> }['_'], replace?: false): void
+    _(state: T | { _(state: T): T }['_'], replace: true): void
+}['_']
+
+export interface StoreApi<T> {
+    set: SetStateInternal<T>
+    get: () => T
+    getInitialState: () => T
+    subscribe: (listener: (state: T, prevState: T) => void) => () => void
 }
+
+const store = (() => {
+    type State = StyleSheetConfig
+    type Listener = (state: State, prevState: State) => void
+    let state: State
+    const listeners: Set<Listener> = new Set()
+
+    const initialState: State = {
+        ruleSets: {},
+        rootVariables: {},
+        universalVariables: {},
+        animations: {},
+        rem: ROOT_FONT_SIZE,
+        ruleOrder: 0,
+    }
+
+    const set: StoreApi<State>['set'] = (partial, replace) => {
+        const nextState =
+            typeof partial === 'function' ? (partial as (state: State) => State)(state) : partial
+        if (!Object.is(nextState, state)) {
+            const previousState = state
+            state =
+                replace ?? (typeof nextState !== 'object' || nextState === null) ?
+                    (nextState as State)
+                :   Object.assign({}, state, nextState)
+            listeners.forEach(listener => listener(state, previousState))
+        }
+    }
+
+    const get: StoreApi<State>['get'] = () => state
+
+    const getInitialState: StoreApi<State>['getInitialState'] = () => initialState
+
+    const subscribe: StoreApi<State>['subscribe'] = listener => {
+        listeners.add(listener)
+        // Unsubscribe
+        return () => listeners.delete(listener)
+    }
+
+    const updateOrder = () =>
+        set(({ ruleOrder, ...rest }) => ({ ...rest, ruleOrder: (ruleOrder += 1) }))
+
+    const addAnimation = (name: string, animationFrames: AnimationKeyframesRecord_V2) =>
+        set(({ animations }) => {
+            if (!(name in animations)) {
+                animations[name] = animationFrames
+            }
+            return animations
+        })
+
+    return { set, get, getInitialState, subscribe, addAnimation, updateOrder }
+})()
+
+const extraRules = new WeakMap<StyleRule, Partial<StyleRule>[]>()
+
+const staticDeclarations = new WeakMap<WeakKey, Record<string, StyleDescriptor>>()
 
 export class StyleSheetBuilder {
     animationFrames?: AnimationKeyframesRecord_V2 // AnimationKeyframes_V2[]
     animationDeclarations: StyleDeclaration[] = []
-    staticDeclarations: Record<string, StyleDescriptor> | undefined
 
     stylesheet: ReactNativeCssStyleSheet = {}
 
     varUsage = new Set<string>()
 
-    private rule: StyleRule = {
+    readonly shared = store
+
+    private _rule: StyleRule = {
         specificity: [],
+    }
+    get rule(): StyleRule {
+        return this._rule
+    }
+    private setRule(rule: StyleRule): void {
+        this._rule = rule
+    }
+
+    private _mapping: StyleRuleMapping = {}
+    get mapping(): StyleRuleMapping {
+        return this._mapping
+    }
+    private setMapping(mapping: StyleRuleMapping) {
+        this._mapping = mapping
+    }
+
+    private _descriptorProperty: string | undefined
+    get descriptorProperty(): string | undefined {
+        return this._descriptorProperty
+    }
+    private setDescriptorProperty(property: string) {
+        this._descriptorProperty = property
     }
 
     constructor(
         private options: CompilerOptions,
         private mode: BuilderMode = 'style',
-        private ruleTemplate: StyleRule = {
-            specificity: [],
-        },
-        private mapping: StyleRuleMapping = {},
-        private shared: SharedStyleSheetConfig = defaultSharedConfig,
     ) {}
 
+    private createRuleFromPartial(rule: StyleRule, partial: Partial<StyleRule>) {
+        rule = this.cloneRule(rule)
+
+        if (partial.mediaQueries) {
+            rule.mediaQueries ??= []
+            rule.mediaQueries.push(...(partial.mediaQueries ?? []))
+        }
+
+        if (partial.declarations) {
+            rule.declarations = partial.declarations
+        }
+
+        return rule
+    }
+
+    private addRuleToRuleSet(name: string, rule = this.rule) {
+        const ruleSets = this.shared.get().ruleSets
+        ruleSets[name] ??= []
+        ruleSets[name].push(rule)
+        this.shared.set({ ruleSets })
+    }
+
     fork(mode: BuilderMode) {
-        this.shared.ruleOrder++
-        return new StyleSheetBuilder(
-            this.options,
-            mode,
-            this.cloneRule(),
-            { ...this.mapping },
-            this.shared,
-        )
+        this.shared.updateOrder()
+        const builder = new StyleSheetBuilder(this.options, mode)
+        builder.setRule(this.cloneRule())
+        builder.setMapping(structuredClone(this.mapping))
     }
 
     cloneRule({ ...rule } = this.rule): StyleRule {
         return structuredClone(rule)
+    }
+
+    extendRule(rule: Partial<StyleRule>) {
+        return this.cloneRule({ ...this.rule, ...rule })
     }
 
     getOptions(): CompilerOptions {
@@ -91,29 +196,32 @@ export class StyleSheetBuilder {
             stylesheetOptions.ruleSets = ruleSets
         }
 
-        if (this.shared.rootVariables) {
-            stylesheetOptions.rootVars = this.shared.rootVariables // Object.entries(this.shared.rootVariables)
+        const rootVariables = this.shared.get().rootVariables
+        const universalVariables = this.shared.get().universalVariables
+        const animations = this.shared.get().animations
+
+        if (rootVariables) {
+            stylesheetOptions.rootVars = rootVariables // Object.entries(this.shared.rootVariables)
         }
 
-        if (this.shared.universalVariables) {
-            stylesheetOptions.universalVars = this.shared.universalVariables // Object.entries(this.shared.universalVariables)
+        if (universalVariables) {
+            stylesheetOptions.universalVars = universalVariables // Object.entries(this.shared.universalVariables)
         }
 
-        if (this.shared.animations) {
-            stylesheetOptions.keyframes = this.shared.animations // Object.entries(this.shared.animations)
+        if (animations) {
+            stylesheetOptions.keyframes = animations // Object.entries(this.shared.animations)
         }
 
         return stylesheetOptions
     }
 
     getRuleSets() {
-        const entries = Object.entries(this.shared.ruleSets)
+        const ruleSets = this.shared.get().ruleSets
+        if (isEmpty(ruleSets)) return
 
-        if (!entries.length) {
-            return
-        }
+        const entries = getEntries(ruleSets)
 
-        return Object.entries(this.shared.ruleSets).reduce(
+        return getEntries(ruleSets).reduce(
             (acc, [name, rules]) => {
                 acc[name] = rules.sort(specificityCompareFn)
                 return acc
@@ -131,21 +239,21 @@ export class StyleSheetBuilder {
     }
 
     newRule(mapping: StyleRuleMapping, { important = false } = {}) {
-        this.mapping = mapping
-        this.staticDeclarations = undefined
-        this.rule = this.cloneRule(this.ruleTemplate)
-        this.rule.specificity[Specificity.Order] = this.shared.ruleOrder
+        this.setMapping(mapping)
+        this.setRule(this.cloneRule(this.rule))
+        this.rule.specificity[Specificity.Order] = this.shared.get().ruleOrder
         if (important) {
             this.rule.specificity[Specificity.Important] = 1
         }
     }
 
-    addRuleToRuleSet(name: string, rule = this.rule) {
-        if (this.shared.ruleSets[name]) {
-            this.shared.ruleSets[name].push(rule)
-        } else {
-            this.shared.ruleSets[name] = [rule]
+    addExtraRule(rule: Partial<StyleRule>) {
+        let extraRuleArray = extraRules.get(this.rule)
+        if (!extraRuleArray) {
+            extraRuleArray = []
+            extraRules.set(this.rule, extraRuleArray)
         }
+        extraRuleArray.push(rule)
     }
 
     addMediaQuery(condition: MediaCondition) {
@@ -154,22 +262,36 @@ export class StyleSheetBuilder {
     }
 
     addContainer(value: string[] | false) {
-        this.rule.containers ??= []
-
         if (value === false) {
             this.rule.containers = []
         } else {
+            this.rule.containers ??= []
             this.rule.containers.push(...value.map(name => `container:${name}`))
         }
     }
 
-    addDescriptor(property: string, value: StyleDescriptor, forceTuple?: boolean) {
+    addUnnamedDescriptor(value: StyleDescriptor, forceTuple?: boolean, rule?: StyleRule) {
+        if (this.descriptorProperty === undefined) return
+
+        this.addDescriptor(this.descriptorProperty, value, forceTuple, rule)
+    }
+
+    addDescriptor(
+        property: string,
+        value: StyleDescriptor,
+        forceTuple?: boolean,
+        rule: StyleRule = this.rule,
+    ) {
         if (value === undefined) return
 
         if (this.mode === 'keyframes') {
             property = toRNProperty(property)
             this.pushDescriptor(property, value, this.animationDeclarations, forceTuple)
-        } else if (property.startsWith('--')) {
+            return
+        }
+
+        // If property is a CSS Custom Property
+        if (property.startsWith('--')) {
             // If we have enabled variable usage tracking, skip unused variables
             if (
                 this.options.stripUnusedVariables &&
@@ -179,30 +301,49 @@ export class StyleSheetBuilder {
                 return
             }
 
-            this.rule.vars ??= {}
-            this.rule.vars[property.slice(2)] = value
+            rule.vars ??= {}
+            rule.vars[property.slice(2)] = value
             // this.rule.vars ??= []
             // this.rule.vars.push([property.slice(2), value])
-        } else if (isStyleFunction(value)) {
-            const [delayed, usesVariables] = postProcessStyleFunction(value)
+            return
+        }
 
-            this.rule.declarations ??= []
+        // If the value is already a StyleFunctionDescriptor object, then it
+        // has a value that needs to be computed at runtime or after other
+        // styles have been calculated
+        if (isStyleFunctionDescriptor(value)) {
+            const { delay, usesVariables } = postProcessStyleFunction(value)
+
+            rule.declarations ??= []
+
+            if (value.func === '@animation') {
+                rule.animations ??= true
+            }
 
             if (usesVariables) {
-                this.rule.declarationsWithVars = 1
+                rule.declarationsWithVars = 1
             }
 
             this.pushDescriptor(
                 property,
                 value,
-                this.rule.declarations,
+                rule.declarations,
                 forceTuple,
-                delayed || usesVariables,
+                delay || usesVariables,
             )
-        } else {
-            this.rule.declarations ??= []
-            this.pushDescriptor(property, value, this.rule.declarations)
+            return
         }
+
+        if (
+            property.startsWith('animation-') ||
+            property.startsWith('transition-') ||
+            property === 'transition'
+        ) {
+            rule.animations ??= true
+        }
+
+        rule.declarations ??= []
+        this.pushDescriptor(property, value, rule.declarations)
     }
 
     addShorthand(property: string, options: Record<string, StyleDescriptor>) {
@@ -227,12 +368,9 @@ export class StyleSheetBuilder {
         let propPath = this.mapping[property] ?? this.mapping['*'] ?? property // : string | string[]
 
         if (Array.isArray(propPath)) {
-            const [first, ...rest] = propPath
+            if (!propPath.length) return
 
-            if (!first) {
-                // This should not happen, but if it does, we skip the property
-                return
-            }
+            const [first, ...rest] = propPath
 
             if (!rest.length) {
                 propPath = first
@@ -241,21 +379,40 @@ export class StyleSheetBuilder {
             }
         }
 
-        if (isStyleFunction(value)) {
+        if (isStyleFunctionDescriptor(value)) {
+            const declaration: StyleDeclaration = {
+                type: 'descriptor',
+                descriptor: value,
+                propertyPath: propPath,
+            }
             if (delayed) {
-                declarations.push([value, propPath, 1])
-            } else {
-                declarations.push([value, propPath])
+                declaration.delay = true
             }
-        } else if (forceTuple || Array.isArray(propPath)) {
-            declarations.push([value, propPath])
-        } else {
-            if (!this.staticDeclarations) {
-                this.staticDeclarations = {}
-                declarations.push(this.staticDeclarations)
-            }
-            this.staticDeclarations[propPath] = value
+
+            declarations.push(declaration)
+
+            return
         }
+        if (forceTuple || Array.isArray(propPath)) {
+            const declaration: StyleDeclaration = {
+                type: 'value',
+                descriptor: value,
+                propertyPath: propPath,
+            }
+            declarations.push(declaration)
+            return
+        }
+
+        let staticDeclarationRecord = staticDeclarations.get(declarations)
+        if (!staticDeclarationRecord) {
+            staticDeclarationRecord = {}
+            staticDeclarations.set(declarations, staticDeclarationRecord)
+            declarations.push({
+                type: 'static-object',
+                descriptor: staticDeclarationRecord,
+            })
+        }
+        staticDeclarationRecord[propPath] = value
     }
 
     applyRuleToSelectors(selectorList: NormalizeSelector[]): void {
@@ -318,19 +475,30 @@ export class StyleSheetBuilder {
                 }
 
                 this.addRuleToRuleSet(className, rule)
+
+                const extraRulesArray = extraRules.get(this.rule)
+                if (extraRulesArray) {
+                    for (const extraRule of extraRulesArray) {
+                        this.addRuleToRuleSet(
+                            className,
+                            this.createRuleFromPartial(rule, extraRule),
+                        )
+                    }
+                }
             } else {
                 // These can only have variable declarations
-                if (!this.rule.vars) {
-                    continue
-                }
+                if (!this.rule.vars) continue
 
                 const { type, variant } = selector
 
+                const varsType = this.shared.get()[type]
+
                 for (const [name, value] of Object.entries(this.rule.vars)) {
-                    this.shared[type] ??= {}
-                    this.shared[type][name] ??= [undefined]
-                    this.shared[type][name][variant === 'light' ? 0 : 1] = value
+                    varsType[name] ??= [undefined]
+                    varsType[name][variant === 'light' ? 0 : 1] = value
                 }
+
+                this.shared.set({ [type]: varsType })
             }
         }
     }
@@ -341,12 +509,11 @@ export class StyleSheetBuilder {
     }
 
     newAnimationFrames(name: string) {
-        this.shared.animations ??= {}
-
-        this.animationFrames = this.shared.animations[name]
+        const animations = this.shared.get().animations
+        this.animationFrames = animations[name]
         if (!this.animationFrames) {
-            this.animationFrames = {}
-            this.shared.animations[name] = this.animationFrames
+            this.animationFrames ??= {}
+            this.shared.set({ animations: { ...animations, [name]: this.animationFrames } })
         }
     }
 
@@ -356,54 +523,43 @@ export class StyleSheetBuilder {
         }
 
         this.animationDeclarations = []
-        this.staticDeclarations = {}
         this.animationFrames[progress] = this.animationDeclarations
         // this.animationFrames.push([progress, this.animationDeclarations])
     }
 }
 
-function isStyleFunction(value: StyleDescriptor | StyleDescriptor[]): value is StyleFunction {
-    return Boolean(
-        Array.isArray(value) &&
-            value.length > 0 &&
-            value[0] &&
-            typeof value[0] === 'object' &&
-            Object.keys(value[0]).length === 0,
-    )
-}
+function postProcessStyleFunction(value: StyleDescriptor): {
+    delay: boolean
+    usesVariables: boolean
+} {
+    const results = { delay: false, usesVariables: false }
 
-function postProcessStyleFunction(value: StyleDescriptor): [
-    // Should it be delayed
-    boolean,
-    // Does it use variables
-    boolean,
-] {
-    if (!Array.isArray(value)) {
-        return [false, false]
+    if (!isObject(value)) {
+        return results
     }
 
     if (isStyleDescriptorArray(value)) {
-        let shouldDelay = false
-        let usesVariables = false
         for (const v of value) {
-            const [delayed, variables] = postProcessStyleFunction(v)
-            shouldDelay ||= delayed
-            usesVariables ||= variables
+            const { delay, usesVariables } = postProcessStyleFunction(v)
+            results.delay = delay
+            results.usesVariables = usesVariables
         }
 
-        return [shouldDelay, usesVariables]
+        return results
     }
 
-    let [shouldDelay, usesVariables] = postProcessStyleFunction(value[2])
+    if (isStyleFunctionDescriptor(value)) {
+        let { delay, usesVariables } = postProcessStyleFunction(value.value)
 
-    usesVariables ||= value[1] === 'var'
-    shouldDelay ||= value[3] === 1
+        usesVariables ||= value.func == 'var'
+        delay ||= value.processLast === true
 
-    if (shouldDelay) {
-        return [true, usesVariables]
+        if (delay) {
+            return { delay, usesVariables }
+        }
     }
 
-    return [false, false]
+    return results
 }
 
 function allEqual(...params: unknown[]) {

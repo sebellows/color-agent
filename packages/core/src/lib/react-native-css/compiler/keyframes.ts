@@ -4,9 +4,9 @@ import type {
     KeyframesRule,
 } from 'lightningcss'
 
-import type { EasingFunction, StyleDescriptor } from './compiler.types'
 import { parseDeclaration } from './declarations'
 import type { StyleSheetBuilder } from './stylesheet'
+import type { EasingFunction, StyleDescriptor } from './types'
 
 export function parseIterationCount(value: AnimationIterationCount[]): number[] {
     return value.map(value => {

@@ -3,7 +3,7 @@ import { Length, LengthValue, MediaFeatureValue } from 'lightningcss'
 
 import { supportedUnits } from '../common/properties'
 import { VAR_SYMBOL } from '../runtime/constants'
-import { InlineVariable } from './compiler.types'
+import { InlineVariable } from './types'
 
 export function isInlineVariable(value: unknown): value is InlineVariable {
     return isPlainObject(value) && VAR_SYMBOL in value
