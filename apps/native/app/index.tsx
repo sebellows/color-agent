@@ -1,6 +1,8 @@
 import { StyleSheet, Text, View } from 'react-native'
+
 import { StatusBar } from 'expo-status-bar'
-import { Button } from '@coloragent/ui'
+
+// import { Button } from '@coloragent/ui'
 
 import '../global.css'
 

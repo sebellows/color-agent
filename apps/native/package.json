@@ -12,7 +12,6 @@
     },
     "dependencies": {
         "@coloragent/eslint-config": "workspace:*",
-        "@coloragent/core": "workspace:*",
         "@coloragent/ui": "workspace:*",
         "@coloragent/utils": "workspace:*",
         "expo": "~53.0.20",

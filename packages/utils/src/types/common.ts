@@ -1,5 +1,3 @@
-import { LiteralUnion } from 'type-fest'
-
 /**
  * Function Type
  *
@@ -26,12 +24,25 @@ export interface Type<T = any> extends Function {
 export type Constructor<T, TArgs extends unknown[] = any[]> = new (...arguments_: TArgs) => T
 
 /**
+ * Represents an abstract class `T`, if applied to a concrete class it would stop
+ * being instantiable.
+ */
+export interface AbstractType<T> extends Function {
+    prototype: T
+}
+
+/**
  * A type that represents a boolean value or a string that can be interpreted as a boolean.
  * This is used internally in a number of libraries, such as React and Vue, but not exported.
  */
 export type Booleanish = boolean | 'true' | 'false'
 
 export type Fn<T = unknown, Args extends unknown[] = any[]> = (...args: Args) => T
+
+/**
+ * Because sometimes `UnknownRecord` isn't lazy enough for me.
+ */
+export type AnyRecord = Record<string, any>
 
 /**
  * The constructor for an async function.
@@ -74,42 +85,3 @@ export interface AsyncFunctionConstructor {
     readonly prototype: AsyncFunction
     toString(): string
 }
-
-/**
- * Allows creating a union type by combining primitive types and literal types without
- * sacrificing auto-completion in IDEs for the literal type part of the union.
- *
- * Currently, when a union type of a primitive type is combined with literal types,
- * TypeScript loses all information about the combined literals. Thus, when such type
- * is used in an IDE with autocompletion, no suggestions are made for the declared literals.
- *
- * This type is a workaround for [Microsoft/TypeScript#29729](https://github.com/Microsoft/TypeScript/issues/29729).
- * It will be removed as soon as it's not needed anymore.
- *
- * NOTE: Taken from `type-fest`, which doesn't publicly export the utility...
- * out of spite, I bet 😠
- *
- * Use-cases:
- * - Get string keys from a type which may have number keys.
- * - Makes it possible to index using strings retrieved from template types.
- *
- * @example
- * ```
- * const colors = [
- *     'blue',
- *     'red',
- *     'green',
- * ] as const
- *
- * type Color = (typeof colors)[number]
- *
- * const colorSet = new Set<Color>(colors)
- * const hasBlue = colorSet.has('blue')
- * \// 'blue' will be flagged as error in VS Code
- *
- * const colorSet = new Set<LiteralStringUnion<Color>>(colors)
- * const hasBlue = colorSet.has('blue')
- * \// 'blue' will no longer be flagged
- * ```
- */
-export type LiteralStringUnion<BaseType> = LiteralUnion<BaseType, string>

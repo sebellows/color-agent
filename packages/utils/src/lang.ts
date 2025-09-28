@@ -1,3 +1,5 @@
+import { isFunction, isNil, isPrimitive, isUndefined } from 'es-toolkit'
+import { isObject } from 'es-toolkit/compat'
 import { ValueOf } from 'type-fest'
 import { AsyncFunction as TAsyncFunction } from 'type-fest/source/async-return-type'
 
@@ -125,18 +127,6 @@ export function is<T extends keyof TypeConstructorMap>(
 }
 
 /**
- * Check if a value is a primitive type.
- *
- * @param {*} value - Any type of value
- * @param {string} type - The type to check the value against
- * @returns {boolean}
- */
-export function isPrimitive<T>(value: T): value is T {
-    const type = typeOf(value)
-    return ['boolean', 'null', 'number', 'string', 'symbol', 'undefined'].includes(type)
-}
-
-/**
  * Check if a value is NOT a primitive type.
  *
  * @param {*} value - Any type of value
@@ -150,16 +140,6 @@ export function isArrayBuffer(value: unknown): value is ArrayBuffer {
     return typeOf(value) === 'arraybuffer'
 }
 
-/** Verify if a value is null or undefined. */
-export function isNil(value: unknown): value is null | undefined
-export function isNil(value: unknown): boolean {
-    return value == null
-}
-
-export function isUndefined(value: unknown): value is undefined {
-    return typeOf(value) === 'undefined'
-}
-
 /**
  * Check if a value is defined, by default it checks if the value is not 'null' or 'undefined'.
  * If 'strict' is set to true, it will also check if the value is only 'undefined'.
@@ -169,50 +149,10 @@ export function isDefined(value: unknown): boolean {
 }
 
 /**
- * Verify if a value is of the common type 'Object'.
- * i.e., a plain object, Array, Date, Map, Set, or 'null'.
- */
-export function isObject<T extends object = object>(value: unknown): value is T {
-    return typeof value === 'object'
-}
-
-export function isError(value: unknown): value is Error {
-    if (!isObject(value)) {
-        return false
-    }
-    const type = getType(value)
-    return (
-        type === 'Error' ||
-        type === 'DOMException' ||
-        (hasOwn(value, 'message') && hasOwn(value, 'name') && !isPlainObject(value))
-    )
-}
-
-/**
  * Verify that the value is a built-in, native JS or Browser object.
  */
 export function isNativeObject(value: unknown) {
     return !Object.is(_protoToString, value?.toString)
-}
-
-/**
- * Verify that a value is a plain object created either by the Object constructor
- * or using `Object.create(null)`.
- */
-export function isPlainObject<T extends object = Record<string, any>>(value: unknown): value is T {
-    return is(value, 'object')
-}
-
-export function isArray(value: unknown) {
-    return Array.isArray(value)
-}
-
-export function isDate(value: unknown) {
-    return is(value, 'date')
-}
-
-export function isFunction(value: unknown): value is Fn {
-    return is(value, 'function')
 }
 
 export function isAsync(value: unknown): value is TAsyncFunction {
@@ -243,22 +183,6 @@ export function isAsyncIterable<T>(value: unknown): value is AsyncIterable<T> {
     )
 }
 
-export function isEmpty<O extends Object | undefined>(value: O) {
-    if (isNil(value)) return true
-
-    if (typeof value === 'string') {
-        // Check for empty JSON string as well
-        return value === '' || value === '""'
-    } else if (Array.isArray(value)) {
-        return JSON.stringify(value) === '[]'
-    } else if (isObject(value)) {
-        // this will work for plain objects, Maps, and Set
-        return JSON.stringify(value) === '{}'
-    }
-
-    return false
-}
-
 export function isClass<T, TArgs extends unknown[] = any>(
     value: unknown,
 ): value is Constructor<T, TArgs> {
@@ -273,37 +197,6 @@ export function isClass<T, TArgs extends unknown[] = any>(
     }
 
     return _isClass
-}
-
-export function isMap<K = any, V = any>(value: unknown): value is Map<K, V> {
-    return is(value, 'map')
-}
-
-export function isSet<V = any>(value: unknown): value is Set<V> {
-    return is(value, 'set')
-}
-
-export function isRegExp(value: unknown): value is RegExp {
-    return is(value, 'regexp')
-}
-
-export function isNumber(value: unknown): value is number {
-    // parseFloat(value) handles most of the cases we're interested in (it treats null, empty string,
-    // and other non-number values as NaN, where Number just uses 0) but it considers the string
-    // '123hello' to be a valid number. Therefore we also check if Number(value) is NaN.
-    if (isNaN(parseFloat(value as any)) && isNaN(Number(value))) {
-        return false
-    }
-
-    return is(value, 'number')
-}
-
-export function isString(value: unknown): value is string {
-    return is(value, 'string')
-}
-
-export function isSymbol(value: unknown): value is symbol {
-    return is(value, 'symbol')
 }
 
 export const isConstructor = <T = any>(value: unknown): value is Constructor<T> => {

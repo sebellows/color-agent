@@ -1,16 +1,4 @@
-import {
-    getType,
-    is,
-    isEmpty,
-    isError,
-    isMap,
-    isNativeObject,
-    isNonPrimitive,
-    isPlainObject,
-    isPrimitive,
-    isUndefined,
-    typeOf,
-} from './lang'
+import { getType, is, isNativeObject, isNonPrimitive, typeOf } from './lang'
 
 describe('getType', () => {
     it("will extract the constructor type using the 'toString' method on a value's prototype", () => {
@@ -50,18 +38,6 @@ describe('typeOf', () => {
     })
 })
 
-describe('isPrimitive', () => {
-    it("returns 'true' if the object type passed is a primitive type", () => {
-        const result = isPrimitive(Symbol.for('primitiveObject'))
-        expect(result).toStrictEqual(true)
-    })
-
-    it("returns 'false' if the object type passed is NOT a primitive type", () => {
-        const result = isPrimitive([1, 2, 3, 4])
-        expect(result).toStrictEqual(false)
-    })
-})
-
 describe('isNonPrimitive', () => {
     it("returns 'true' if the type of argument is NOT a primitive type", () => {
         const result = isNonPrimitive({ foobar: 'bez' })
@@ -70,48 +46,6 @@ describe('isNonPrimitive', () => {
 
     it("returns 'false' if the object type passed is a primitive type", () => {
         const result = isNonPrimitive(5)
-        expect(result).toStrictEqual(false)
-    })
-})
-
-describe('isPlainObject', () => {
-    it('returns true if the type of argument is a plain object', () => {
-        const result = isPlainObject({ foo: 'bar' })
-        expect(result).toStrictEqual(true)
-    })
-})
-
-describe('isMap', () => {
-    it('returns true if the type of argument is a Map object', () => {
-        const result = isMap(new Map())
-        expect(result).toStrictEqual(true)
-    })
-})
-
-describe('isUndefined', () => {
-    it("returns 'true' if the type of argument is strictly undefined", () => {
-        const result = isUndefined(undefined)
-        expect(result).toStrictEqual(true)
-    })
-    it("returns 'false' if the type of argument is defined", () => {
-        const result = isUndefined('WooHoo!')
-        expect(result).toStrictEqual(false)
-    })
-})
-
-describe('isError', () => {
-    it("returns 'true' if the passed object extends the 'Error' interface", () => {
-        const result = isError(new Error('!!!'))
-        expect(result).toStrictEqual(true)
-    })
-
-    it("returns 'true' if the passed object is a DOMException", () => {
-        const result = isError(new DOMException('!!!'))
-        expect(result).toStrictEqual(true)
-    })
-
-    it("returns 'false' if the passed object does not extend the Error interface", () => {
-        const result = isError('error')
         expect(result).toStrictEqual(false)
     })
 })
@@ -126,33 +60,6 @@ describe('isNativeObject', () => {
 
     it("returns 'false' if the type of argument is not a Native object", () => {
         const result = isNativeObject({})
-        expect(result).toStrictEqual(false)
-    })
-})
-
-describe('isEmpty', () => {
-    it("returns 'true' if a plain object is empty (i.e., has no entries)", () => {
-        const result = isEmpty({})
-        expect(result).toStrictEqual(true)
-    })
-
-    it("returns 'true' if a string is empty", () => {
-        const result = isEmpty('')
-        expect(result).toStrictEqual(true)
-    })
-
-    it("returns 'true' if an array is empty", () => {
-        const result = isEmpty([])
-        expect(result).toStrictEqual(true)
-    })
-
-    it("returns 'false' if a plain object is NOT empty", () => {
-        const result = isEmpty({ a: null })
-        expect(result).toStrictEqual(false)
-    })
-
-    it("returns 'false' if a set contains entries", () => {
-        const result = isEmpty(new Set([1, 2, 3]))
         expect(result).toStrictEqual(false)
     })
 })

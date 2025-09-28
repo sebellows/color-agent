@@ -1,6 +1,6 @@
-import { AriaRole } from 'react'
-import { Role } from 'react-native'
-import { ArrayValues, KeysOfUnion, UnionToTuple } from 'type-fest'
+// import { AriaRole } from 'react'
+// import { Role } from 'react-native'
+// import { ArrayValues, KeysOfUnion, UnionToTuple } from 'type-fest'
 
 export type AnyRecord = Record<string, any>
 export type AnyFunction = (...args: any[]) => any

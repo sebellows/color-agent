@@ -1,6 +1,7 @@
-import { THEME_COLOR_SCHEMES } from '../../../scripts'
 import { useColorPalette } from '@ui/theme/color-palette'
 import { PlatformEnv } from '@ui/types'
+
+import { THEME_COLOR_SCHEMES } from '../constants'
 
 export function getThemeColors(platform: PlatformEnv) {
     const colorSpace = platform === 'mobile' ? 'hsl' : 'oklch'
