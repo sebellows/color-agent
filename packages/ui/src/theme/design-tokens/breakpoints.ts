@@ -1,4 +1,4 @@
-export const breakpoints = {
+const breakpoints = {
     xs: 0,
     sm: 640, // small devices/large phones
     md: 768, // baseline tablet
@@ -10,3 +10,7 @@ export const breakpoints = {
     tablet: 768,
     desktop: 1280,
 }
+
+export type BreakpointToken = keyof typeof breakpoints
+
+export default breakpoints

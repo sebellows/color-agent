@@ -10,8 +10,8 @@ export const PALETTE_COLOR_NAMES = {
 } as const
 
 export const THEME_COLOR_SCHEMES = {
-    accent: 'violet',
-    secondary: 'orange',
+    primary: 'violet',
+    accent: 'orange',
     default: 'slate', // 'background' | 'foreground'
     neutral: 'slate',
     positive: 'emerald',

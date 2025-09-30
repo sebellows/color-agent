@@ -1,4 +1,4 @@
-export const zIndices = {
+const zIndices = {
     '-1': -1,
     '0': 0,
     '10': 10,
@@ -13,3 +13,7 @@ export const zIndices = {
     '100': 100,
     max: 9999,
 }
+
+export type ZIndicesToken = keyof typeof zIndices
+
+export default zIndices

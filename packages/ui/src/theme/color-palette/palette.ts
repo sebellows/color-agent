@@ -1,6 +1,8 @@
-import Color, { Coords } from 'colorjs.io'
 import { assertUnreachable, getEntries } from '@coloragent/utils'
+import Color, { Coords } from 'colorjs.io'
 
+import { THEME_COLOR_SCHEMES } from '../constants'
+import { rawColorPalette } from './raw-colors'
 import {
     CustomColorSchemes,
     HslValueString,
@@ -10,8 +12,6 @@ import {
     ThemeColorSchemeMap,
     ThemeColorSchemes,
 } from './types'
-import { rawColorPalette } from './raw-colors'
-import { THEME_COLOR_SCHEMES } from '../constants'
 
 function normalizeAlpha(alpha?: number) {
     if (typeof alpha === 'number') {
@@ -46,16 +46,16 @@ export function whenColorScheme<TColorValue, TColorSchemes extends CustomColorSc
     match: ThemeColorSchemeMap<TColorValue, TColorSchemes>,
 ) {
     switch (scheme) {
-        case 'secondary':
-            return match.secondary
+        case 'accent':
+            return match.accent
         case 'critical':
             return match.critical
         case 'default':
             return match.default
         case 'neutral':
             return match.neutral
-        case 'accent':
-            return match.accent
+        case 'primary':
+            return match.primary
         case 'positive':
             return match.positive
         case 'warning':
@@ -116,11 +116,11 @@ export function useColorPalette<TColorSchemes extends CustomColorSchemes = {}>(
     }
 
     const colorSchemes = {
-        secondary: _colorResolver(themeColors.secondary),
+        accent: _colorResolver(themeColors.accent),
         critical: _colorResolver(themeColors.critical),
         default: _colorResolver(themeColors.default),
         neutral: _colorResolver(themeColors.neutral),
-        accent: _colorResolver(themeColors.accent),
+        primary: _colorResolver(themeColors.primary),
         positive: _colorResolver(themeColors.positive),
         warning: _colorResolver(themeColors.warning),
     }

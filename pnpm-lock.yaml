@@ -219,6 +219,9 @@ importers:
       colorjs.io:
         specifier: ^0.5.2
         version: 0.5.2
+      es-toolkit:
+        specifier: ^1.39.10
+        version: 1.39.10
       expo-font:
         specifier: ^13.3.1
         version: 13.3.1(expo@53.0.20)(react@19.1.0)

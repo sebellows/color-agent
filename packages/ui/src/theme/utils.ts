@@ -1,14 +1,26 @@
+import { StyleSheet, ViewStyle } from 'react-native'
+
 import { assertUnreachable } from '@coloragent/utils'
+
 import { ActionState } from '../types'
 import type { ThemeColorScheme } from './color-palette/types'
+
+type FlexCenter = Required<Pick<ViewStyle, 'flexDirection' | 'justifyContent' | 'alignItems'>>
+export const flexCenter: FlexCenter = {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+}
+
+export const absoluteFill = StyleSheet.absoluteFillObject
 
 export function resolveComponentColorScheme<T>(
     scheme: ThemeColorScheme,
     match: Record<ThemeColorScheme, T>,
 ): T {
     switch (scheme) {
-        case 'secondary':
-            return match.secondary
+        case 'accent':
+            return match.accent
         case 'default':
             return match.default
         case 'critical':
@@ -17,8 +29,8 @@ export function resolveComponentColorScheme<T>(
             return match.neutral
         case 'positive':
             return match.positive
-        case 'accent':
-            return match.accent
+        case 'primary':
+            return match.primary
         case 'warning':
             return match.warning
         default:
@@ -31,12 +43,12 @@ export function resolveComponentColorScheme<T>(
 
 export function resolveTextColor(scheme: ThemeColorScheme, state: ActionState = 'default') {
     return resolveComponentColorScheme(scheme, {
-        secondary: state === 'disabled' ? 'mutedForeground' : 'secondaryForeground',
+        accent: state === 'disabled' ? 'mutedForeground' : 'secondaryForeground',
         critical: state === 'disabled' ? 'mutedForeground' : 'negativeForeground',
         default: state === 'disabled' ? 'mutedForeground' : 'foreground',
         neutral: state === 'disabled' ? 'mutedForeground' : 'foreground',
         positive: state === 'disabled' ? 'mutedForeground' : 'positiveForeground',
-        accent: state === 'disabled' ? 'mutedForeground' : 'accentForeground',
+        primary: state === 'disabled' ? 'mutedForeground' : 'accentForeground',
         warning: state === 'disabled' ? 'mutedForeground' : 'warningForeground',
     })
 }

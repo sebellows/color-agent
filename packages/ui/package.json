@@ -46,6 +46,7 @@
         "@react-native-community/hooks": "^100.1.0",
         "@shopify/restyle": "^2.4.5",
         "colorjs.io": "^0.5.2",
+        "es-toolkit": "^1.39.10",
         "expo-font": "^13.3.1",
         "expo-haptics": "^14.1.4",
         "react": "^19.1.0",
