@@ -1,81 +1,59 @@
-import { getEntries } from '@coloragent/utils'
+import { ValueOf } from 'type-fest'
 
-const DEFAULT_SPACE = 4
-const spacingUnits = [
-    0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 14, 16, 20, 24, 28, 32, 36, 40, 44, 48, 56, 64, 72, 80, 96, 256,
-    288, 320, 384,
-] as const
+import { Config } from '../../config'
 
-const negativeSpacingUnitRange = [
-    -1, -2, -3, -4, -5, -6, -8, -10, -12, -14, -16, -20, -24, -28, -32, -36, -40, -44, -48, -56,
-    -64,
-] as const
+const SPACE = Config.get('theme.SPACING_UNIT')
+
+const negativeSpacing = {
+    px: -1,
+    '0.5': -2, // 0.5 * -SPACE,
+    '1': -4, // 1 * -SPACE,
+    '2': -8, // 2 * -SPACE,
+    '3': -12, // 3 * -SPACE,
+    '4': -16, // 4 * -SPACE,
+    '6': -24, // 6 * -SPACE,
+    '8': -32, // 8 * -SPACE,
+    '10': -40, // 10 * -SPACE,
+    '12': -48, // 12 * -SPACE,
+    xs: -4, // 1 * -SPACE,
+    default: -8, // 2 * -SPACE,
+    sm: -12, // 3 * -SPACE,
+    md: -16, // 4 * -SPACE,
+    lg: -24, // 6 * -SPACE,
+    xl: -32, // 8 * -SPACE,
+    xxl: -40, // 10 * -SPACE,
+    xxxl: -48, // 12 * -SPACE,
+} as const
 
 const spacing = {
-    auto: undefined,
-    xs: spacingUnits[2],
-    sm: spacingUnits[4],
-    md: spacingUnits[12], // 16
-    lg: spacingUnits[14], // 24
-    xl: spacingUnits[16], // 32
-    '2xl': spacingUnits[18], // 40
-    '3xl': spacingUnits[20], // 48
+    auto: 0,
     none: 0,
-}
-
-type SpacingUnitNumber = keyof typeof spacing
-// | `${(typeof spacingUnits)[number]}`
-// | `${(typeof negativeSpacingUnitRange)[number]}`
+    px: 1,
+    '0.5': 2, // 0.5 * SPACE,
+    '1': SPACE, // 1 * SPACE,
+    '2': 8, // 2 * SPACE,
+    '3': 12, // 3 * SPACE,
+    '4': 16, // 4 * SPACE,
+    '6': 24, // 6 * SPACE,
+    '8': 32, // 8 * SPACE,
+    '10': 40, // 10 * SPACE,
+    '12': 48, // 12 * SPACE,
+    xs: 4, // 1 * SPACE,
+    default: 8, // 2 * SPACE,
+    sm: 12, // 3 * SPACE,
+    md: 16, // 4 * SPACE,
+    lg: 24, // 6 * SPACE,
+    xl: 32, // 8 * SPACE,
+    xxl: 40, // 10 * SPACE,
+    xxxl: 48, // 12 * SPACE,
+} as const
 
 export type SpacingToken = keyof typeof spacing
+export type NegativeSpacingToken = keyof typeof negativeSpacing
+
+export type Spacing<Key extends SpacingToken = SpacingToken> = ValueOf<typeof spacing, Key>
 
 export default spacing
+export { negativeSpacing }
 
-export const spacingUtil = (value: number) => value * DEFAULT_SPACE
-
-// const getNativeSpacingVariants = (): SpacingOptions => {
-//     const init = {} as SpacingOptions
-//     const units = [...spacingUnits, ...negativeSpacingUnitRange].reduce((acc, unit) => {
-//         const key = unit.toString() as SpacingUnitNumber
-//         acc[key] = unit
-//         return acc
-//     }, init)
-
-//     for (const [alias, value] of getEntries(unitAliases)) {
-//         const unit = value.toString() as SpacingUnitNumber
-//         if (!(unit in units)) {
-//             throw new Error(`Spacing alias "${alias}" does not match any spacing unit.`)
-//         }
-//         units[alias] = units[unit]
-//     }
-
-//     return units
-// }
-
-// const getWebSpacingVariants = (): SpacingOptions => {
-//     const init = { auto: 'auto', none: 'none' } as SpacingOptions
-//     const units = [...spacingUnits, ...negativeSpacingUnitRange].reduce((acc, unit) => {
-//         const key = unit.toString() as SpacingUnitNumber
-//         acc[key] = unit === 0 ? '0' : `${Math.floor(unit / space)}rem`
-//         return acc
-//     }, init)
-
-//     for (const [alias, value] of getEntries(unitAliases)) {
-//         const unit = value.toString() as SpacingUnitNumber
-//         if (!(unit in units)) {
-//             throw new Error(`Spacing alias "${alias}" does not match any spacing unit.`)
-//         }
-//         units[alias] = units[unit]
-//     }
-
-//     return units
-// }
-
-// function getSpacingVariants(platform: PlatformEnv): SpacingOptions {
-//     if (platform === 'mobile') {
-//         return getNativeSpacingVariants()
-//     }
-//     return getWebSpacingVariants()
-// }
-
-// export { getSpacingVariants }
+export const spacingUtil = (value: number) => value * SPACE

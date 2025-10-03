@@ -1,10 +1,20 @@
-import { StorageContract as IStorageContract, Listener, StorageGetter } from './storage.types'
+import { Listener, StorageGetter } from './storage.types'
 
-export abstract class StorageContract implements IStorageContract {
+export interface StorageConfiguration {
+    id: string
+}
+
+export abstract class StorageContract<Config extends StorageConfiguration = StorageConfiguration> {
+    readonly id: string
+
     /** An ID for the store instance */
     abstract readonly name: string
 
     abstract readonly keyPrefix: string
+
+    constructor(config: Config) {
+        this.id = config.id
+    }
 
     abstract clear(): void
 

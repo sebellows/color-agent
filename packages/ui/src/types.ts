@@ -2,6 +2,9 @@
 // import { Role } from 'react-native'
 // import { ArrayValues, KeysOfUnion, UnionToTuple } from 'type-fest'
 
+import { LiteralUnion, Paths } from 'type-fest'
+import { ToString } from 'type-fest/source/internal'
+
 export type AnyRecord = Record<string, any>
 export type AnyFunction = (...args: any[]) => any
 
@@ -10,7 +13,15 @@ export enum PlatformEnv {
     'web' = 'web',
 }
 
-export type UnknownRecord = Record<string, unknown>
+export type KeyPathOf<T extends AnyRecord> =
+    | readonly string[]
+    | LiteralUnion<
+          ToString<
+              | Paths<T, { bracketNotation: false; maxRecursionDepth: 2 }>
+              | Paths<T, { bracketNotation: true; maxRecursionDepth: 2 }>
+          >,
+          string
+      >
 
 export type ActionState = 'default' | 'hover' | 'pressed' | 'disabled' | 'selected' | 'focused'
 export type ComponentAttrState =

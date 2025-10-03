@@ -1,26 +1,13 @@
-import { DimensionValue } from 'react-native'
+const sizesList = [12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 56, 64] as const
 
-// import { THEME_BASE_UNIT_SIZE } from '@ui/theme/constants'
+type SizeList = typeof sizesList
+type Size = SizeList[number]
+type SizeDefinitions = Record<Size, { width: Size; height: Size }>
 
-const sizesList = [
-    0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 14, 16, 20, 24, 28, 32, 36, 40, 44, 48, 56, 64, 72, 80, 96, 256,
-    288, 320, 384,
-] as const
-
-// type SizeValue = (typeof sizes)[number] | 'auto' | 'none' | `${number}%`
-type SizeKey = `${(typeof sizesList)[number]}` | 'auto' | 'none' | `${number}%`
-
-type SizeKeyWeb = `${(typeof sizesList)[number]}` | 'auto' | 'none'
-type SizeValueWeb = DimensionValue | 'none' | `${number}rem`
-
-type SizingOptionsNative = Record<SizeKey, DimensionValue>
-// type SizingOptionsWeb = Record<SizeKeyWeb, SizeValueWeb>
-
-const getNativeSizeVariants = (): SizingOptionsNative => {
-    const init = {} as SizingOptionsNative
+const getNativeSizeVariants = (): SizeDefinitions => {
+    const init = {} as SizeDefinitions
     const units = sizesList.reduce((acc, unit) => {
-        const key = unit.toString() as SizeKey
-        acc[key] = unit
+        acc[unit] = { width: unit, height: unit }
         return acc
     }, init)
 
@@ -29,16 +16,6 @@ const getNativeSizeVariants = (): SizingOptionsNative => {
 
 const sizes = getNativeSizeVariants()
 
+export type SizeTokens = keyof typeof sizes
+
 export default sizes
-
-// const getWebSizeVariants = (): SizingOptionsWeb => {
-//     const init = { auto: 'auto', none: 'none' } as SizingOptionsWeb
-//     const units = sizesList.reduce((acc, unit) => {
-//         const key = unit.toString() as SizeKeyWeb
-//         acc[key] = (
-//             unit === 0 ? '0' : `${Math.floor(unit / THEME_BASE_UNIT_SIZE)}rem`) as SizeValueWeb
-//         return acc
-//     }, init)
-
-//     return units
-// }

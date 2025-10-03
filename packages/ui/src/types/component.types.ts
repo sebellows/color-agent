@@ -59,6 +59,21 @@ type ComponentDef =
           Ref: React.Ref<RNImage>
           Props: ImageProps
       }
+//
+
+type RCTComponentDef =
+    | {
+          type: 'RCTText'
+          Component: RNText
+          Ref: React.Ref<RNText> // ComponentType<T>
+          Props: TextProps
+      }
+    | {
+          type: 'RCTImage'
+          Component: RNImage
+          Ref: React.Ref<RNImage>
+          Props: ImageProps
+      }
 
 export type ComponentTypeName = ComponentDef['type']
 type GetComponent<T extends ComponentTypeName> = Extract<ComponentDef, { type: T }>

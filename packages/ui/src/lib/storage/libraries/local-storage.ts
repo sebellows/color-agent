@@ -1,57 +1,35 @@
-import { isNil, isUndefined } from 'es-toolkit'
+import { isUndefined } from 'es-toolkit'
 
 import { StorageContract } from '../storage.contract'
 import { Listener, StorageGetter, StorageValueType } from '../storage.types'
 import { $global, hasAccessToLocalStorage } from './global'
 import { MemoryStorage } from './memory-storage'
+import { createTextEncoder, KEY_WILDCARD, SimpleStorageConfig } from './shared'
 
-export function createTextEncoder() {
-    if ($global.TextEncoder != null) {
-        return new $global.TextEncoder()
-    }
-    return {
-        encode: () => {
-            throw new Error('TextEncoder is not supported in this environment!')
-        },
-        encodeInto: () => {
-            throw new Error('TextEncoder is not supported in this environment!')
-        },
-        encoding: 'utf-8',
-    }
-}
+interface LocalStorageConfig extends Required<SimpleStorageConfig> {}
+class LocalStorageImp extends StorageContract<LocalStorageConfig> {
+    readonly id: string
 
-const config = { id: 'localStorage' }
-
-const storage = ((): Storage => {
-    if (hasAccessToLocalStorage()) {
-        const domStorage = $global?.localStorage ?? localStorage
-        if (isNil(domStorage)) {
-            throw new Error('Could not find "localStorage" instance!')
-        }
-
-        config.id += '.default'
-
-        return domStorage
-    }
-
-    config.id += '.fallback'
-
-    return new MemoryStorage()
-})()
-
-const KEY_WILDCARD = '\\'
-const textEncoder = createTextEncoder()
-const listeners = new Set<Listener>()
-
-class LocalStorageImp extends StorageContract {
     /** The name of the object or library instantiating the store */
-    readonly name = hasAccessToLocalStorage() ? 'LocalStorage' : 'MemoryStorage'
+    readonly name = 'LocalStorage'
+
+    readonly storage: Storage
+
+    readonly textEncoder = createTextEncoder()
+
+    readonly listeners = new Set<Listener>()
 
     get keyPrefix() {
-        return `${config.id}${KEY_WILDCARD}`
+        return `${this.id}${KEY_WILDCARD}`
     }
 
-    protected prefixedKey(key: string) {
+    constructor(config: LocalStorageConfig) {
+        super(config)
+        this.id = config.id
+        this.storage = config.storage
+    }
+
+    private prefixedKey(key: string) {
         if (key.includes('\\')) {
             throw new Error(
                 `${this.constructor.name}: 'key' cannot contain the backslash character ('\\')!`,
@@ -60,12 +38,12 @@ class LocalStorageImp extends StorageContract {
         return `${this.keyPrefix}${key}`
     }
 
-    protected _get(key: string) {
-        return storage.getItem(this.prefixedKey(key))
+    private _get(key: string) {
+        return this.storage.getItem(this.prefixedKey(key))
     }
 
     clear() {
-        storage.clear()
+        this.storage.clear()
     }
 
     contains(key: string): boolean {
@@ -74,6 +52,7 @@ class LocalStorageImp extends StorageContract {
 
     get(key: string): StorageGetter {
         const value = this._get(key) ?? undefined
+        const textEncoder = this.textEncoder
 
         return {
             as<T extends StorageValueType>(type: T) {
@@ -92,29 +71,40 @@ class LocalStorageImp extends StorageContract {
     }
 
     keys(): string[] {
-        const _keys = Object.keys(storage)
+        const _keys = Object.keys(this.storage)
         return _keys
             .filter(key => key.startsWith(this.keyPrefix))
             .map(key => key.slice(this.keyPrefix.length))
     }
 
     remove(key: string): boolean {
-        return storage.removeItem(key) ?? false
+        return this.storage.removeItem(key) ?? false
     }
 
     set(key: string, value: boolean | string | number | ArrayBuffer): void {
-        storage.setItem(this.prefixedKey(key), value.toString())
+        this.storage.setItem(this.prefixedKey(key), value.toString())
     }
 
     addListener(listener: Listener): { remove: () => void } {
-        listeners.add(listener)
+        this.listeners.add(listener)
 
         return {
             remove: () => {
-                listeners.delete(listener)
+                this.listeners.delete(listener)
             },
         }
     }
 }
 
-export const getLocalStorage = () => new LocalStorageImp()
+export const createLocalStorage = (config: SimpleStorageConfig): StorageContract => {
+    if (hasAccessToLocalStorage()) {
+        const domStorage = $global?.localStorage ?? localStorage
+        if (domStorage) {
+            return new LocalStorageImp({ id: config.id, storage: domStorage })
+        }
+
+        console.warn('Could not find "localStorage" instance. Using in-memory storage instead.')
+    }
+
+    return new MemoryStorage({ id: config.id })
+}

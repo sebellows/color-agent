@@ -1,5 +1,6 @@
 import { assertUnreachable, getEntries } from '@coloragent/utils'
 import Color, { Coords } from 'colorjs.io'
+import { isNumber } from 'es-toolkit/compat'
 
 import { THEME_COLOR_SCHEMES } from '../constants'
 import { rawColorPalette } from './raw-colors'
@@ -86,48 +87,80 @@ export function whenStateColor<T>(state: StateColor, match: Record<StateColor, T
     }
 }
 
-export function useColorPalette<TColorSchemes extends CustomColorSchemes = {}>(
-    space: 'hsl' | 'oklch',
-    themeColors: ThemeColorSchemes<TColorSchemes>,
-) {
-    const init = {} as PaletteColors<string>
-    let palette = {} as PaletteColors<string>
+const palette: PaletteColors<string> = getEntries(rawColorPalette).reduce(
+    (acc, [colorName, colorValues]) => {
+        acc[colorName] = colorValues.map(color => new Color('hsl', color).toString())
+        return acc
+    },
+    {} as PaletteColors<string>,
+)
 
-    if (space === 'oklch') {
-        palette = getEntries(rawColorPalette).reduce((acc, [colorName, colorValues]) => {
-            acc[colorName] = colorValues.map(color => toOklchString(color))
-            return acc
-        }, init)
-    } else {
-        palette = getEntries(rawColorPalette).reduce((acc, [colorName, colorValues]) => {
-            acc[colorName] = colorValues.map(color => toHslString(color))
-            return acc
-        }, init)
-    }
+function getColor(color: keyof PaletteColors, index: number, alpha?: number) {
+    return new Color('oklch', rawColorPalette[color][index], normalizeAlpha(alpha)).toString()
+}
 
-    const toString = space === 'oklch' ? toOklchString : toHslString
+export function resolvePaletteColor(color: keyof PaletteColors, defaultAlpha?: number) {
+    return (index = 6, alpha = defaultAlpha) => {
+        if (!isNumber(alpha)) {
+            return palette[color][index]
+        }
 
-    function _getColor(color: keyof PaletteColors, index: number, alpha?: number) {
-        return toString(rawColorPalette[color][index], alpha)
-    }
-
-    function _colorResolver(color: keyof PaletteColors, defaultAlpha?: number) {
-        return (index = 6, alpha = defaultAlpha) => _getColor(color, index, alpha)
-    }
-
-    const colorSchemes = {
-        accent: _colorResolver(themeColors.accent),
-        critical: _colorResolver(themeColors.critical),
-        default: _colorResolver(themeColors.default),
-        neutral: _colorResolver(themeColors.neutral),
-        primary: _colorResolver(themeColors.primary),
-        positive: _colorResolver(themeColors.positive),
-        warning: _colorResolver(themeColors.warning),
-    }
-
-    return {
-        palette,
-        colorSchemes,
-        toString,
+        return getColor(color, index, alpha)
     }
 }
+
+export const getColorSchemes = (themeColors: ThemeColorSchemes) => ({
+    accent: resolvePaletteColor(themeColors.accent),
+    critical: resolvePaletteColor(themeColors.critical),
+    default: resolvePaletteColor(themeColors.default),
+    neutral: resolvePaletteColor(themeColors.neutral),
+    primary: resolvePaletteColor(themeColors.primary),
+    positive: resolvePaletteColor(themeColors.positive),
+    warning: resolvePaletteColor(themeColors.warning),
+})
+
+// export function useColorPalette<
+//     ColorSpace extends 'hsl' | 'oklch',
+//     TColorSchemes extends CustomColorSchemes = {},
+// >(space: ColorSpace, themeColors: ThemeColorSchemes<TColorSchemes>) {
+//     const init = {} as PaletteColors<string>
+//     let palette = {} as PaletteColors<string>
+
+//     if (space === 'oklch') {
+//         palette = getEntries(rawColorPalette).reduce((acc, [colorName, colorValues]) => {
+//             acc[colorName] = colorValues.map(color => toOklchString(color))
+//             return acc
+//         }, init)
+//     } else {
+//         palette = getEntries(rawColorPalette).reduce((acc, [colorName, colorValues]) => {
+//             acc[colorName] = colorValues.map(color => toHslString(color))
+//             return acc
+//         }, init)
+//     }
+
+//     const toString = space === 'oklch' ? toOklchString : toHslString
+
+//     function _getColor(color: keyof PaletteColors, index: number, alpha?: number) {
+//         return toString(rawColorPalette[color][index], alpha)
+//     }
+
+//     function _colorResolver(color: keyof PaletteColors, defaultAlpha?: number) {
+//         return (index = 6, alpha = defaultAlpha) => _getColor(color, index, alpha)
+//     }
+
+//     const colorSchemes = {
+//         accent: _colorResolver(themeColors.accent),
+//         critical: _colorResolver(themeColors.critical),
+//         default: _colorResolver(themeColors.default),
+//         neutral: _colorResolver(themeColors.neutral),
+//         primary: _colorResolver(themeColors.primary),
+//         positive: _colorResolver(themeColors.positive),
+//         warning: _colorResolver(themeColors.warning),
+//     }
+
+//     return {
+//         palette,
+//         colorSchemes,
+//         toString,
+//     }
+// }

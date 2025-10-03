@@ -38,3 +38,7 @@ type MemoizeCache<K, V> = Map<K, V>
 type MemoizedFn<Fn extends (...args: any[]) => any> = Fn & {
     cache: MemoizeCache<any, ReturnType<Fn>>
 }
+
+export function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+}

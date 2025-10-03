@@ -15,23 +15,23 @@ export type StorageGetter = {
     as<T extends StorageValueType>(type: T): StorageValue
 }
 
-export interface StorageContract {
-    /** An ID for the store instance */
-    readonly name: string
+// export interface StorageContract {
+//     /** An ID for the store instance */
+//     readonly name: string
 
-    readonly keyPrefix: string
+//     readonly keyPrefix: string
 
-    clear(): void
+//     clear(): void
 
-    contains(key: string): boolean
+//     contains(key: string): boolean
 
-    get(key: string): StorageGetter
+//     get(key: string): StorageGetter
 
-    keys(): string[]
+//     keys(): string[]
 
-    remove(key: string): boolean
+//     remove(key: string): boolean
 
-    set(key: string, value: boolean | string | number | ArrayBuffer): void
+//     set(key: string, value: boolean | string | number | ArrayBuffer): void
 
-    addListener(listener: Listener): { remove: () => void }
-}
+//     addListener(listener: Listener): { remove: () => void }
+// }

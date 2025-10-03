@@ -16,6 +16,7 @@ export function createMockStorage(): StorageContract {
     const keyPrefix = 'storage.test'
 
     return {
+        id: 'storage.test',
         name: 'StorageTest',
         keyPrefix,
         clear: () => {
