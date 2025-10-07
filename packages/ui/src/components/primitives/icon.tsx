@@ -1,12 +1,11 @@
 import { memo } from 'react'
 import type { AccessibilityProps, ViewStyle } from 'react-native'
 
-import icons from '@expo/vector-icons/Feather'
+import FeatherIcon from '@expo/vector-icons/Feather'
 import { Color } from '@ui/theme'
-import { SvgXml } from 'react-native-svg'
 import { useUnistyles } from 'react-native-unistyles'
 
-export type IconName = keyof typeof icons
+export type IconName = keyof (typeof FeatherIcon)['glyphMap']
 
 type Props = {
     name: IconName
@@ -20,14 +19,14 @@ export const Icon = memo(function Icon({
     color = 'fg',
     size = 24,
     style,
-    ...rest
+    ...props
 }: Props & AccessibilityProps) {
     const { theme } = useUnistyles()
     const iconColor = theme.utils.getColor(color)
     return (
-        <SvgXml
-            {...rest}
-            xml={icons[name]}
+        <FeatherIcon
+            {...props}
+            name={name}
             width={size}
             height={size}
             color={iconColor}

@@ -1,19 +1,14 @@
-import { createElement, forwardRef, type ComponentType } from 'react'
 import type { TextProps as RNTextProps } from 'react-native'
 
-import { getKeys } from '@coloragent/utils'
 import { FastText } from '@ui/internal'
-import type { Color, TypographyToken } from '@ui/theme'
-import { typography } from '@ui/theme/utils'
-import { getEntries } from '@ui/utils/get-entries'
+import { getColorVariants, type Color, type TypographyToken } from '@ui/theme'
 import { StyleSheet } from 'react-native-unistyles'
 
-type TextProps = RNTextProps & {
+export type TextProps = RNTextProps & {
     variant?: TypographyToken
     align?: 'left' | 'right' | 'center'
     uppercase?: boolean
     color?: Color
-    children: React.ReactNode
 }
 
 export function Text({
@@ -43,12 +38,7 @@ const styles = StyleSheet.create(theme => ({
     text: {
         variants: {
             variant: theme.typography,
-            color: Object.fromEntries(
-                getEntries(theme.colors).map(([key, _value]) => [
-                    key,
-                    { color: theme.utils.getColor(key) },
-                ]),
-            ),
+            color: getColorVariants(theme),
             align: {
                 left: { textAlign: 'left' },
                 right: { textAlign: 'right' },

@@ -1,4 +1,4 @@
-import { BoxShadowValue, View } from 'react-native'
+import { View } from 'react-native'
 
 import { getShadow, type Color } from '@ui/theme'
 import { announceForAccessibility } from '@ui/utils/a11y'
@@ -10,7 +10,7 @@ import { StyleSheet, useUnistyles } from 'react-native-unistyles'
 import { Icon, IconButton, Stack, Text } from './primitives'
 import { type IconName } from './primitives/icon'
 
-type Variant = 'info' | 'positive' | 'warning' | 'critical'
+type Variant = 'info' | 'success' | 'warning' | 'error'
 
 type Props = ToastConfigParams<{
     icon?: IconName
@@ -18,13 +18,13 @@ type Props = ToastConfigParams<{
 
 const toastConfig = {
     success: ({ text1, text2, props }: Props) => (
-        <Toast variant="positive" title={text1 || ''} subtitle={text2} icon={props?.icon} />
+        <Toast variant="success" title={text1 || ''} subtitle={text2} icon={props?.icon} />
     ),
     warn: ({ text1, text2, props }: Props) => (
         <Toast variant="warning" title={text1 || ''} subtitle={text2} icon={props?.icon} />
     ),
     error: ({ text1, text2, props }: Props) => (
-        <Toast variant="critical" title={text1 || ''} subtitle={text2} icon={props?.icon} />
+        <Toast variant="error" title={text1 || ''} subtitle={text2} icon={props?.icon} />
     ),
     info: ({ text1, text2, props }: Props) => (
         <Toast variant="info" title={text1 || ''} subtitle={text2} icon={props?.icon} />
@@ -69,9 +69,9 @@ function getHaptic(type: Variant) {
             return haptics.impactLight
         case 'warning':
             return haptics.notificationWarning
-        case 'critical':
+        case 'error':
             return haptics.notificationError
-        case 'positive':
+        case 'success':
             return haptics.notificationSuccess
         default:
             return haptics.impactLight
@@ -124,15 +124,15 @@ function Toast({
 const variantToColor: { [variant in Variant]: Color } = {
     info: 'infoContrast',
     warning: 'warnContrast',
-    critical: 'errorContrast',
-    positive: 'successContrast',
+    error: 'errorContrast',
+    success: 'successContrast',
 }
 
 const variantToIcon: { [variant in Variant]?: IconName } = {
     info: 'info' as IconName,
     warning: 'warning' as IconName,
-    critical: 'error' as IconName,
-    positive: 'checkCircle' as IconName,
+    error: 'error' as IconName,
+    success: 'checkCircle' as IconName,
 }
 
 const styles = StyleSheet.create(theme => ({

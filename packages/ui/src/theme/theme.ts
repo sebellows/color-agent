@@ -4,6 +4,7 @@ import { StyleSheet } from 'react-native-unistyles'
 
 import { Config } from '../config'
 import { KeyPathOf } from '../types'
+import { getEntries } from '../utils/get-entries'
 import {
     getFonts,
     getFontSizes,
@@ -36,6 +37,9 @@ const themeCommon = {
     fontWeights: getFontWeights(typography),
     letterSpacings: getLetterSpacings(typography),
     lineHeights: getLineHeights(typography),
+    boxShadows: Object.fromEntries(
+        getEntries(shadows).map(([key, value]) => [key, value.boxShadow]),
+    ),
     shadows: getShadows(shadows),
     sizes,
     zIndices,

@@ -12,8 +12,7 @@ import {
     type ViewProps,
 } from 'react-native'
 
-import { AnyRecord } from '@coloragent/utils'
-import { Constructor, Get, IsAny } from 'type-fest'
+import { IsAny } from 'type-fest'
 
 export type RNImage = typeof Image
 export type RNView = typeof View
@@ -24,15 +23,6 @@ export type ImageRef = React.ComponentRef<RNImage>
 export type ViewRef = React.ComponentRef<RNView>
 export type PressableRef = React.ComponentRef<RNPressable>
 export type TextRef = React.ComponentRef<RNText>
-
-// type ComponentTypeMap = {
-//     Pressable: RNPressable
-//     View: RNView
-//     Text: RNText
-//     Image: RNImage
-// }
-
-// export type ComponentType<Key extends keyof ComponentTypeMap> = ComponentTypeMap[Key]
 
 type ComponentDef =
     | {
@@ -59,9 +49,8 @@ type ComponentDef =
           Ref: React.Ref<RNImage>
           Props: ImageProps
       }
-//
 
-type RCTComponentDef =
+export type RCTComponentDef =
     | {
           type: 'RCTText'
           Component: RNText
@@ -81,8 +70,6 @@ type GetComponent<T extends ComponentTypeName> = Extract<ComponentDef, { type: T
 export type ComponentType<T extends ComponentTypeName> = GetComponent<T>['Component']
 export type ComponentRef<T extends ComponentTypeName> = GetComponent<T>['Component']
 export type ComponentProps<T extends ComponentTypeName> = GetComponent<T>['Props']
-
-// export type SlotComponentProps<T extends ComponentTypeName> = ComponentProps<T> &
 
 type PointerDownOutsideEvent = CustomEvent<{ originalEvent: PointerEvent }>
 type FocusOutsideEvent = CustomEvent<{ originalEvent: FocusEvent }>

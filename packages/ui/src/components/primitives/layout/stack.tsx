@@ -4,7 +4,7 @@ import { View, type ViewProps } from 'react-native'
 import { type Space } from '@ui/theme'
 import { StyleSheet } from 'react-native-unistyles'
 
-type Props = ViewProps & {
+export type StackProps = ViewProps & {
     spacing: Space | 'none'
     axis: 'x' | 'y'
     align?: 'center' | 'start' | 'end' | 'stretch' | 'baseline'
@@ -12,7 +12,7 @@ type Props = ViewProps & {
     children: ReactNode
 }
 
-export function Stack({ children, axis, spacing, align, justify, style, ...rest }: Props) {
+export function Stack({ children, axis, spacing, align, justify, style, ...rest }: StackProps) {
     styles.useVariants({
         axis,
         align,

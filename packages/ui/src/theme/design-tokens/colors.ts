@@ -133,6 +133,7 @@ const light = {
 const dark = {
     fg: _light,
     fgInverted: colorSchemes.neutral(11),
+    fgMuted: colorSchemes.neutral(4),
     fgSubtle: colorSchemes.neutral(6),
 
     bg: _dark,

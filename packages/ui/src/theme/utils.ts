@@ -1,13 +1,17 @@
 import { StyleSheet, ViewStyle } from 'react-native'
 
 import { assertUnreachable } from '@coloragent/utils'
+import { isError } from 'es-toolkit'
+import { get } from 'es-toolkit/compat'
 
 import { ActionState, KeyPathOf } from '../types'
+import { getEntries } from '../utils/get-entries'
 import type { ThemeColorScheme } from './color-palette/types'
 import { ColorScheme, TypographyDefinition } from './design-tokens'
 import colors from './design-tokens/colors'
 import { ShadowsToken } from './design-tokens/shadows'
 import { default as typographyTokens, type TypographyToken } from './design-tokens/typography'
+import { Theme } from './theme'
 import { UnistylesTheme } from './theme.types'
 
 type FlexCenter = Required<Pick<ViewStyle, 'flexDirection' | 'justifyContent' | 'alignItems'>>
@@ -68,9 +72,23 @@ export function isColorScheme(
     return colorSchemeNames.includes(token as ColorScheme)
 }
 
+export function getColorVariants(theme: Theme) {
+    try {
+        return Object.fromEntries(
+            getEntries(theme.colors).map(([key, _value]) => {
+                const color = get(theme.colors, key) as string
+                return [key, { color }]
+            }),
+        )
+    } catch (err) {
+        const msg = isError(err) ? err.message : ''
+        throw new Error("There was an error parsing the theme's color variants. " + msg)
+    }
+}
+
 export function getColorSchemeVariants(token: string | ColorScheme | KeyPathOf<typeof colors>) {
     if (isColorScheme(token)) {
-        return colors[token]
+        return get(colors, token)
     }
     throw new Error(`Color scheme "${token}" is not a valid color scheme.`)
 }

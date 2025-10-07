@@ -13,15 +13,13 @@ export enum PlatformEnv {
     'web' = 'web',
 }
 
-export type KeyPathOf<T extends AnyRecord> =
-    | readonly string[]
-    | LiteralUnion<
-          ToString<
-              | Paths<T, { bracketNotation: false; maxRecursionDepth: 2 }>
-              | Paths<T, { bracketNotation: true; maxRecursionDepth: 2 }>
-          >,
-          string
-      >
+export type KeyPathOf<T extends AnyRecord> = LiteralUnion<
+    ToString<
+        | Paths<T, { bracketNotation: false; maxRecursionDepth: 2 }>
+        | Paths<T, { bracketNotation: true; maxRecursionDepth: 2 }>
+    >,
+    string
+>
 
 export type ActionState = 'default' | 'hover' | 'pressed' | 'disabled' | 'selected' | 'focused'
 export type ComponentAttrState =

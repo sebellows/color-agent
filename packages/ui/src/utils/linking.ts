@@ -1,6 +1,6 @@
 import { Linking } from 'react-native'
 
-import { showToast } from '@ui/components/toast'
+import { showToast } from '@ui/components/toaster'
 
 type LaunchUrlParams = {
     url: string

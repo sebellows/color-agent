@@ -283,6 +283,9 @@ importers:
       '@rnx-kit/metro-resolver-symlinks':
         specifier: ^0.2.5
         version: 0.2.5
+      '@shopify/flash-list':
+        specifier: ^2.1.0
+        version: 2.1.0(@babel/runtime@7.28.3)(react-native@0.80.1)(react@19.1.0)
       '@storybook/addon-ondevice-actions':
         specifier: ^9.0.9
         version: 9.0.9(react-native@0.80.1)(react@19.1.0)(storybook@9.0.13)
@@ -292,6 +295,9 @@ importers:
       '@storybook/react-native':
         specifier: ^9.0.9
         version: 9.0.9(@gorhom/bottom-sheet@5.1.6)(react-dom@19.1.0)(react-native-gesture-handler@2.26.0)(react-native-reanimated@4.0.1)(react-native-safe-area-context@5.5.0)(react-native-svg@15.12.0)(react-native@0.80.1)(react@19.1.0)(storybook@9.0.13)(typescript@5.5.4)
+      '@types/luxon':
+        specifier: ^3.7.1
+        version: 3.7.1
       '@types/node':
         specifier: ^20.10.6
         version: 20.10.6
@@ -307,9 +313,24 @@ importers:
       expo-constants:
         specifier: ~17.1.7
         version: 17.1.7(expo@53.0.20)(react-native@0.80.1)
+      expo-image:
+        specifier: ^3.0.9
+        version: 3.0.9(expo@53.0.20)(react-native@0.80.1)(react@19.1.0)
+      expo-status-bar:
+        specifier: ~2.2.3
+        version: 2.2.3(react-native@0.80.1)(react@19.1.0)
+      luxon:
+        specifier: ^3.7.2
+        version: 3.7.2
       react-dom:
         specifier: ^19.1.0
         version: 19.1.0(react@19.1.0)
+      react-native-collapsible:
+        specifier: ^1.6.2
+        version: 1.6.2(react-native@0.80.1)(react@19.1.0)
+      react-native-date-picker:
+        specifier: ^5.0.13
+        version: 5.0.13(react-native@0.80.1)(react@19.1.0)
       react-native-gesture-handler:
         specifier: ^2.26.0
         version: 2.26.0(react-native@0.80.1)(react@19.1.0)
@@ -337,6 +358,9 @@ importers:
       typescript:
         specifier: 5.5.4
         version: 5.5.4
+      zod:
+        specifier: ^4.1.12
+        version: 4.1.12
 
   packages/utils:
     dependencies:
@@ -4440,6 +4464,18 @@ packages:
     resolution: {integrity: sha512-5EwMtOqvJMMa3HbmxLlF74e+3/HhwBTMcvt3nqVJgGCozO6hzIPOBlwm8mGVNR9SN2IJpxSnlxczyDjcn7qIyw==}
     dev: true
 
+  /@shopify/flash-list@2.1.0(@babel/runtime@7.28.3)(react-native@0.80.1)(react@19.1.0):
+    resolution: {integrity: sha512-/EIQlptG456yM5o9qNmNsmaZEFEOGvG3WGyb6GUAxSLlcKUGlPUkPI2NLW5wQSDEY4xSRa5zocUI+9xwmsM4Kg==}
+    peerDependencies:
+      '@babel/runtime': '*'
+      react: '*'
+      react-native: '*'
+    dependencies:
+      '@babel/runtime': 7.28.3
+      react: 19.1.0
+      react-native: 0.80.1(@babel/core@7.27.4)(@types/react@19.1.8)(react@19.1.0)
+    dev: true
+
   /@shopify/restyle@2.4.5(react-native@0.80.1)(react@19.1.0):
     resolution: {integrity: sha512-xV970ytoX0oLac9+fMOMxcXcV9nv5BtwdNk50ZoyhqSLyiGamLJMpL/lMZIQHsmfDT8sksbUx94zQnZBztMgww==}
     peerDependencies:
@@ -4984,6 +5020,10 @@ packages:
 
   /@types/json5@0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
+    dev: true
+
+  /@types/luxon@3.7.1:
+    resolution: {integrity: sha512-H3iskjFIAn5SlJU7OuxUmTEpebK6TKB8rxZShDslBMZJ5u9S//KM1sbdAisiSrqwLQncVjnpi2OK2J51h+4lsg==}
     dev: true
 
   /@types/node@20.10.6:
@@ -8548,6 +8588,22 @@ packages:
       expo: 53.0.20(@babel/core@7.27.4)(react-native@0.80.1)(react@19.1.0)
     dev: false
 
+  /expo-image@3.0.9(expo@53.0.20)(react-native@0.80.1)(react@19.1.0):
+    resolution: {integrity: sha512-GkPIjeqrODMBdpbRWOzbwiq8ztxjgq1rdZrnqwt/pzQavgXPlr4rW/7aigue9Jm5t5vebhMNAuc1A/XIXXqpcA==}
+    peerDependencies:
+      expo: '*'
+      react: '*'
+      react-native: '*'
+      react-native-web: '*'
+    peerDependenciesMeta:
+      react-native-web:
+        optional: true
+    dependencies:
+      expo: 53.0.20(@babel/core@7.27.4)(react-native@0.80.1)(react@19.1.0)
+      react: 19.1.0
+      react-native: 0.80.1(@babel/core@7.27.4)(@types/react@19.1.8)(react@19.1.0)
+    dev: true
+
   /expo-keep-awake@14.1.4(expo@53.0.20)(react@19.1.0):
     resolution: {integrity: sha512-wU9qOnosy4+U4z/o4h8W9PjPvcFMfZXrlUoKTMBW7F4pLqhkkP/5G4EviPZixv4XWFMjn1ExQ5rV6BX8GwJsWA==}
     peerDependencies:
@@ -8643,10 +8699,9 @@ packages:
       react-native: '*'
     dependencies:
       react: 19.1.0
-      react-native: 0.80.1(@babel/core@7.23.7)(@types/react@19.1.8)(react@19.1.0)
+      react-native: 0.80.1(@babel/core@7.27.4)(@types/react@19.1.8)(react@19.1.0)
       react-native-edge-to-edge: 1.6.0(react-native@0.80.1)(react@19.1.0)
       react-native-is-edge-to-edge: 1.2.1(react-native@0.80.1)(react@19.1.0)
-    dev: false
 
   /expo-system-ui@5.0.10(expo@53.0.20)(react-native-web@0.21.0)(react-native@0.80.1):
     resolution: {integrity: sha512-BTXbSyJr80yuN6VO4XQKZj7BjesZQLHgOYZ0bWyf4VB19GFZq7ZnZOEc/eoKk1B3eIocOMKUfNCrg/Wn8Kfcuw==}
@@ -10859,6 +10914,11 @@ packages:
     dependencies:
       yallist: 3.1.1
 
+  /luxon@3.7.2:
+    resolution: {integrity: sha512-vtEhXh/gNjI9Yg1u4jX/0YVPMvxzHuGgCm6tC5kZyb08yjGWGnqAjGJvcXbqQR2P3MyMEFnRbpcdFS6PBcLqew==}
+    engines: {node: '>=12'}
+    dev: true
+
   /lz-string@1.5.0:
     resolution: {integrity: sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==}
     hasBin: true
@@ -11960,6 +12020,26 @@ packages:
   /react-is@19.1.1:
     resolution: {integrity: sha512-tr41fA15Vn8p4X9ntI+yCyeGSf1TlYaY5vlTZfQmeLBrFo3psOPX6HhTDnFNL9uj3EhP0KAQ80cugCl4b4BERA==}
     dev: false
+
+  /react-native-collapsible@1.6.2(react-native@0.80.1)(react@19.1.0):
+    resolution: {integrity: sha512-MCOBVJWqHNjnDaGkvxX997VONmJeebh6wyJxnHEgg0L1PrlcXU1e/bo6eK+CDVFuMrCafw8Qh4DOv/C4V/+Iew==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
+    dependencies:
+      react: 19.1.0
+      react-native: 0.80.1(@babel/core@7.27.4)(@types/react@19.1.8)(react@19.1.0)
+    dev: true
+
+  /react-native-date-picker@5.0.13(react-native@0.80.1)(react@19.1.0):
+    resolution: {integrity: sha512-qCLUODZVsJetO5zuoXjw1D39K527XWqBG8sOfhWdHyPzf13h8RXR1/RSKd1N0fdRDi5GdyizYmB0lPAK12/hbw==}
+    peerDependencies:
+      react: '>= 17.0.1'
+      react-native: '>= 0.64.3'
+    dependencies:
+      react: 19.1.0
+      react-native: 0.80.1(@babel/core@7.27.4)(@types/react@19.1.8)(react@19.1.0)
+    dev: true
 
   /react-native-edge-to-edge@1.6.0(react-native@0.80.1)(react@19.1.0):
     resolution: {integrity: sha512-2WCNdE3Qd6Fwg9+4BpbATUxCLcouF6YRY7K+J36KJ4l3y+tWN6XCqAC4DuoGblAAbb2sLkhEDp4FOlbOIot2Og==}
@@ -14360,6 +14440,10 @@ packages:
 
   /zod@3.25.67:
     resolution: {integrity: sha512-idA2YXwpCdqUSKRCACDE6ItZD9TZzy3OZMtpfLoh6oPR47lipysRrJfjzMqFxQ3uJuUPyUeWe1r9vLH33xO/Qw==}
+    dev: true
+
+  /zod@4.1.12:
+    resolution: {integrity: sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ==}
     dev: true
 
   github.com/motdotla/dotenv-cli/1480f6b162841926affb626910ba86138294f5ef:
