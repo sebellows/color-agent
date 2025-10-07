@@ -4,7 +4,7 @@ import { View, type LayoutChangeEvent, type ViewProps } from 'react-native'
 import { type Space } from '@ui/theme'
 import { StyleSheet, useUnistyles } from 'react-native-unistyles'
 
-import { flattenChildren } from '../../helpers'
+import { flattenChildren } from '../helpers'
 
 type Props = ViewProps & {
     spacing: Space

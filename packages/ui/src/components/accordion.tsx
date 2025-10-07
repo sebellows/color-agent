@@ -1,27 +1,15 @@
 import { useState } from 'react'
 import { TouchableOpacity } from 'react-native'
 
+import { Color } from '@ui/theme'
 import { haptics } from '@ui/utils/haptics'
+import { t } from '@ui/utils/translation'
 import Collapsible, { type CollapsibleProps } from 'react-native-collapsible'
 import { StyleSheet } from 'react-native-unistyles'
 
-import { Color } from '../../theme'
 import { Icon, type IconName } from './icon'
 import { Stack } from './layout/stack'
 import { Text } from './text'
-
-/**
- * TODO: Replace with real translation function
- */
-const t = (strs: TemplateStringsArray, ...values: string[]) => {
-    return strs.reduce((acc, str) => {
-        acc += values.reduce((acc2, value) => {
-            acc2 += value
-            return acc2
-        }, str)
-        return acc
-    }, '')
-}
 
 type AccordionProps = Omit<CollapsibleProps, 'collapsed'> & {
     title: string

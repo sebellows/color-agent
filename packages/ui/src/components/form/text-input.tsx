@@ -11,15 +11,13 @@ import {
 import { haptics } from '@ui/utils/haptics'
 import { StyleSheet, useUnistyles } from 'react-native-unistyles'
 
-import { IconButton } from '../buttons/icon-button'
 import { Icon, type IconName } from '../icon'
 import { Stack } from '../layout/stack'
-import { Text } from '../text'
 import { CharacterLimit } from './character-limit'
 import { ClearButton } from './clear-button'
 import { FormHint } from './form-hint'
 import { FormLabel } from './form-label'
-import { TextMaskToggle } from './text-mask-toggle.tsx'
+import { TextMaskToggle } from './text-mask-toggle'
 
 export type TextInputProps = Omit<RNTextInputProps, 'onChange'> & {
     value: string

@@ -19,10 +19,10 @@ export type RNView = typeof View
 export type RNPressable = typeof Pressable
 export type RNText = typeof Text
 
-export type ImageRef = React.ComponentRef<RNImage>
-export type ViewRef = React.ComponentRef<RNView>
-export type PressableRef = React.ComponentRef<RNPressable>
-export type TextRef = React.ComponentRef<RNText>
+export type ImageRef = RNImage // React.ComponentRef<RNImage>
+export type ViewRef = RNView //React.Ref<RNView>
+export type PressableRef = RNPressable // React.ForwardedRef<RNPressable>
+export type TextRef = RNText // React.ComponentRef<RNText>
 
 type ComponentDef =
     | {

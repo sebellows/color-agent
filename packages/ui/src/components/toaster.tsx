@@ -7,8 +7,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import ToastContainer, { type ToastConfigParams } from 'react-native-toast-message'
 import { StyleSheet, useUnistyles } from 'react-native-unistyles'
 
-import { Icon, IconButton, Stack, Text } from './primitives'
-import { type IconName } from './primitives/icon'
+import { IconButton } from './buttons/icon-button'
+import { Icon, type IconName } from './icon'
+import { Stack } from './layout/stack'
+import { Text } from './text'
 
 type Variant = 'info' | 'success' | 'warning' | 'error'
 
@@ -31,7 +33,7 @@ const toastConfig = {
     ),
 }
 
-export default function Toaster() {
+export function Toaster() {
     const { theme } = useUnistyles()
     const insets = useSafeAreaInsets()
     const topOffset = insets.top + theme.space.sm

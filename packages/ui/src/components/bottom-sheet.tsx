@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, type ReactNode } from 'react'
-import { AccessibilityInfo, View } from 'react-native'
+import { View } from 'react-native'
 
 import RNBottomSheet, {
     BottomSheetBackdrop,
@@ -7,6 +7,7 @@ import RNBottomSheet, {
     type BottomSheetBackdropProps,
     type BottomSheetProps as RNBottomSheetProps,
 } from '@gorhom/bottom-sheet'
+import { ReduceMotion } from 'react-native-reanimated'
 import { StyleSheet } from 'react-native-unistyles'
 
 type BottomSheetProps = RNBottomSheetProps & {
@@ -31,6 +32,7 @@ export const BottomSheet = forwardRef<RNBottomSheet, BottomSheetProps>(
         ref,
     ) => {
         const bottomSheetRef = useRef<RNBottomSheet>(null)
+
         useImperativeHandle(ref, () => ({
             close: () => bottomSheetRef.current?.close(),
             expand: () => bottomSheetRef.current?.expand(),
@@ -51,7 +53,7 @@ export const BottomSheet = forwardRef<RNBottomSheet, BottomSheetProps>(
             overshootClamping: true,
             // restSpeedThreshold: 0.1,
             stiffness: 500,
-            reduceMotion: AccessibilityInfo.isReduceMotionEnabled(),
+            reduceMotion: ReduceMotion.System,
         })
 
         const handleSheetChanges = (index: number) => {
@@ -108,9 +110,9 @@ BottomSheet.displayName = 'BottomSheet'
 
 const styles = StyleSheet.create(theme => ({
     contentWrapper: {
-        padding: theme.space.regular,
+        padding: theme.space.default,
     },
     background: {
-        backgroundColor: theme.colors.surface,
+        backgroundColor: theme.colors.bg,
     },
 }))

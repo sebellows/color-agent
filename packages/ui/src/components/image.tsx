@@ -5,7 +5,7 @@ import {
     type StyleProp,
 } from 'react-native'
 
-import { useImageDimensions } from '@react-native-community/hooks'
+import { useImageDimensions } from '@ui/hooks/use-image-dimensions'
 import { Image as ExpoImage, type ImageProps, type ImageSource } from 'expo-image'
 
 type Props = ImageProps & {
@@ -23,7 +23,7 @@ export function Image({
     accessibilityRole = 'image',
     ...rest
 }: Props & AccessibilityProps) {
-    const { dimensions } = useImageDimensions({ uri: source as string, ...autoSize })
+    const dimensions = useImageDimensions({ source, size: autoSize })
 
     return (
         <ExpoImage

@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { TouchableOpacity, type TextInput as RNTextInput } from 'react-native'
 
+import { t } from '@ui/utils/translation'
 import { StyleSheet } from 'react-native-unistyles'
 
 import { Icon } from '../icon'
@@ -10,19 +11,6 @@ import { TextInput, type TextInputProps } from './text-input'
 
 type SearchInputProps = TextInputProps & {
     suggestions?: string[]
-}
-
-/**
- * TODO: Replace with real translation function
- */
-const t = (strs: TemplateStringsArray, ...values: string[]) => {
-    return strs.reduce((acc, str) => {
-        acc += values.reduce((acc2, value) => {
-            acc2 += value
-            return acc2
-        }, str)
-        return acc
-    }, '')
 }
 
 export const SearchField = forwardRef<RNTextInput, SearchInputProps>(

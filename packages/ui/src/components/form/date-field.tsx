@@ -33,7 +33,7 @@ type Props = {
  * object specifically from the latter.
  */
 
-export const DateInput = forwardRef(
+export const DateField = forwardRef(
     (
         {
             value,
@@ -123,7 +123,7 @@ export const DateInput = forwardRef(
     },
 )
 
-DateInput.displayName = 'DateInput'
+DateField.displayName = 'DateField'
 
 const styles = StyleSheet.create(theme => ({
     message: {

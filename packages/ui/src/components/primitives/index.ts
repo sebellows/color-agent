@@ -1,7 +1,0 @@
-export { Button } from './buttons/button'
-export { IconButton } from './buttons/icon-button'
-export { Icon } from './icon'
-export { Grid } from './layout/grid'
-export { Spacer } from './layout/spacer'
-export { Stack } from './layout/stack'
-export { Text } from './text'

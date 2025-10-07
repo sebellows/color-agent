@@ -4,7 +4,7 @@ import { Modal, Platform, SafeAreaView, TouchableOpacity, View } from 'react-nat
 import { FlashList } from '@shopify/flash-list'
 import { StyleSheet } from 'react-native-unistyles'
 
-import { useEffectEvent } from '../../hooks/use-effect-event'
+import { useEffectEvent } from '../hooks/use-effect-event'
 import { Checkbox } from './form/checkbox'
 import { Radio } from './form/radio-input'
 import { SearchInput } from './form/search-field'

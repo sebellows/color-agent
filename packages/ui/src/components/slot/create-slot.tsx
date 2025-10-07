@@ -7,11 +7,40 @@ import {
     type StyleProp,
 } from 'react-native'
 
-import type { ComponentTypeName, PropsWithRef } from '../../types/component.types'
+import type {
+    ComponentTypeName,
+    PressableRef,
+    PropsWithRef,
+    RNPressable,
+} from '../../types/component.types'
 
 function isValidElement<P = {}>(props: unknown): props is React.ReactElement<P & { ref: any }> {
     return React.isValidElement(props)
 }
+
+export const Pressable = React.forwardRef<React.ComponentRef<RNPressable>, RNPressableProps>(
+    (props, forwardedRef) => {
+        const { children, ...pressableSlotProps } = props
+
+        if (!React.isValidElement(children)) {
+            console.log('Slot.Pressable - Invalid asChild element', children)
+            return null
+        }
+
+        return React.cloneElement<
+            React.ComponentPropsWithoutRef<RNPressable>,
+            React.ComponentRef<RNPressable>
+        >(isTextChildren(children) ? <></> : children, {
+            ...mergeProps(pressableSlotProps, children.props as AnyProps),
+            ref:
+                forwardedRef ?
+                    composeRefs(forwardedRef, (children as any).ref)
+                :   (children as any).ref,
+        })
+    },
+)
+
+Pressable.displayName = 'SlotPressable'
 
 export function createSlot<TName extends ComponentTypeName>(componentName: TName) {
     const SlotComponent = ({ ref, ...props }: PropsWithRef<TName>) => {
@@ -37,34 +66,6 @@ export function createSlot<TName extends ComponentTypeName>(componentName: TName
 
     return SlotComponent
 }
-
-// export function createSlot<TName extends ComponentTypeName>(componentName: TName) {
-//     const SlotComponent = React.forwardRef<
-//         ComponentRef<TName>,
-//         React.PropsWithChildren<ComponentProps<TName>>
-//     >((props, ref) => {
-//         const { children, ...slotProps } = props
-
-//         if (isTextChildren(children)) {
-//             return <></>
-//         }
-
-//         if (isValidElement(children)) {
-//             return React.cloneElement(children, {
-//                 ...mergeProps(slotProps, children.props),
-//                 ref: ref ? composeRefs(ref, (children as any).ref) : (children as any).ref,
-//             })
-//         }
-
-//         console.log(`Slot.${Text} - Invalid asChild element`, children)
-
-//         return null
-//     })
-
-//     SlotComponent.displayName = `Slot${componentName}`
-
-//     return SlotComponent
-// }
 
 // This project uses code from WorkOS/Radix Primitives.
 // The code is licensed under the MIT License.

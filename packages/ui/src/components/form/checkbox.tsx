@@ -6,14 +6,17 @@ import Animated, { Easing, useAnimatedStyle, withTiming } from 'react-native-rea
 import { StyleSheet } from 'react-native-unistyles'
 
 import { Icon } from '../icon'
+import { PressableSlotProps } from '../slot'
 import { Text } from '../text'
 
-type Props = AccessibilityProps & {
-    onChange: (value: string) => void
-    value: string
-    checked: boolean
-    label: string
-}
+type RootProps = AccessibilityProps &
+    PressableSlotProps & {
+        onChange: (value: boolean) => void
+        value: string
+        checked: boolean
+        disabled?: boolean
+        label: string
+    }
 
 export function Checkbox({
     onChange,
@@ -22,7 +25,7 @@ export function Checkbox({
     label,
     accessibilityLabel = `Checkbox option: ${label}`,
     ...props
-}: Props) {
+}: RootProps) {
     const animatedStyles = useAnimatedStyle(() => {
         return {
             transform: [
@@ -45,7 +48,7 @@ export function Checkbox({
 
     function onPress() {
         haptics.selection()
-        onChange(value)
+        onChange(!checked)
     }
 
     styles.useVariants({ checked })
