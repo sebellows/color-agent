@@ -18,7 +18,7 @@ const HIT_SLOP_FACTOR = 1.2
 
 export function IconButton({
     icon,
-    color = 'neutral',
+    color = 'neutral.fg',
     size = 'normal',
     variant = 'filled',
     loading,
