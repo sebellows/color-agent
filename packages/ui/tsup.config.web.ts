@@ -1,13 +1,18 @@
 import { defineConfig, Options } from 'tsup'
 
 export default defineConfig((options: Options) => ({
-    treeshake: true,
-    splitting: true,
-    entry: ['src/**/*.ts'],
+    entry: ['src/**/*.{ts,tsx}'],
     format: ['esm'],
     tsconfig: 'tsconfig.json',
+    outDir: 'dist-web',
+    clean: true,
     dts: true,
     minify: true,
-    clean: true,
+    splitting: true,
+    treeshake: true,
+    target: 'esnext',
+    loader: {
+        '.js': 'jsx',
+    },
     ...options,
 }))

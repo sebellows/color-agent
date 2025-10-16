@@ -1,4 +1,4 @@
-import { ComponentType, ComponentTypeName } from '../../types/component.types'
+import { ComponentType, ComponentTypeName } from '@ui/types/component.types'
 
 export type SlotProps<T extends ComponentTypeName> = React.ComponentPropsWithoutRef<
     ComponentType<T>

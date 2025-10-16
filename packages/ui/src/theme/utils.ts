@@ -1,7 +1,7 @@
 import { StyleSheet, ViewStyle } from 'react-native'
 
 import { assertUnreachable } from '@coloragent/utils'
-import { isError } from 'es-toolkit'
+import { isError, upperFirst } from 'es-toolkit'
 import { get } from 'es-toolkit/compat'
 
 import { ActionState, KeyPathOf } from '../types'
@@ -9,7 +9,9 @@ import { getEntries } from '../utils/get-entries'
 import type { ThemeColorScheme } from './color-palette/types'
 import colors, { ColorScheme } from './design-tokens/colors.native'
 import { ShadowsToken } from './design-tokens/shadows'
-import { default as typographyTokens, type TypographyToken } from './design-tokens/typography'
+import { NegativeSpacingToken, SpacingToken } from './design-tokens/spacing'
+import { TypographyToken } from './design-tokens/typography-token'
+import { default as typographyTokens } from './design-tokens/typography.native'
 import { TypographyDefinition } from './design-tokens/utils'
 import { Theme } from './theme'
 import { UnistylesTheme } from './theme.types'
@@ -46,8 +48,8 @@ export function resolveComponentColorScheme<T>(
             if (scheme in match) {
                 return match[scheme as keyof typeof match]
             }
-            // assertUnreachable(scheme)
-            throw new Error(`Unexpected value: "${scheme}"`)
+
+            return assertUnreachable(scheme)
     }
 }
 
@@ -109,4 +111,78 @@ export const typography = (theme: UnistylesTheme, variant: TypographyToken) => {
 
 export function getShadow(theme: UnistylesTheme, variant: ShadowsToken) {
     return [theme.shadows[variant]]
+}
+
+type Direction = 'top' | 'right' | 'bottom' | 'left'
+
+export function getPosition(
+    theme: UnistylesTheme,
+    variant: SpacingToken | NegativeSpacingToken,
+    ...dirs: Direction[]
+) {
+    const space = theme.space[variant]
+    const value = variant.startsWith('-') ? -space : space
+
+    if (dirs.length === 1) {
+        return { [dirs[0]]: value }
+    }
+
+    return dirs.reduce(
+        (acc, dir) => {
+            acc[dir] = value
+            return acc
+        },
+        {} as Record<Direction, number>,
+    )
+}
+
+type SpacingDirection = 'top' | 'right' | 'bottom' | 'left' | 'start' | 'end'
+
+export function getMargin(
+    theme: UnistylesTheme,
+    variant: SpacingToken | NegativeSpacingToken,
+    ...dirs: SpacingDirection[]
+) {
+    const space = theme.space[variant]
+    const value = variant.startsWith('-') ? -space : space
+
+    if (!dirs.length) {
+        return { margin: value }
+    }
+
+    if (dirs.length === 1) {
+        return { [`margin${upperFirst(dirs[0])}`]: value }
+    }
+
+    return dirs.reduce(
+        (acc, dir) => {
+            acc[`margin${upperFirst(dir)}`] = value
+            return acc
+        },
+        {} as Record<Direction, number>,
+    )
+}
+
+export function getPadding(
+    theme: UnistylesTheme,
+    variant: SpacingToken,
+    ...dirs: SpacingDirection[]
+) {
+    const value = theme.space[variant]
+
+    if (!dirs.length) {
+        return { padding: value }
+    }
+
+    if (dirs.length === 1) {
+        return { [`padding${upperFirst(dirs[0])}`]: value }
+    }
+
+    return dirs.reduce(
+        (acc, dir) => {
+            acc[`padding${upperFirst(dir)}`] = value
+            return acc
+        },
+        {} as Record<Direction, number>,
+    )
 }

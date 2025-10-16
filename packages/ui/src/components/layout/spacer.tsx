@@ -1,7 +1,6 @@
-import React from 'react'
 import { View, type ViewProps } from 'react-native'
 
-import { type Space } from '@ui/theme'
+import { type Space } from '@ui/theme/theme.types'
 import { StyleSheet } from 'react-native-unistyles'
 
 type SpacerProps = {

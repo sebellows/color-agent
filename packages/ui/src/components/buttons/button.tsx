@@ -1,7 +1,7 @@
 import { ActivityIndicator, TouchableOpacity, type GestureResponderEvent } from 'react-native'
 
 import { useHaptics } from '@ui/hooks/use-haptics.native'
-import { type TypographyToken } from '@ui/theme'
+import { TypographyToken } from '@ui/theme/design-tokens/typography-token'
 import { StyleSheet, useUnistyles } from 'react-native-unistyles'
 
 import { Icon } from '../icon'

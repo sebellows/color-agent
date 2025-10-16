@@ -4,7 +4,7 @@ import { AnyRecord, isDecimal } from '@coloragent/utils'
 import { Entries, Get, ValueOf } from 'type-fest'
 
 import { getEntries } from '../../utils/get-entries'
-import { type TypographyToken } from './typography'
+import { type TypographyToken } from './typography.native'
 
 export type TypographyDefinition = NonNullable<
     Pick<

@@ -2,8 +2,6 @@ import { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'reac
 import {
     AccessibilityProps,
     TextInput as RNTextInput,
-    TouchableOpacity,
-    View,
     type TextInputProps as RNTextInputProps,
     type TextInputFocusEvent,
 } from 'react-native'

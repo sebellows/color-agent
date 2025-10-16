@@ -4,16 +4,12 @@
     "extends": "./tsconfig.base.json",
     "compilerOptions": {
         "jsx": "react-jsx",
-        "lib": ["DOM", "DOM.Iterable", "ESNext"],
-        "module": "preserve",
-        "moduleDetection": "force",
-        "moduleResolution": "bundler",
-        "noEmit": true,
-        "target": "ESNext"
+        "lib": ["DOM", "DOM.Iterable", "ESNext"]
     },
     "exclude": [
-        "dist",
-        "build",
+        "./dist",
+        "./dist-*",
+        "./build",
         "node_modules",
         "babel.config.js",
         "metro.config.cjs",

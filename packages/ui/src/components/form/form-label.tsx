@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 
-import { Color } from '@ui/theme'
+import type { Color } from '@ui/theme/theme.types'
 
 import { Icon, type IconName } from '../icon'
 import { Stack, StackProps } from '../layout/stack'

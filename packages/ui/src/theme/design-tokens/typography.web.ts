@@ -1,6 +1,7 @@
 import { Config } from '@ui/config'
 
-import { resolveFontFamilyProps, resolveSizeProps } from './resolvers/resolvers'
+import { resolveFontFamilyProps, resolveSizeProps } from './resolvers/resolvers.web'
+import { TYPOGRAPHY_TOKENS } from './typography-token'
 import { FontConfigType, FontWeightKey } from './utils'
 
 const { ROOT_FONT_SIZE, BASE_FONT_SIZE, BASE_LINE_HEIGHT } = Config.get('theme')
@@ -233,6 +234,12 @@ const typography = {
     },
 }
 
-export type TypographyToken = keyof typeof typography
+if (JSON.stringify(Object.keys(typography)) !== JSON.stringify(TYPOGRAPHY_TOKENS)) {
+    throw new Error(
+        'The number of typography definitions is out of sync with the number of TYPOGRAPHY_TOKENS',
+    )
+}
+
+// export type TypographyToken = keyof typeof typography
 
 export default typography

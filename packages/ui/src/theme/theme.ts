@@ -1,16 +1,16 @@
+import { KeyPathOf } from '@ui/types'
+import { getEntries } from '@ui/utils/get-entries'
 import { get } from 'es-toolkit/compat'
 import { StyleSheet } from 'react-native-unistyles'
 
 import { Config } from '../config'
-import { KeyPathOf } from '../types'
-import { getEntries } from '../utils/get-entries'
 import breakpoints from './design-tokens/breakpoints'
 import colors from './design-tokens/colors.native'
 import radii from './design-tokens/radii'
 import shadows from './design-tokens/shadows'
 import sizes from './design-tokens/sizes'
 import space from './design-tokens/spacing'
-import { default as _typography, TypographyToken } from './design-tokens/typography'
+import { default as _typography, TypographyToken } from './design-tokens/typography.native'
 import {
     getFonts,
     getFontSizes,

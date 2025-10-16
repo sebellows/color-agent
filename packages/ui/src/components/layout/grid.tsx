@@ -1,7 +1,7 @@
 import { cloneElement, isValidElement, useState, type ReactNode } from 'react'
 import { View, type LayoutChangeEvent, type ViewProps } from 'react-native'
 
-import { type Space } from '@ui/theme'
+import { type Space } from '@ui/theme/theme.types'
 import { StyleSheet, useUnistyles } from 'react-native-unistyles'
 
 import { flattenChildren } from '../helpers'

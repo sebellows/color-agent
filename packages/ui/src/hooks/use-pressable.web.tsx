@@ -1,31 +1,63 @@
 import { ReactElement } from 'react'
+import { View, ViewProps } from 'react-native'
 
+// import { Box, BoxProps } from '@ui/components/box';
+import { StyleSheet } from 'react-native-unistyles'
 import { useFocus, useHover } from 'use-events'
-import { Box, BoxProps } from '@ui/components/box'
+
+import { getPosition } from '../theme/utils'
+import { UsePressedState, usePressedState } from './use-pressed-state.native'
+
+// export const Card = (props: ViewProps) => <View style={styles.card} {...props} />
+
+// const styles = StyleSheet.create(theme => ({
+//     card: {
+//         backgroundColor: theme.colors.bg,
+//         borderRadius: theme.radii.default,
+//         borderWidth: StyleSheet.hairlineWidth,
+//         borderColor: theme.colors.line3,
+//         padding: theme.space.default,
+//         boxShadow: theme.boxShadows.soft3,
+//     },
+// }))
 
 function ItemHover({
     isFocused,
     isHovered,
-    ...rest
+    ...props
 }: {
     isFocused: boolean
     isHovered: boolean
-} & BoxProps) {
-    return (
-        <Box
-            opacity={isFocused || isHovered ? 1 : 0}
-            // transition="transition"
-            borderRadius="xs"
-            position="absolute"
-            size="calc(100% + 24px)"
-            left={-4}
-            top={-4}
-            bg="base.component-bg-hover"
-            zIndex="-1"
-            {...rest}
-        />
-    )
+} & ViewProps) {
+    const state = usePressedState()
+    return <View style={styles.item(state)} {...props}></View>
 }
+
+const styles = StyleSheet.create(theme => {
+    return {
+        item: (state: UsePressedState) => ({
+            backgroundColor: theme.colors.componentBgHover,
+            borderRadius: theme.radii.sm,
+            borderWidth: StyleSheet.hairlineWidth,
+            borderColor: theme.colors.line3,
+            padding: theme.space.default,
+            position: 'absolute',
+            ...getPosition(theme, '-md', 'left', 'top'),
+            boxShadow: theme.boxShadows.soft3,
+            transition: 'transition',
+            zIndex: -1,
+            opacity: state.pressed?.value ? 1 : 0,
+            _web: {
+                _hover: {
+                    opacity: 1,
+                },
+                _focus: {
+                    opacity: 1,
+                },
+            },
+        }),
+    }
+})
 
 type HoverBind = ReturnType<typeof useHover>[1]
 type FocusBind = ReturnType<typeof useFocus>[1]

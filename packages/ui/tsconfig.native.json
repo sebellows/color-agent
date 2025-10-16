@@ -1,15 +1,13 @@
 {
-    "extends": "@coloragent/typescript-config/tsconfig.react-native.json",
+    "extends": "@coloragent/typescript-config/tsconfig.native.json",
     "compilerOptions": {
-        "composite": true,
-        "tsBuildInfoFile": "tsconfig.native.tsbuildinfo",
-        "baseUrl": "./src",
+        "baseUrl": ".",
         "rootDir": ".",
         "outDir": "./dist-native",
         "paths": {
-            "@ui/*": ["src/*"]
+            "@ui/*": ["./src/*"]
         }
     },
-    "include": ["index.d.ts", "*.ts", "**/*.ts", "**/*.tsx"],
-    "exclude": ["dist-*", "build", "node_modules", "*.cjs", "*.mjs", "**/*.web.ts", "**/*.web.tsx"]
+    "include": ["index.d.ts", "native.ts", "*.ts", "**/*.ts", "**/*.tsx"],
+    "exclude": ["./dist-*", "./build", "node_modules", "*.cjs", "*.mjs"]
 }

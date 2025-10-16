@@ -7,12 +7,7 @@ import {
     type StyleProp,
 } from 'react-native'
 
-import type {
-    ComponentTypeName,
-    PressableRef,
-    PropsWithRef,
-    RNPressable,
-} from '../../types/component.types'
+import type { ComponentTypeName, PropsWithRef, RNPressable } from '@ui/types/component.types'
 
 function isValidElement<P = {}>(props: unknown): props is React.ReactElement<P & { ref: any }> {
     return React.isValidElement(props)

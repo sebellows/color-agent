@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react'
 import type { PressableProps, TouchableWithoutFeedbackProps } from 'react-native'
 
-import { Color, ColorScheme } from '@ui/theme'
+import { Color } from '@ui/theme'
+import { ColorScheme } from '@ui/theme/design-tokens/colors.native'
 
 import type { IconName } from '../icon'
 

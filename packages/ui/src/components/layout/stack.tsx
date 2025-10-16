@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { View, type ViewProps } from 'react-native'
 
-import { type Space } from '@ui/theme'
+import { type Space } from '@ui/theme/theme.types'
 import { StyleSheet } from 'react-native-unistyles'
 
 export type StackProps = ViewProps & {
