@@ -8,7 +8,7 @@ import {
     type TextInputFocusEvent,
 } from 'react-native'
 
-import { useHaptics } from '@ui/hooks/use-haptics'
+import { useHaptics } from '@ui/hooks/use-haptics.native'
 import { StyleSheet, useUnistyles } from 'react-native-unistyles'
 
 import { Icon, type IconName } from '../icon'

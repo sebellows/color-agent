@@ -1,7 +1,8 @@
 import { UnistylesThemes, useUnistyles } from 'react-native-unistyles'
 
 import { KeyPathOf } from '../types'
-import { TypographyDefinition, TypographyToken } from './design-tokens'
+import type { TypographyToken } from './design-tokens/typography'
+import { TypographyDefinition } from './design-tokens/utils'
 
 type Theme = ReturnType<typeof useUnistyles>['theme']
 

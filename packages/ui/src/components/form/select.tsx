@@ -7,7 +7,7 @@ import {
 } from 'react'
 import { Keyboard, type AccessibilityProps, type ViewStyle } from 'react-native'
 
-import { useHaptics } from '@ui/hooks/use-haptics'
+import { useHaptics } from '@ui/hooks/use-haptics.native'
 import { callAll } from '@ui/utils/common'
 
 import type { IconName } from '../icon'

@@ -4,6 +4,6 @@ export {
     resolvePaletteColor,
     whenColorScheme,
     whenStateColor,
-} from './palette'
+} from './palette.native'
 export { rawColorPalette } from './raw-colors'
 export * from './types'

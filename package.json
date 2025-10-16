@@ -7,7 +7,11 @@
         "build": "dotenv -- turbo run build",
         "clean": "turbo run clean && rm -rf node_modules",
         "commit": "cz",
-        "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore"
+        "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore",
+        "sb-docs:web": "storybook dev --docs -c ./apps/.storybook-web",
+        "sb:android": "expo start --android",
+        "sb:ios": "expo start --ios",
+        "sb:web": "storybook dev -p 6006 -c ./apps/.storybook-web"
     },
     "dependencies": {
         "dotenv-cli": "github:motdotla/dotenv-cli"

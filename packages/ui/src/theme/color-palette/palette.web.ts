@@ -1,4 +1,5 @@
-import { assertUnreachable, getEntries } from '@coloragent/utils'
+import { assertUnreachable } from '@coloragent/utils'
+import { getEntries } from '@ui/utils/get-entries'
 import Color from 'colorjs.io'
 import { isNumber } from 'es-toolkit/compat'
 

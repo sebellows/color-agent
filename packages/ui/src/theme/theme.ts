@@ -1,10 +1,16 @@
-import { getKeys } from '@coloragent/utils'
 import { get } from 'es-toolkit/compat'
 import { StyleSheet } from 'react-native-unistyles'
 
 import { Config } from '../config'
 import { KeyPathOf } from '../types'
 import { getEntries } from '../utils/get-entries'
+import breakpoints from './design-tokens/breakpoints'
+import colors from './design-tokens/colors.native'
+import radii from './design-tokens/radii'
+import shadows from './design-tokens/shadows'
+import sizes from './design-tokens/sizes'
+import space from './design-tokens/spacing'
+import { default as _typography, TypographyToken } from './design-tokens/typography'
 import {
     getFonts,
     getFontSizes,
@@ -12,16 +18,8 @@ import {
     getLetterSpacings,
     getLineHeights,
     getShadows,
-    TypographyDefinition,
     TypographyDefinitions,
-} from './design-tokens'
-import breakpoints from './design-tokens/breakpoints'
-import colors from './design-tokens/colors'
-import radii from './design-tokens/radii'
-import shadows from './design-tokens/shadows'
-import sizes from './design-tokens/sizes'
-import space from './design-tokens/spacing'
-import { default as _typography, TypographyToken } from './design-tokens/typography'
+} from './design-tokens/utils'
 import zIndices from './design-tokens/z-indices'
 import { absoluteFill, flexCenter } from './utils'
 

@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import ToastContainer, { type ToastConfigParams } from 'react-native-toast-message'
 import { StyleSheet, useUnistyles } from 'react-native-unistyles'
 
-import { useHaptics } from '../hooks/use-haptics'
+import { useHaptics } from '../hooks/use-haptics.native'
 import { IconButton } from './buttons/icon-button'
 import { Icon, type IconName } from './icon'
 import { Stack } from './layout/stack'

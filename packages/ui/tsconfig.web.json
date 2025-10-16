@@ -1,0 +1,29 @@
+{
+    "extends": "@coloragent/typescript-config/tsconfig.web.json",
+    "compilerOptions": {
+        "composite": true,
+        "baseUrl": "./src",
+        "outDir": "./dist-web",
+        "paths": {
+            "@ui/*": ["src/*"]
+        }
+    },
+    "include": [
+        "index.d.ts",
+        "**/*.ts",
+        "**/*.tsx",
+        ".expo/types/**/*.ts",
+        "expo-env.d.ts"
+    ],
+    "exclude": [
+        "dist-*",
+        "build",
+        "node_modules",
+        "babel.config.cjs",
+        "metro.config.cjs",
+        "tsup.config.*.ts",
+        "**/*.native.ts",
+        "**/*.native.tsx",
+        "**/*.js"
+    ]
+}

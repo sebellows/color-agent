@@ -6,7 +6,7 @@ import { t } from '@ui/utils/translation'
 import Collapsible, { type CollapsibleProps } from 'react-native-collapsible'
 import { StyleSheet } from 'react-native-unistyles'
 
-import { useHaptics } from '../hooks/use-haptics'
+import { useHaptics } from '../hooks/use-haptics.native'
 import { Icon, type IconName } from './icon'
 import { Stack } from './layout/stack'
 import { Text } from './text'

@@ -1,5 +1,3 @@
-import { ValueOf } from 'type-fest'
-
 export type Listener = (key: string) => void
 
 export type StorageValueType = 'string' | 'number' | 'boolean' | 'buffer'

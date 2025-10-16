@@ -1,0 +1,13 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ],
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "paths": {
+      "@coloragent/ui": ["../../packages/ui/src/index"]
+    }
+  }
+}

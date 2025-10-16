@@ -5,7 +5,7 @@ import { DateTime } from 'luxon'
 import DatePicker from 'react-native-date-picker'
 import { StyleSheet } from 'react-native-unistyles'
 
-import { useHaptics } from '../../hooks/use-haptics'
+import { useHaptics } from '../../hooks/use-haptics.native'
 import { callAll } from '../../utils/common'
 import { type IconName } from '../icon'
 import { Text } from '../text'

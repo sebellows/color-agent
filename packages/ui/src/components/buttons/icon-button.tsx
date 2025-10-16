@@ -1,7 +1,7 @@
 import { ActivityIndicator, GestureResponderEvent, Pressable } from 'react-native'
 
-import { useHaptics } from '@ui/hooks/use-haptics'
-import { usePressedState } from '@ui/hooks/use-pressed-state'
+import { useHaptics } from '@ui/hooks/use-haptics.native'
+import { usePressedState } from '@ui/hooks/use-pressed-state.native'
 import Animated, {
     useAnimatedStyle,
     useSharedValue,

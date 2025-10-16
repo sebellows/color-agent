@@ -1,22 +1,22 @@
 {
-  "extends": "@coloragent/typescript-config/tsconfig.react-native",
-  "include": ["index.d.ts", "**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "src/use-"],
-  "compilerOptions": {
-      "composite": false,
-      "declaration": true,
-      "declarationMap": true,
-      "forceConsistentCasingInFileNames": true,
-      "inlineSources": false,
-      "isolatedModules": true,
-      "noUnusedLocals": false,
-      "noUnusedParameters": false,
-      "preserveWatchOutput": true,
-      "module": "nodenext",
-      "moduleResolution": "nodenext",
-      "baseUrl": ".",
-      "strict": true,
-      "paths": {
-          "@ui/*": ["src/*"]
-      }
-  }
+    "extends": "@coloragent/typescript-config/tsconfig.react-native",
+    "include": ["index.d.ts", "**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],
+    "exclude": ["./dist-*", "build", "node_modules"],
+    "compilerOptions": {
+        "declaration": true,
+        "declarationMap": true,
+        "forceConsistentCasingInFileNames": true,
+        "inlineSources": false,
+        "isolatedModules": true,
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
+        "preserveWatchOutput": true,
+        "baseUrl": ".",
+        "rootDir": ".",
+        "outDir": "dist-web",
+        "strict": true,
+        "paths": {
+            "@ui/*": ["src/*"]
+        }
+    }
 }

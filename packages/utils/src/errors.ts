@@ -10,19 +10,22 @@
 
 import { isNil } from 'es-toolkit'
 
-export function assertUnreachable(
+type AssertOptions = { shouldThrow?: boolean }
+type RequiredAssertOptions = Required<AssertOptions>
+
+export function assertUnreachable<Options extends AssertOptions = RequiredAssertOptions>(
     value: unknown,
     message?: string | null,
-    { shouldThrow = true }: { shouldThrow?: boolean } = {},
-): void {
+    options: Options = { shouldThrow: true } as Options,
+) {
     const strValue = typeof value === 'string' ? value : JSON.stringify(value)
     const msg = message ?? 'Unexpected value:'
 
-    if (!shouldThrow) {
+    if (`${options.shouldThrow}` !== 'true') {
         console.warn(
             `Source: "@coloragent/utils/src/errors/#assertUnreachable"\nMessage: "${msg}${strValue}"`,
         )
-        return
+        return true
     }
 
     throw new Error(`${msg} ${strValue}`)

@@ -1,4 +1,5 @@
-import { getEntries, isDecimal } from '@coloragent/utils'
+import { isDecimal } from '@coloragent/utils'
+import { getEntries } from '@ui/utils/get-entries'
 
 import {
     FontConfigType,

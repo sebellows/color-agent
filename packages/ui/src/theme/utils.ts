@@ -7,10 +7,10 @@ import { get } from 'es-toolkit/compat'
 import { ActionState, KeyPathOf } from '../types'
 import { getEntries } from '../utils/get-entries'
 import type { ThemeColorScheme } from './color-palette/types'
-import { ColorScheme, TypographyDefinition } from './design-tokens'
-import colors from './design-tokens/colors'
+import colors, { ColorScheme } from './design-tokens/colors.native'
 import { ShadowsToken } from './design-tokens/shadows'
 import { default as typographyTokens, type TypographyToken } from './design-tokens/typography'
+import { TypographyDefinition } from './design-tokens/utils'
 import { Theme } from './theme'
 import { UnistylesTheme } from './theme.types'
 
@@ -46,7 +46,8 @@ export function resolveComponentColorScheme<T>(
             if (scheme in match) {
                 return match[scheme as keyof typeof match]
             }
-            assertUnreachable(scheme)
+            // assertUnreachable(scheme)
+            throw new Error(`Unexpected value: "${scheme}"`)
     }
 }
 

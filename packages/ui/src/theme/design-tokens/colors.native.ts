@@ -1,4 +1,4 @@
-import { getColorSchemes } from '../color-palette'
+import { getColorSchemes } from '../color-palette/palette.native'
 import { THEME_COLOR_SCHEMES } from '../constants'
 
 const colorSchemes = getColorSchemes(THEME_COLOR_SCHEMES)

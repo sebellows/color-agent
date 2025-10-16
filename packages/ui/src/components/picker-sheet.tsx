@@ -7,7 +7,7 @@ import { StyleSheet } from 'react-native-unistyles'
 import { useEffectEvent } from '../hooks/use-effect-event'
 import { Checkbox } from './form/checkbox'
 import { Radio } from './form/radio-input'
-import { SearchInput } from './form/search-field'
+import { SearchField } from './form/search-field'
 import { Spacer } from './layout/spacer'
 import { Stack } from './layout/stack'
 import StatusBar from './status-bar'
@@ -228,7 +228,7 @@ function ListHeader({
     return (
         <View style={styles.listHeaderWrapper}>
             <Stack axis="y" spacing="default">
-                <SearchInput
+                <SearchField
                     value={searchTerm}
                     onChange={onSearch}
                     accessibilityLabel="Search options"

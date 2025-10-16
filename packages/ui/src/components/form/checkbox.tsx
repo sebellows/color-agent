@@ -1,7 +1,7 @@
 import React from 'react'
 import { AccessibilityProps, PixelRatio, TouchableOpacity, View } from 'react-native'
 
-import { useHaptics } from '@ui/hooks/use-haptics'
+import { useHaptics } from '@ui/hooks/use-haptics.native'
 import Animated, { Easing, useAnimatedStyle, withTiming } from 'react-native-reanimated'
 import { StyleSheet } from 'react-native-unistyles'
 

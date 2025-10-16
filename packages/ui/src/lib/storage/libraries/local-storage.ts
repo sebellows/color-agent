@@ -7,6 +7,7 @@ import { MemoryStorage } from './memory-storage'
 import { createTextEncoder, KEY_WILDCARD, SimpleStorageConfig } from './shared'
 
 interface LocalStorageConfig extends Required<SimpleStorageConfig> {}
+
 class LocalStorageImp extends StorageContract<LocalStorageConfig> {
     readonly id: string
 
@@ -81,7 +82,7 @@ class LocalStorageImp extends StorageContract<LocalStorageConfig> {
         return this.storage.removeItem(key) ?? false
     }
 
-    set(key: string, value: boolean | string | number | ArrayBuffer): void {
+    set(key: string, value: boolean | string | number | ArrayBuffer) {
         this.storage.setItem(this.prefixedKey(key), value.toString())
     }
 
