@@ -1,6 +1,7 @@
-import { ActivityIndicator, Pressable, type GestureResponderEvent } from 'react-native'
+import { ActivityIndicator, GestureResponderEvent, Pressable } from 'react-native'
 
-import { haptics } from '@ui/utils/haptics'
+import { useHaptics } from '@ui/hooks/use-haptics'
+import { usePressedState } from '@ui/hooks/use-pressed-state'
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -26,12 +27,19 @@ export function IconButton({
     accessibilityRole,
     accessibilityLabel,
     accessibilityHint,
-    ...rest
+    ...props
 }: IconButtonProps) {
     const { theme } = useUnistyles()
-    const pressed = useSharedValue(false)
+    const {
+        onPressIn,
+        onPressOut,
+        pressed: pressedState = false,
+    } = usePressedState({ disabled, ...props })
+    const pressed = useSharedValue(pressedState)
     const iconSize = sizeToIconSize[size]
     const wantedHitSize = iconSize * HIT_SLOP_FACTOR
+
+    const { triggerHaptics } = useHaptics()
 
     const hitSlop = {
         top: (wantedHitSize - iconSize) / 2,
@@ -49,16 +57,6 @@ export function IconButton({
 
     const iconColor = getIconColor({ variant, color, disabled })
 
-    function handlePressIn() {
-        if (disabled) return
-        pressed.value = true
-    }
-
-    function handlePressOut() {
-        if (disabled) return
-        pressed.value = false
-    }
-
     const contentStyles = useAnimatedStyle(() => {
         return {
             transform: [{ scale: withSpring(pressed.value ? 0.8 : 1) }],
@@ -72,11 +70,12 @@ export function IconButton({
         }
     })
 
-    function _onPress(e: GestureResponderEvent) {
-        if (!disabled && onPress) {
-            haptics.selection()
-            onPress(e)
-        }
+    const handleOnPress = (e: GestureResponderEvent) => {
+        if (disabled) return
+
+        triggerHaptics('selection')
+
+        onPress?.(e)
     }
 
     styles.useVariants({
@@ -87,16 +86,16 @@ export function IconButton({
     return (
         <Pressable
             hitSlop={hitSlop}
-            onPressIn={handlePressIn}
-            onPressOut={handlePressOut}
+            onPressIn={onPressIn}
+            onPressOut={onPressOut}
             disabled={disabled}
-            onPress={_onPress}
+            onPress={handleOnPress}
             style={[styles.wrapper, wrapperStyle]}
             accessibilityRole={accessibilityRole ?? 'button'}
             accessibilityLabel={accessibilityLabel} // Icon button with ${icon} icon
             accessibilityHint={accessibilityHint} // Double tap to perform action
             accessibilityState={{ disabled: !!disabled, busy: !!loading }}
-            {...rest}
+            {...props}
         >
             <Animated.View style={highlightStyles} />
             {loading ?

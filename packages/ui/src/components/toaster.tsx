@@ -2,11 +2,11 @@ import { View } from 'react-native'
 
 import { getShadow, type Color } from '@ui/theme'
 import { announceForAccessibility } from '@ui/utils/a11y'
-import { haptics } from '@ui/utils/haptics'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import ToastContainer, { type ToastConfigParams } from 'react-native-toast-message'
 import { StyleSheet, useUnistyles } from 'react-native-unistyles'
 
+import { useHaptics } from '../hooks/use-haptics'
 import { IconButton } from './buttons/icon-button'
 import { Icon, type IconName } from './icon'
 import { Stack } from './layout/stack'
@@ -52,7 +52,17 @@ export function showToast({
     icon?: IconName
     type: Variant
 }) {
-    getHaptic(type)()
+    const { triggerHaptics } = useHaptics()
+    switch (type) {
+        case 'error':
+        case 'success':
+        case 'warning':
+            triggerHaptics(`notify.${type}`)
+            break
+        default:
+            triggerHaptics('impact.light')
+    }
+
     ToastContainer.show({
         text1: title,
         text2: subtitle,
@@ -63,21 +73,6 @@ export function showToast({
     announceForAccessibility({
         message: `${type} toast: ${title}${subtitle ? `, ${subtitle}` : ''}`,
     })
-}
-
-function getHaptic(type: Variant) {
-    switch (type) {
-        case 'info':
-            return haptics.impactLight
-        case 'warning':
-            return haptics.notificationWarning
-        case 'error':
-            return haptics.notificationError
-        case 'success':
-            return haptics.notificationSuccess
-        default:
-            return haptics.impactLight
-    }
 }
 
 function Toast({

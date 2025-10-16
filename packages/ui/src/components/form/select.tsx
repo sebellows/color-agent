@@ -7,7 +7,8 @@ import {
 } from 'react'
 import { Keyboard, type AccessibilityProps, type ViewStyle } from 'react-native'
 
-import { haptics } from '@ui/utils/haptics'
+import { useHaptics } from '@ui/hooks/use-haptics'
+import { callAll } from '@ui/utils/common'
 
 import type { IconName } from '../icon'
 import { PickerModal } from '../picker-modal'
@@ -96,6 +97,12 @@ export const Select = forwardRef(
             },
         }))
 
+        const { triggerHaptics } = useHaptics()
+
+        // NOTE: Dismissing the keyboard first is necessary to force any focused input to blur
+        const onPress = () =>
+            callAll(Keyboard.dismiss, () => setPickerOpen(true), triggerHaptics('selection'))
+
         return (
             <>
                 <InputButton
@@ -107,12 +114,7 @@ export const Select = forwardRef(
                     message={message}
                     placeholder={placeholder}
                     isFocused={isPickerOpen}
-                    onPress={() => {
-                        // Dismissing the keyboard is necessary to force any focused input to blur
-                        Keyboard.dismiss()
-                        setPickerOpen(true)
-                        haptics.selection()
-                    }}
+                    onPress={onPress}
                     accessibilityRole={accessibilityRole ?? 'button'}
                     accessibilityLabel={
                         accessibilityLabel ??

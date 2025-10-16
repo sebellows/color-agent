@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { AccessibilityProps, Animated, PixelRatio, TouchableOpacity, View } from 'react-native'
 
-import { haptics } from '@ui/utils/haptics'
+import { useHaptics } from '@ui/hooks/use-haptics'
 import { StyleSheet } from 'react-native-unistyles'
 
 import { Text } from '../text'
@@ -22,8 +22,10 @@ export function Radio({
     accessibilityLabel: _accessibilityLabel,
     ...props
 }: Props) {
+    const { triggerHaptics } = useHaptics()
+
     function onPress() {
-        haptics.selection()
+        triggerHaptics('selection')
         onChange(value)
     }
 

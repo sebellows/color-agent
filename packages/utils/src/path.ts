@@ -158,3 +158,11 @@ export function toKeyPath(path: string) {
 
     return keypath
 }
+
+export function isSegmentedPath(path: string, separator: string) {
+    return path.includes(separator) && !path.endsWith(separator) && !path.startsWith(separator)
+}
+
+export function isDotPath(path: string) {
+    return isSegmentedPath(path, '.')
+}

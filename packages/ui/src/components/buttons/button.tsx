@@ -1,7 +1,7 @@
 import { ActivityIndicator, TouchableOpacity, type GestureResponderEvent } from 'react-native'
 
+import { useHaptics } from '@ui/hooks/use-haptics'
 import { type TypographyToken } from '@ui/theme'
-import { haptics } from '@ui/utils/haptics'
 import { StyleSheet, useUnistyles } from 'react-native-unistyles'
 
 import { Icon } from '../icon'
@@ -39,11 +39,14 @@ export function Button({
 
     const iconComp = icon && <Icon name={icon} color={textColor} size={iconSize} />
 
-    function _onPress(e: GestureResponderEvent) {
-        if (!disabled && onPress) {
-            haptics.selection()
-            onPress(e)
-        }
+    const { triggerHaptics } = useHaptics()
+
+    const handleOnPress = (e: GestureResponderEvent) => {
+        if (disabled) return
+
+        triggerHaptics('selection')
+
+        onPress?.(e)
     }
 
     styles.useVariants({
@@ -54,7 +57,7 @@ export function Button({
     return (
         <TouchableOpacity
             style={[styles.wrapper, wrapperStyle, style]}
-            onPress={_onPress}
+            onPress={handleOnPress}
             activeOpacity={disabled ? 0.9 : 0.8}
             accessibilityRole={accessibilityRole ?? 'button'}
             accessibilityState={{ disabled, busy: loading }}

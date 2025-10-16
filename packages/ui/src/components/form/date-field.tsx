@@ -1,11 +1,12 @@
 import { forwardRef, useImperativeHandle, useMemo, useState } from 'react'
 import { Keyboard, type AccessibilityProps, type ViewStyle } from 'react-native'
 
-import { haptics } from '@ui/utils/haptics'
 import { DateTime } from 'luxon'
 import DatePicker from 'react-native-date-picker'
 import { StyleSheet } from 'react-native-unistyles'
 
+import { useHaptics } from '../../hooks/use-haptics'
+import { callAll } from '../../utils/common'
 import { type IconName } from '../icon'
 import { Text } from '../text'
 import { InputButton } from './input-button'
@@ -74,6 +75,12 @@ export const DateField = forwardRef(
             [_initialAccessibilityLabel, label, value],
         )
 
+        const { triggerHaptics } = useHaptics()
+
+        // NOTE: Dismissing the keyboard first is necessary to force any focused input to blur
+        const onPress = () =>
+            callAll(Keyboard.dismiss, () => setPickerOpen(true), triggerHaptics('selection'))
+
         const format =
             mode === 'date' ? DateTime.DATE_SHORT
             : mode === 'datetime' ? DateTime.DATETIME_SHORT
@@ -87,12 +94,7 @@ export const DateField = forwardRef(
                     label={label}
                     icon={icon}
                     isFocused={isPickerOpen}
-                    onPress={() => {
-                        // Dismissing the keyboard is necessary to force any focused input to blur
-                        Keyboard.dismiss()
-                        setPickerOpen(true)
-                        haptics.selection()
-                    }}
+                    onPress={onPress}
                     accessibilityLabel={accessibilityLabel}
                     accessibilityHint={accessibilityHint}
                 />

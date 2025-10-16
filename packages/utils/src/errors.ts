@@ -8,17 +8,55 @@
  * Source: https://github.com/leather-io/mono/blob/main/packages/utils/
  */
 
-export function assertUnreachable(value: unknown): never {
+import { isNil } from 'es-toolkit'
+
+export function assertUnreachable(
+    value: unknown,
+    message?: string | null,
+    { shouldThrow = true }: { shouldThrow?: boolean } = {},
+): void {
     const strValue = typeof value === 'string' ? value : JSON.stringify(value)
-    throw new Error(`Unexpected value: ${strValue}`)
-}
+    const msg = message ?? 'Unexpected value:'
 
-export function assertExistence<T>(value: T, message: string): asserts value is NonNullable<T> {
-    if (value === null || value === undefined) {
-        throw new Error(message)
+    if (!shouldThrow) {
+        console.warn(
+            `Source: "@coloragent/utils/src/errors/#assertUnreachable"\nMessage: "${msg}${strValue}"`,
+        )
+        return
     }
+
+    throw new Error(`${msg} ${strValue}`)
 }
 
-export function assertIsTruthy<T>(val: T): asserts val is NonNullable<T> {
-    if (!val) throw new Error(`expected: true, actual: ${val}`)
+export function assertExistence<T>(
+    value: T,
+    message: string,
+    { shouldThrow = true }: { shouldThrow?: boolean } = {},
+): asserts value is NonNullable<T> {
+    if (!isNil(value)) return
+
+    if (!shouldThrow) {
+        console.warn(
+            `Source: "@coloragent/utils/src/errors/#assertExistence"\nMessage: "${message}"`,
+        )
+        return
+    }
+
+    throw new Error(message)
+}
+
+export function assertIsTruthy<T>(
+    val: T,
+    { shouldThrow = true }: { shouldThrow?: boolean } = {},
+): asserts val is NonNullable<T> {
+    if (`${val}` === 'true') return
+
+    if (!shouldThrow) {
+        console.warn(
+            `Source: "@coloragent/utils/src/errors/#assertIsTruthy\nExpected: true\nActual: ${val}`,
+        )
+        return
+    }
+
+    throw new Error(`Expected: true, actual: ${val}`)
 }

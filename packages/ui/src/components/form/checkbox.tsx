@@ -1,7 +1,7 @@
 import React from 'react'
 import { AccessibilityProps, PixelRatio, TouchableOpacity, View } from 'react-native'
 
-import { haptics } from '@ui/utils/haptics'
+import { useHaptics } from '@ui/hooks/use-haptics'
 import Animated, { Easing, useAnimatedStyle, withTiming } from 'react-native-reanimated'
 import { StyleSheet } from 'react-native-unistyles'
 
@@ -46,8 +46,10 @@ export function Checkbox({
         return checked ? 'Double tap to check this option' : 'Double tap to uncheck this option'
     }, [checked])
 
+    const { triggerHaptics } = useHaptics()
+
     function onPress() {
-        haptics.selection()
+        triggerHaptics('selection')
         onChange(!checked)
     }
 

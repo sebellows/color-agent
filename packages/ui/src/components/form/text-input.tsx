@@ -8,7 +8,7 @@ import {
     type TextInputFocusEvent,
 } from 'react-native'
 
-import { haptics } from '@ui/utils/haptics'
+import { useHaptics } from '@ui/hooks/use-haptics'
 import { StyleSheet, useUnistyles } from 'react-native-unistyles'
 
 import { Icon, type IconName } from '../icon'
@@ -131,6 +131,8 @@ export const TextInput = forwardRef<RNTextInput, TextInputProps>(
             [label, isValid],
         )
 
+        const { triggerHaptics } = useHaptics()
+
         function handleCancel() {
             onChange('')
             inputRef.current?.blur()
@@ -138,7 +140,7 @@ export const TextInput = forwardRef<RNTextInput, TextInputProps>(
 
         function handleFocus(e: TextInputFocusEvent) {
             setFocused(true)
-            haptics.selection()
+            triggerHaptics('selection')
             if (onFocus) onFocus(e)
         }
 

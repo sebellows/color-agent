@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { TouchableOpacity } from 'react-native'
 
 import { Color } from '@ui/theme'
-import { haptics } from '@ui/utils/haptics'
 import { t } from '@ui/utils/translation'
 import Collapsible, { type CollapsibleProps } from 'react-native-collapsible'
 import { StyleSheet } from 'react-native-unistyles'
 
+import { useHaptics } from '../hooks/use-haptics'
 import { Icon, type IconName } from './icon'
 import { Stack } from './layout/stack'
 import { Text } from './text'
@@ -28,9 +28,10 @@ export function Accordion({
     ...rest
 }: AccordionProps) {
     const [collapsed, setCollapsed] = useState(!initialOpen)
+    const { triggerHaptics } = useHaptics()
 
     function onPress() {
-        haptics.selection()
+        triggerHaptics('selection')
         setCollapsed(p => !p)
     }
 
