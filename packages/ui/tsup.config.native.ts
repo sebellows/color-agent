@@ -24,7 +24,7 @@ export default defineConfig((options: Options) => ({
     inject: ['./react-shim.mjs'],
     format: ['esm'],
     tsconfig: 'tsconfig.native.json',
-    outDir: 'dist-native',
+    outDir: 'dist',
     clean: true,
     dts: true,
     minify: true,

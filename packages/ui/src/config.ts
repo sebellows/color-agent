@@ -1,10 +1,9 @@
 import { AnyRecord, getKeys } from '@coloragent/utils'
+import { StorageEngine, StorageRegistry } from '@ui/lib/storage'
 import { merge } from 'es-toolkit'
 import { get, set } from 'es-toolkit/compat'
 import { Get, LiteralUnion, Paths } from 'type-fest'
 import { ToString } from 'type-fest/source/internal'
-
-import { StorageEngine, StorageRegistry } from './lib/storage'
 
 type KeyPath<T extends AnyRecord> =
     | readonly string[]

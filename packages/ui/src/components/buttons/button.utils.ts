@@ -1,6 +1,8 @@
 import { type StyleProp, type ViewStyle } from 'react-native'
 
-import { getColorSchemeVariants, type Color, type Theme } from '@ui/theme'
+import { type Theme } from '@ui/theme/theme'
+import { type Color } from '@ui/theme/theme.types'
+import { getColorSchemeVariants } from '@ui/theme/utils'
 
 import { type ButtonProps, type ButtonSize, type IconButtonProps } from './button.types'
 

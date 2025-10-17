@@ -29,6 +29,7 @@ out/
 # Production
 build
 dist
+dist-*
 
 # Misc
 vendor-data/

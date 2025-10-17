@@ -9,6 +9,14 @@
             "@ui/*": ["./src/*"]
         }
     },
-    "include": ["index.d.ts", "global.d.ts", "exports.native.ts", "*.ts", "**/*.ts", "**/*.tsx"],
-    "exclude": ["./dist-*", "./build", "node_modules", "*.cjs", "*.mjs"]
+    "include": [
+        "index.d.ts",
+        "global.d.ts",
+        "exports.native.ts",
+        "**/*.ts",
+        "**/*.tsx",
+        ".expo/types/**/*.ts",
+        "expo-env.d.ts"
+    ],
+    "exclude": ["./dist", "./build", "node_modules", "*.cjs", "*.mjs"]
 }
