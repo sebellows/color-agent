@@ -1,10 +1,11 @@
 import type { TextProps as RNTextProps } from 'react-native'
 
-import { FastText } from '@ui/internal'
 import { TypographyToken } from '@ui/theme/design-tokens/typography-token'
 import { Color } from '@ui/theme/theme.types'
 import { getColorVariants } from '@ui/theme/utils'
 import { StyleSheet } from 'react-native-unistyles'
+
+import { FastText } from '../internal'
 
 export type TextProps = RNTextProps & {
     variant?: TypographyToken

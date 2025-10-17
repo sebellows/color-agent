@@ -75,10 +75,25 @@ export default ({ config }: ConfigContext): ExpoConfig => {
                 'expo-font',
                 {
                     fonts: [
-                        './src/design-system/fonts/Inter-Bold.ttf',
-                        './src/design-system/fonts/Inter-Medium.ttf',
-                        './src/design-system/fonts/Inter-Regular.ttf',
-                        './src/design-system/fonts/Inter-SemiBold.ttf',
+                        // NotoSans
+                        './src/design-system/fonts/NotoSans-Bold.ttf',
+                        './src/design-system/fonts/NotoSans-BoldItalic.ttf',
+                        './src/design-system/fonts/NotoSans-Medium.ttf',
+                        './src/design-system/fonts/NotoSans-MediumItalic.ttf',
+                        './src/design-system/fonts/NotoSans-Regular.ttf',
+                        './src/design-system/fonts/NotoSans-RegularItalic.ttf',
+                        './src/design-system/fonts/NotoSans-SemiBold.ttf',
+                        './src/design-system/fonts/NotoSans-SemiBoldItalic.ttf',
+                        // SpaceGrotesk
+                        './src/design-system/fonts/SpaceGrotesk-Bold.ttf',
+                        './src/design-system/fonts/SpaceGrotesk-Medium.ttf',
+                        './src/design-system/fonts/SpaceGrotesk-Regular.ttf',
+                        './src/design-system/fonts/SpaceGrotesk-SemiBold.ttf',
+                        // SpaceMono
+                        './src/design-system/fonts/SpaceMono-Bold.ttf',
+                        './src/design-system/fonts/SpaceMono-BoldItalic.ttf',
+                        './src/design-system/fonts/SpaceMono-Italic.ttf',
+                        './src/design-system/fonts/SpaceMono-Regular.ttf',
                     ],
                 },
             ],

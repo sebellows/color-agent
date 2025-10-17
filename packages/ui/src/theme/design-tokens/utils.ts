@@ -1,10 +1,9 @@
-import { BoxShadowValue, TextStyle } from 'react-native'
+import { TextStyle } from 'react-native'
 
-import { AnyRecord, isDecimal } from '@coloragent/utils'
-import { Entries, Get, ValueOf } from 'type-fest'
+import { isDecimal } from '@coloragent/utils'
 
 import { getEntries } from '../../utils/get-entries'
-import { type TypographyToken } from './typography.native'
+import { type TypographyToken } from './typography-token'
 
 export type TypographyDefinition = NonNullable<
     Pick<

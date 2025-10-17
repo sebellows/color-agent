@@ -4,10 +4,11 @@
         "baseUrl": ".",
         "rootDir": ".",
         "outDir": "./dist-native",
+        "resolveJsonModule": true,
         "paths": {
             "@ui/*": ["./src/*"]
         }
     },
-    "include": ["index.d.ts", "native.ts", "*.ts", "**/*.ts", "**/*.tsx"],
+    "include": ["index.d.ts", "global.d.ts", "exports.native.ts", "*.ts", "**/*.ts", "**/*.tsx"],
     "exclude": ["./dist-*", "./build", "node_modules", "*.cjs", "*.mjs"]
 }

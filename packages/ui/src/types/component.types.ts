@@ -1,7 +1,6 @@
 import {
     Image,
     Insets,
-    NativeMethods,
     Pressable,
     Text,
     View,

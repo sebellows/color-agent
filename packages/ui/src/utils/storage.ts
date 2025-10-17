@@ -1,7 +1,6 @@
+import { Config } from '@ui/config'
 import appConfig from '@ui/constants'
-
-import { Config } from '../config'
-import { createStorage } from '../lib/storage'
+import { createStorage } from '@ui/lib/storage'
 
 const createStorageKey = (key: string) => `@${appConfig.scheme}/${key}`
 

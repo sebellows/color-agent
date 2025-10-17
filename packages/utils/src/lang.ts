@@ -5,7 +5,7 @@ import { AsyncFunction as TAsyncFunction } from 'type-fest/source/async-return-t
 
 import { hasOwn } from './misc'
 import { isDecimal } from './number'
-import { AsyncFunction, Constructor, Fn, Type } from './types'
+import { AsyncFunction, Constructor } from './types'
 
 /**
  * @internal

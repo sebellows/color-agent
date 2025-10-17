@@ -10,7 +10,8 @@ import radii from './design-tokens/radii'
 import shadows from './design-tokens/shadows'
 import sizes from './design-tokens/sizes'
 import space from './design-tokens/spacing'
-import { default as _typography, TypographyToken } from './design-tokens/typography.native'
+import { TypographyToken } from './design-tokens/typography-token'
+import { default as _typography } from './design-tokens/typography.native'
 import {
     getFonts,
     getFontSizes,

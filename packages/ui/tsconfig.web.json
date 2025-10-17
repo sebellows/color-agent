@@ -4,12 +4,15 @@
         "baseUrl": "./src",
         "rootDir": ".",
         "outDir": "./dist-web",
+        "resolveJsonModule": true,
         "paths": {
             "@ui/*": ["./src/*"]
         }
     },
     "include": [
         "index.d.ts",
+        "global.d.ts",
+        "exports.web.ts",
         "**/*.ts",
         "**/*.tsx",
         ".expo/types/**/*.ts",

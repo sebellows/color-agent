@@ -1,11 +1,11 @@
 import { StyleSheet, ViewStyle } from 'react-native'
 
 import { assertUnreachable } from '@coloragent/utils'
+import { ActionState, KeyPathOf } from '@ui/types'
+import { getEntries } from '@ui/utils/get-entries'
 import { isError, upperFirst } from 'es-toolkit'
 import { get } from 'es-toolkit/compat'
 
-import { ActionState, KeyPathOf } from '../types'
-import { getEntries } from '../utils/get-entries'
 import type { ThemeColorScheme } from './color-palette/types'
 import colors, { ColorScheme } from './design-tokens/colors.native'
 import { ShadowsToken } from './design-tokens/shadows'
@@ -49,7 +49,7 @@ export function resolveComponentColorScheme<T>(
                 return match[scheme as keyof typeof match]
             }
 
-            return assertUnreachable(scheme)
+            return assertUnreachable(scheme) as never
     }
 }
 
