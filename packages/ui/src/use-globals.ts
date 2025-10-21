@@ -8,7 +8,7 @@ import {
 import { isNumber } from 'es-toolkit/compat'
 import { UnistylesBreakpoints, UnistylesRuntime, UnistylesThemes } from 'react-native-unistyles'
 
-import breakpoints from './theme/design-tokens/breakpoints'
+import { breakpoints } from './design-system/design-tokens/breakpoints'
 
 interface GlobalStoreValue {
     boldTextEnabled: boolean

@@ -1,9 +1,12 @@
 import { AnyRecord, getKeys } from '@coloragent/utils'
-import { StorageEngine, StorageRegistry } from '@ui/lib/storage'
 import { merge } from 'es-toolkit'
 import { get, set } from 'es-toolkit/compat'
 import { Get, LiteralUnion, Paths } from 'type-fest'
 import { ToString } from 'type-fest/source/internal'
+
+import { StorageEngine, StorageRegistry } from './lib/storage'
+
+const SPACING_UNIT = 4 as const
 
 type KeyPath<T extends AnyRecord> =
     | readonly string[]
@@ -21,7 +24,7 @@ export type Configuration = {
         registry: typeof StorageRegistry
     }
     theme: {
-        SPACING_UNIT: number
+        SPACING_UNIT: typeof SPACING_UNIT
         ROOT_FONT_SIZE: number
         BASE_FONT_SIZE: number
         BASE_LINE_HEIGHT: number
@@ -35,7 +38,7 @@ const initialConfig: Configuration = {
         registry: StorageRegistry,
     },
     theme: {
-        SPACING_UNIT: 4,
+        SPACING_UNIT,
         ROOT_FONT_SIZE: 16,
         BASE_FONT_SIZE: 14,
         BASE_LINE_HEIGHT: 1.42857,

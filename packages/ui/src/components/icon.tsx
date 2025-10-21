@@ -2,8 +2,9 @@ import { memo } from 'react'
 import type { AccessibilityProps, ViewStyle } from 'react-native'
 
 import FeatherIcon from '@expo/vector-icons/Feather'
-import type { Color } from '@ui/theme/theme.types'
 import { useUnistyles } from 'react-native-unistyles'
+
+import type { Color } from '../theme/theme.types'
 
 export type IconName = keyof (typeof FeatherIcon)['glyphMap']
 

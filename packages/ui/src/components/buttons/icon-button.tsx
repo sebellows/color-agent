@@ -1,7 +1,5 @@
 import { ActivityIndicator, GestureResponderEvent, Pressable } from 'react-native'
 
-import { useHaptics } from '@ui/hooks/use-haptics.native'
-import { usePressedState } from '@ui/hooks/use-pressed-state.native'
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -10,6 +8,8 @@ import Animated, {
 } from 'react-native-reanimated'
 import { StyleSheet, useUnistyles } from 'react-native-unistyles'
 
+import { useHaptics } from '../../hooks/use-haptics.native'
+import { usePressedState } from '../../hooks/use-pressed-state.native'
 import { Icon } from '../icon'
 import type { IconButtonProps } from './button.types'
 import { getIconColor, getIconWrapperStyle, sizeToIconSize } from './button.utils'

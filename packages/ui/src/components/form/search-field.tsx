@@ -1,9 +1,9 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { TouchableOpacity, type TextInput as RNTextInput } from 'react-native'
 
-import { t } from '@ui/utils/translation'
 import { StyleSheet } from 'react-native-unistyles'
 
+import { t } from '../../utils/translation'
 import { Icon } from '../icon'
 import { Stack } from '../layout/stack'
 import { Text } from '../text'

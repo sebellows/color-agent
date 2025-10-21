@@ -1,8 +1,8 @@
-import { Config } from '@ui/config'
-import appConfig from '@ui/constants'
-import { createStorage } from '@ui/lib/storage'
+import { Config } from '../config'
+import UiConfig from '../constants'
+import { createStorage } from '../lib/storage/create-storage'
 
-const createStorageKey = (key: string) => `@${appConfig.scheme}/${key}`
+const createStorageKey = (key: string) => `@${UiConfig.scheme}/${key}`
 
 // Add all your storage keys here
 export const STORAGE_KEYS = {

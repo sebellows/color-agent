@@ -1,9 +1,8 @@
 import type { ReactNode } from 'react'
 import type { PressableProps, TouchableWithoutFeedbackProps } from 'react-native'
 
-import { ColorScheme } from '@ui/theme/design-tokens/colors.native'
-import { type Color } from '@ui/theme/theme.types'
-
+import { ColorScheme } from '../../design-system/design-tokens/colors.native'
+import { type Color } from '../../theme/theme.types'
 import type { IconName } from '../icon'
 
 export type ButtonSize = 'small' | 'normal' | 'large'

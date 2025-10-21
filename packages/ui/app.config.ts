@@ -1,7 +1,7 @@
 import type { ConfigContext, ExpoConfig } from 'expo/config'
 
-import type { AppConfig, AppEnv } from './app.config.types'
 import { version } from './package.json'
+import type { AppEnv, UiConfig } from './src/ui.config.types'
 
 // Replace these with your EAS project ID and project slug.
 // You can find them at https://expo.dev/accounts/[account]/projects/[project].
@@ -26,7 +26,7 @@ const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.exampl
 
 export default ({ config }: ConfigContext): ExpoConfig => {
     const env = (process.env.APP_ENV as AppEnv) || 'development'
-    const customConfig = getDynamicAppConfig(env)
+    const customConfig = getDynamicUiConfig(env)
     console.log('⚙️ Building app for environment:', env)
 
     return {
@@ -146,7 +146,7 @@ function getExtraProguardRules() {
 }
 
 /** Dynamically configure the app based on the environment. */
-const getDynamicAppConfig = (environment: AppEnv): AppConfig => {
+const getDynamicUiConfig = (environment: AppEnv): UiConfig => {
     if (environment === 'production') {
         return {
             name: APP_NAME,

@@ -31,10 +31,6 @@ export type ComponentAttrState =
     | 'shadow'
     | 'text'
 
-export interface AsProp<As extends React.ElementType = React.ElementType> {
-    as?: As
-}
-
 /**
  * Not exported in @types/react, but used internally.
  *

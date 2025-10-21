@@ -3,7 +3,7 @@ import svgrPlugin from 'esbuild-plugin-svgr'
 import { defineConfig, Options } from 'tsup'
 
 export default defineConfig((options: Options) => ({
-    entry: ['src/**/*.{ts,tsx}'],
+    entry: ['src/index.ts'], // ['src/**/*.{ts,tsx}'],
     esbuildPlugins: [
         svgrPlugin({ native: true, typescript: true }),
         copy({
@@ -24,7 +24,7 @@ export default defineConfig((options: Options) => ({
     inject: ['./react-shim.mjs'],
     format: ['esm'],
     tsconfig: 'tsconfig.native.json',
-    outDir: 'dist',
+    outDir: 'dist-native',
     clean: true,
     dts: true,
     minify: true,

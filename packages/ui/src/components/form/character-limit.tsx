@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
 
-import type { Space } from '@ui/theme/theme.types'
 import { StyleSheet } from 'react-native-unistyles'
 
+import type { Space } from '../../theme/theme.types'
 import { Stack, StackProps } from '../layout/stack'
 import { Text, type TextProps } from '../text'
 

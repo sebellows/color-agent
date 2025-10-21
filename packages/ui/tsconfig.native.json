@@ -2,21 +2,10 @@
     "extends": "@coloragent/typescript-config/tsconfig.native.json",
     "compilerOptions": {
         "baseUrl": ".",
-        "rootDir": ".",
+        "rootDir": "./src",
         "outDir": "./dist-native",
-        "resolveJsonModule": true,
-        "paths": {
-            "@ui/*": ["./src/*"]
-        }
+        "resolveJsonModule": true
     },
-    "include": [
-        "index.d.ts",
-        "global.d.ts",
-        "exports.native.ts",
-        "**/*.ts",
-        "**/*.tsx",
-        ".expo/types/**/*.ts",
-        "expo-env.d.ts"
-    ],
-    "exclude": ["./dist", "./build", "node_modules", "*.cjs", "*.mjs"]
+    "include": ["."],
+    "exclude": ["node_modules", "*.cjs", "*.mjs", "./dist-*", "./build"]
 }

@@ -1,17 +1,16 @@
-import { KeyPathOf } from '@ui/types'
-import { getEntries } from '@ui/utils/get-entries'
 import { get } from 'es-toolkit/compat'
 import { StyleSheet } from 'react-native-unistyles'
 
 import { Config } from '../config'
-import breakpoints from './design-tokens/breakpoints'
-import colors from './design-tokens/colors.native'
-import radii from './design-tokens/radii'
-import shadows from './design-tokens/shadows'
-import sizes from './design-tokens/sizes'
-import space from './design-tokens/spacing'
-import { TypographyToken } from './design-tokens/typography-token'
-import { default as _typography } from './design-tokens/typography.native'
+import { absoluteFill, flexCenter } from '../design-system/design-system.utils'
+import { breakpoints } from '../design-system/design-tokens/breakpoints'
+import { colors } from '../design-system/design-tokens/colors.native'
+import { radii } from '../design-system/design-tokens/radii'
+import { shadows } from '../design-system/design-tokens/shadows'
+import { sizes } from '../design-system/design-tokens/sizes'
+import { spacing } from '../design-system/design-tokens/spacing'
+import { TypographyToken } from '../design-system/design-tokens/typography-token'
+import { typography as _typography } from '../design-system/design-tokens/typography.native'
 import {
     getFonts,
     getFontSizes,
@@ -20,16 +19,17 @@ import {
     getLineHeights,
     getShadows,
     TypographyDefinitions,
-} from './design-tokens/utils'
-import zIndices from './design-tokens/z-indices'
-import { absoluteFill, flexCenter } from './utils'
+} from '../design-system/design-tokens/utils'
+import { zIndices } from '../design-system/design-tokens/z-indices'
+import { KeyPathOf } from '../types'
+import { getEntries } from '../utils/get-entries'
 
 const typography = _typography as TypographyDefinitions
 const { light, dark, ...colorSchemes } = colors
 
 const themeCommon = {
     radii,
-    space,
+    space: spacing,
     typography,
     fonts: getFonts(typography),
     fontSizes: getFontSizes(typography),

@@ -1,110 +1,78 @@
 import * as React from 'react'
-import {
-    StyleSheet,
-    type PressableStateCallbackType,
-    type ImageStyle as RNImageStyle,
-    type PressableProps as RNPressableProps,
-    type StyleProp,
-} from 'react-native'
 
-import type { ComponentTypeName, PropsWithRef, RNPressable } from '@ui/types/component.types'
+// import {
+//     StyleSheet,
+//     type PressableStateCallbackType,
+//     type ImageStyle as RNImageStyle,
+//     type PressableProps as RNPressableProps,
+//     type StyleProp,
+// } from 'react-native'
 
-function isValidElement<P = {}>(props: unknown): props is React.ReactElement<P & { ref: any }> {
-    return React.isValidElement(props)
-}
+import { AnyRecord } from '@coloragent/utils'
 
-export const Pressable = React.forwardRef<React.ComponentRef<RNPressable>, RNPressableProps>(
-    (props, forwardedRef) => {
-        const { children, ...pressableSlotProps } = props
+import { composeEventHandlers } from '../../lib/compose-events'
+import { isWeb } from '../../utils/common'
 
-        if (!React.isValidElement(children)) {
-            console.log('Slot.Pressable - Invalid asChild element', children)
-            return null
-        }
-
-        return React.cloneElement<
-            React.ComponentPropsWithoutRef<RNPressable>,
-            React.ComponentRef<RNPressable>
-        >(isTextChildren(children) ? <></> : children, {
-            ...mergeProps(pressableSlotProps, children.props as AnyProps),
-            ref:
-                forwardedRef ?
-                    composeRefs(forwardedRef, (children as any).ref)
-                :   (children as any).ref,
-        })
-    },
-)
-
-Pressable.displayName = 'SlotPressable'
-
-export function createSlot<TName extends ComponentTypeName>(componentName: TName) {
-    const SlotComponent = ({ ref, ...props }: PropsWithRef<TName>) => {
-        const { children, ...slotProps } = props
-
-        if (isTextChildren(children)) {
-            return <></>
-        }
-
-        if (isValidElement(children)) {
-            return React.cloneElement(children, {
-                ...mergeProps(slotProps, children.props),
-                ref: ref ? composeRefs(ref, (children as any).ref) : (children as any).ref,
-            })
-        }
-
-        console.log(`Slot.${Text} - Invalid asChild element`, children)
-
-        return null
+// type SlotRef<T> = ((instance: T | null) => void) | React.RefObject<T | null> | null // (props: P) => React.ReactNode | Promise<React.ReactNode>
+const _Slot = <Props extends AnyRecord>({ children, ref, ...slotProps }: Props) => {
+    if (React.isValidElement(children)) {
+        const mergedProps = mergeSlotProps(children, slotProps)
+        return React.cloneElement(children, mergedProps)
     }
 
-    SlotComponent.displayName = `Slot${componentName}`
-
-    return SlotComponent
+    return React.Children.count(children) > 1 ? React.Children.only(null) : null
 }
 
-// This project uses code from WorkOS/Radix Primitives.
-// The code is licensed under the MIT License.
-// https://github.com/radix-ui/primitives/tree/main
+export const Slot = React.memo(_Slot)
 
-function composeRefs<T>(...refs: (React.Ref<T> | undefined)[]) {
-    return (node: T) =>
-        refs.forEach(ref => {
-            if (typeof ref === 'function') {
-                ref(node)
-            } else if (ref != null) {
-                ;(ref as React.RefObject<T>).current = node
-            }
-        })
+export const Slottable = ({ children }: { children: React.ReactNode }) => {
+    return <>{children}</>
 }
 
-type AnyProps = Record<string, any>
+Slottable.displayName = 'Slottable'
 
-function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
+const pressMap =
+    isWeb ?
+        {
+            onPress: 'onClick',
+            onPressOut: 'onMouseUp',
+            onPressIn: 'onMouseDown',
+        }
+    :   {}
+
+function mergeSlotProps(child: any, slotProps: Record<string, any>) {
+    const childProps = child.props
+
     // all child props should override
     const overrideProps = { ...childProps }
+    const isHTMLChild = typeof child.type === 'string'
 
-    for (const propName in childProps) {
+    if (isHTMLChild) {
+        for (const key in pressMap) {
+            if (key in slotProps) {
+                slotProps[pressMap[key]] = slotProps[key]
+                delete slotProps[key]
+            }
+        }
+    }
+
+    for (let propName in childProps) {
         const slotPropValue = slotProps[propName]
         const childPropValue = childProps[propName]
-        // const props: { [K in keyof ChildProps]: (...args: unknown[]) => void } = {}
 
-        const isHandler = /^on[A-Z]/.test(propName)
+        if (isHTMLChild && propName in pressMap) {
+            propName = pressMap[propName]
+            delete overrideProps[propName]
+        }
+
+        const isHandler = handleRegex.test(propName)
+        // if it's a handler, modify the override by composing the base handler
         if (isHandler) {
-            // if the handler exists on both, we compose them
-            if (slotPropValue && childPropValue) {
-                overrideProps[propName] = (...args: unknown[]) => {
-                    childPropValue(...args)
-                    slotPropValue(...args)
-                }
-            }
-            // but if it exists only on the slot, we use only this one
-            else if (slotPropValue) {
-                overrideProps[propName] = slotPropValue
-            }
+            overrideProps[propName] = composeEventHandlers(childPropValue, slotPropValue)
         }
         // if it's `style`, we merge them
         else if (propName === 'style') {
-            overrideProps[propName] = combineStyles(slotPropValue, childPropValue)
+            overrideProps[propName] = { ...slotPropValue, ...childPropValue }
         } else if (propName === 'className') {
             overrideProps[propName] = [slotPropValue, childPropValue].filter(Boolean).join(' ')
         }
@@ -113,38 +81,146 @@ function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
     return { ...slotProps, ...overrideProps }
 }
 
-type PressableStyle = RNPressableProps['style']
-type ImageStyle = StyleProp<RNImageStyle>
-type Style = PressableStyle | ImageStyle
+const handleRegex = /^on[A-Z]/
 
-function combineStyles(slotStyle?: Style, childValue?: Style) {
-    if (typeof slotStyle === 'function' && typeof childValue === 'function') {
-        return (state: PressableStateCallbackType) => {
-            return StyleSheet.flatten([slotStyle(state), childValue(state)])
-        }
-    }
-    if (typeof slotStyle === 'function') {
-        return (state: PressableStateCallbackType) => {
-            return childValue ?
-                    StyleSheet.flatten([slotStyle(state), childValue])
-                :   slotStyle(state)
-        }
-    }
-    if (typeof childValue === 'function') {
-        return (state: PressableStateCallbackType) => {
-            return slotStyle ?
-                    StyleSheet.flatten([slotStyle, childValue(state)])
-                :   childValue(state)
-        }
-    }
+// import type { ComponentTypeName, PropsWithRef, RNPressable } from '../../types/component.types'
 
-    return StyleSheet.flatten([slotStyle, childValue].filter(Boolean))
-}
+// function isValidElement<P = {}>(props: unknown): props is React.ReactElement<P & { ref: any }> {
+//     return React.isValidElement(props)
+// }
 
-export function isTextChildren(
-    children: React.ReactNode | ((state: PressableStateCallbackType) => React.ReactNode),
-): children is string | string[] {
-    return Array.isArray(children) ?
-            children.every(child => typeof child === 'string')
-        :   typeof children === 'string'
-}
+// export const Pressable = React.forwardRef<React.ComponentRef<RNPressable>, RNPressableProps>(
+//     (props, forwardedRef) => {
+//         const { children, ...pressableSlotProps } = props
+
+//         if (!React.isValidElement(children)) {
+//             console.log('Slot.Pressable - Invalid asChild element', children)
+//             return null
+//         }
+
+//         return React.cloneElement<
+//             React.ComponentPropsWithoutRef<RNPressable>,
+//             React.ComponentRef<RNPressable>
+//         >(isTextChildren(children) ? <></> : children, {
+//             ...mergeProps(pressableSlotProps, children.props as AnyProps),
+//             ref:
+//                 forwardedRef ?
+//                     composeRefs(forwardedRef, (children as any).ref)
+//                 :   (children as any).ref,
+//         })
+//     },
+// )
+
+// Pressable.displayName = 'SlotPressable'
+
+// export function createSlot<TName extends ComponentTypeName>(componentName: TName) {
+//     const SlotComponent = ({ ref, ...props }: PropsWithRef<TName>) => {
+//         const { children, ...slotProps } = props
+
+//         if (isTextChildren(children)) {
+//             return <></>
+//         }
+
+//         if (isValidElement(children)) {
+//             return React.cloneElement(children, {
+//                 ...mergeProps(slotProps, children.props),
+//                 ref: ref ? composeRefs(ref, (children as any).ref) : (children as any).ref,
+//             })
+//         }
+
+//         console.log(`Slot.${Text} - Invalid asChild element`, children)
+
+//         return null
+//     }
+
+//     SlotComponent.displayName = `Slot${componentName}`
+
+//     return SlotComponent
+// }
+
+// This project uses code from WorkOS/Radix Primitives.
+// The code is licensed under the MIT License.
+// https://github.com/radix-ui/primitives/tree/main
+
+// function composeRefs<T>(...refs: (React.Ref<T> | undefined)[]) {
+//     return (node: T) =>
+//         refs.forEach(ref => {
+//             if (typeof ref === 'function') {
+//                 ref(node)
+//             } else if (ref != null) {
+//                 ;(ref as React.RefObject<T>).current = node
+//             }
+//         })
+// }
+
+// type AnyProps = Record<string, any>
+
+// function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
+//     // all child props should override
+//     const overrideProps = { ...childProps }
+
+//     for (const propName in childProps) {
+//         const slotPropValue = slotProps[propName]
+//         const childPropValue = childProps[propName]
+//         // const props: { [K in keyof ChildProps]: (...args: unknown[]) => void } = {}
+
+//         const isHandler = /^on[A-Z]/.test(propName)
+//         if (isHandler) {
+//             // if the handler exists on both, we compose them
+//             if (slotPropValue && childPropValue) {
+//                 overrideProps[propName] = (...args: unknown[]) => {
+//                     childPropValue(...args)
+//                     slotPropValue(...args)
+//                 }
+//             }
+//             // but if it exists only on the slot, we use only this one
+//             else if (slotPropValue) {
+//                 overrideProps[propName] = slotPropValue
+//             }
+//         }
+//         // if it's `style`, we merge them
+//         else if (propName === 'style') {
+//             overrideProps[propName] = combineStyles(slotPropValue, childPropValue)
+//         } else if (propName === 'className') {
+//             overrideProps[propName] = [slotPropValue, childPropValue].filter(Boolean).join(' ')
+//         }
+//     }
+
+//     return { ...slotProps, ...overrideProps }
+// }
+
+// type PressableStyle = RNPressableProps['style']
+// type ImageStyle = StyleProp<RNImageStyle>
+// type Style = PressableStyle | ImageStyle
+
+// function combineStyles(slotStyle?: Style, childValue?: Style) {
+//     if (typeof slotStyle === 'function' && typeof childValue === 'function') {
+//         return (state: PressableStateCallbackType) => {
+//             return StyleSheet.flatten([slotStyle(state), childValue(state)])
+//         }
+//     }
+//     if (typeof slotStyle === 'function') {
+//         return (state: PressableStateCallbackType) => {
+//             return childValue ?
+//                     StyleSheet.flatten([slotStyle(state), childValue])
+//                 :   slotStyle(state)
+//         }
+//     }
+//     if (typeof childValue === 'function') {
+//         return (state: PressableStateCallbackType) => {
+//             return slotStyle ?
+//                     StyleSheet.flatten([slotStyle, childValue(state)])
+//                 :   childValue(state)
+//         }
+//     }
+
+//     return StyleSheet.flatten([slotStyle, childValue].filter(Boolean))
+// }
+
+// export function isTextChildren(
+//     children: React.ReactNode | ((state: PressableStateCallbackType) => React.ReactNode),
+// ): children is string | string[] {
+//     return Array.isArray(children) ?
+//             children.every(child => typeof child === 'string')
+//         :   typeof children === 'string'
+// }

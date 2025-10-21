@@ -1,9 +1,9 @@
 import { cloneElement, isValidElement, useState, type ReactNode } from 'react'
 import { View, type LayoutChangeEvent, type ViewProps } from 'react-native'
 
-import { type Space } from '@ui/theme/theme.types'
 import { StyleSheet, useUnistyles } from 'react-native-unistyles'
 
+import { type Space } from '../../theme/theme.types'
 import { flattenChildren } from '../helpers'
 
 type Props = ViewProps & {
@@ -26,7 +26,7 @@ export function Grid({ children, spacing = 'none', align, justify, columns, ...r
         justify,
     })
 
-    const space = theme.space[spacing] || 0
+    const space = theme.space[spacing] === 'auto' ? 0 : theme.space[spacing] || 0
 
     return (
         <View

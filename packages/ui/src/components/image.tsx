@@ -5,8 +5,9 @@ import {
     type StyleProp,
 } from 'react-native'
 
-import { useImageDimensions } from '@ui/hooks/use-image-dimensions'
 import { Image as ExpoImage, type ImageProps, type ImageSource } from 'expo-image'
+
+import { useImageDimensions } from '../hooks/use-image-dimensions'
 
 type Props = ImageProps & {
     source: NonNullable<ImageSource | ImageRequireSource>

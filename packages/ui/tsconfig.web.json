@@ -10,21 +10,19 @@
         }
     },
     "include": [
-        "index.d.ts",
-        "global.d.ts",
         "exports.web.ts",
         "**/*.ts",
         "**/*.tsx",
-        ".expo/types/**/*.ts",
-        "expo-env.d.ts"
+        "index.d.ts",
+        "global.d.ts"
     ],
     "exclude": [
-        "./dist-*",
-        "./build",
         "node_modules",
         "babel.config.cjs",
         "metro.config.cjs",
         "tsup.config.*.ts",
-        "**/*.js"
+        "**/*.js",
+        "./dist-*",
+        "./build"
     ]
 }

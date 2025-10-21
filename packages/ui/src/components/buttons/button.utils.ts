@@ -1,9 +1,8 @@
 import { type StyleProp, type ViewStyle } from 'react-native'
 
-import { type Theme } from '@ui/theme/theme'
-import { type Color } from '@ui/theme/theme.types'
-import { getColorSchemeVariants } from '@ui/theme/utils'
-
+import { getColorSchemeVariants } from '../../design-system/design-system.utils'
+import { type Theme } from '../../theme/theme'
+import { type Color } from '../../theme/theme.types'
 import { type ButtonProps, type ButtonSize, type IconButtonProps } from './button.types'
 
 /** Get the base style for a button or icon button */

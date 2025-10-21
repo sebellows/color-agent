@@ -1,11 +1,12 @@
 {
-    "extends": "@coloragent/typescript-config/tsconfig.native.json",
-    "include": ["index.d.ts", "**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "package.json"],
-    "exclude": ["./dist-*", "build", "node_modules"],
+    "extends": "@coloragent/typescript-config/tsconfig.base.json",
+    "include": ["**/*", "global.d.ts"],
+    "exclude": ["node_modules", "./dist-*", "build"],
     "compilerOptions": {
         "baseUrl": ".",
         "rootDir": ".",
         "outDir": "./dist-web",
+        "jsx": "react-jsx",
         "resolveJsonModule": true,
         "paths": {
             "@ui/*": ["./src/*"]

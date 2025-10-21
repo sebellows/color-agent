@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react'
 import { View, type ViewProps } from 'react-native'
 
-import { type Space } from '@ui/theme/theme.types'
 import { StyleSheet } from 'react-native-unistyles'
+
+import { type Space } from '../../theme/theme.types'
 
 export type StackProps = ViewProps & {
     spacing: Space | 'none'

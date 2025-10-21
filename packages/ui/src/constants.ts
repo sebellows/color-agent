@@ -1,7 +1,17 @@
 import Constants from 'expo-constants'
 
-import { type AppConfig } from '../app.config.types'
+import { type UiConfig } from './ui.config.types'
 
-const appConfig = Constants.expoConfig?.extra as AppConfig
+if (!Constants.expoConfig)
+    Constants.expoConfig = {
+        name: 'Color Agent',
+        slug: 'color-agent',
+    }
 
-export default appConfig
+if (!Constants.expoConfig?.extra) {
+    Constants.expoConfig.extra = {}
+}
+
+const UiConfig = Constants.expoConfig?.extra as UiConfig
+
+export default UiConfig

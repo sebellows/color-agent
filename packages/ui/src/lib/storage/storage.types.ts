@@ -12,24 +12,3 @@ export type StorageGetter = {
      */
     as<T extends StorageValueType>(type: T): StorageValue
 }
-
-// export interface StorageContract {
-//     /** An ID for the store instance */
-//     readonly name: string
-
-//     readonly keyPrefix: string
-
-//     clear(): void
-
-//     contains(key: string): boolean
-
-//     get(key: string): StorageGetter
-
-//     keys(): string[]
-
-//     remove(key: string): boolean
-
-//     set(key: string, value: boolean | string | number | ArrayBuffer): void
-
-//     addListener(listener: Listener): { remove: () => void }
-// }

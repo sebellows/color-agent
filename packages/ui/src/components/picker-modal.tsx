@@ -12,10 +12,10 @@ import {
 } from 'react-native'
 
 import { FlashList } from '@shopify/flash-list'
-import { announceForAccessibility } from '@ui/utils/a11y'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { StyleSheet } from 'react-native-unistyles'
 
+import { announceForAccessibility } from '../utils/a11y'
 import { Checkbox } from './form/checkbox'
 import { Radio } from './form/radio-input'
 import { Spacer } from './layout/spacer'

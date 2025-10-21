@@ -1,132 +1,97 @@
+import { HTMLAttributes } from 'react'
 import {
+    GestureResponderHandlers,
     Image,
-    Insets,
+    ImageStyle,
     Pressable,
+    PressableProps,
     Text,
+    TextStyle,
     View,
     ViewStyle,
-    type ImageProps,
-    type PressableProps,
-    type TextProps,
-    type ViewProps,
 } from 'react-native'
 
-import { IsAny } from 'type-fest'
+export interface AsProp<As extends React.ElementType = React.ElementType> {
+    as?: As
+}
 
 export type RNImage = typeof Image
 export type RNView = typeof View
 export type RNPressable = typeof Pressable
 export type RNText = typeof Text
 
-export type ImageRef = RNImage // React.ComponentRef<RNImage>
-export type ViewRef = RNView //React.Ref<RNView>
-export type PressableRef = RNPressable // React.ForwardedRef<RNPressable>
-export type TextRef = RNText // React.ComponentRef<RNText>
+export type RNStyleProps = ViewStyle | TextStyle | ImageStyle
 
-type ComponentDef =
-    | {
-          type: 'Pressable'
-          Component: RNPressable
-          Ref: React.Ref<RNPressable>
-          Props: PressableProps
-      }
-    | {
-          type: 'View'
-          Component: RNView
-          Ref: React.Ref<RNView>
-          Props: ViewProps
-      }
-    | {
-          type: 'Text'
-          Component: RNText
-          Ref: React.Ref<RNText> // ComponentType<T>
-          Props: TextProps
-      }
-    | {
-          type: 'Image'
-          Component: RNImage
-          Ref: React.Ref<RNImage>
-          Props: ImageProps
-      }
+export type RNOnlyProps =
+    | keyof GestureResponderHandlers
+    | 'onStartShouldSetResponder'
+    | 'dataSet'
+    | 'onScrollShouldSetResponder'
+    | 'onScrollShouldSetResponderCapture'
+    | 'onSelectionChangeShouldSetResponder'
+    | 'onSelectionChangeShouldSetResponderCapture'
+    | 'onLayout'
+    | 'href'
+    | 'hrefAttrs'
+    | 'elevationAndroid'
+    | 'rel'
+    | 'download'
+    | 'dir'
+    | 'focusable'
 
-export type RCTComponentDef =
-    | {
-          type: 'RCTText'
-          Component: RNText
-          Ref: React.Ref<RNText> // ComponentType<T>
-          Props: TextProps
-      }
-    | {
-          type: 'RCTImage'
-          Component: RNImage
-          Ref: React.Ref<RNImage>
-          Props: ImageProps
-      }
+export type ViewElement = HTMLElement | RNView
+export type TextElement = HTMLElement | RNText
 
-export type ComponentTypeName = ComponentDef['type']
-type GetComponent<T extends ComponentTypeName> = Extract<ComponentDef, { type: T }>
+type DivAttributes = HTMLAttributes<HTMLDivElement>
 
-export type ComponentType<T extends ComponentTypeName> = GetComponent<T>['Component']
-export type ComponentRef<T extends ComponentTypeName> = GetComponent<T>['Component']
-export type ComponentProps<T extends ComponentTypeName> = GetComponent<T>['Props']
-
-type PointerDownOutsideEvent = CustomEvent<{ originalEvent: PointerEvent }>
-type FocusOutsideEvent = CustomEvent<{ originalEvent: FocusEvent }>
-
-export type PropsWithRef<T extends ComponentTypeName> = React.PropsWithChildren<
-    ComponentProps<T> & {
-        ref?: React.Ref<ComponentType<T>>
+export type WebOnlyPressEvents = Pick<
+    PressableProps,
+    'onPress' | 'onLongPress' | 'onPressIn' | 'onPressOut'
+> &
+    Pick<
+        DivAttributes,
+        'onBlur' | 'onFocus' | 'onMouseEnter' | 'onMouseLeave' | 'onMouseDown' | 'onMouseUp'
+    > & {
+        onHoverIn?: DivAttributes['onMouseEnter']
+        onHoverOut?: DivAttributes['onMouseLeave']
     }
->
 
-/** @deprecated - Use `SlotProps` */
-export type ComponentPropsWithAsChild<T extends ComponentTypeName> = React.ComponentPropsWithoutRef<
-    ComponentType<T>
-> & {
-    asChild?: boolean
-    ref?: React.Ref<ComponentType<T>>
-}
+// type ComponentDef =
+//     | {
+//           type: 'Pressable'
+//           Component: RNPressable
+//           Ref: React.Ref<RNPressable>
+//           Props: PressableProps
+//       }
+//     | {
+//           type: 'View'
+//           Component: RNView
+//           Ref: React.Ref<RNView>
+//           Props: ViewProps
+//       }
+//     | {
+//           type: 'Text'
+//           Component: RNText
+//           Ref: React.Ref<RNText> // ComponentType<T>
+//           Props: TextProps
+//       }
+//     | {
+//           type: 'Image'
+//           Component: RNImage
+//           Ref: React.Ref<RNImage>
+//           Props: ImageProps
+//       }
 
-export type IsOptional<T> =
-    IsAny<T> extends true ? true
-    : Extract<T, undefined> extends never ? false
-    : true
-
-/**
- * Certain props are only available on the native version of the component.
- * @docs For the web version, see the Radix documentation https://www.radix-ui.com/primitives
- */
-export interface PositionedContentProps {
-    forceMount?: true | undefined
-    style?: ViewStyle
-    alignOffset?: number
-    insets?: Insets
-    avoidCollisions?: boolean
-    align?: 'start' | 'center' | 'end'
-    side?: 'top' | 'bottom'
-    sideOffset?: number
-    /** Platform: NATIVE ONLY */
-    disablePositioningStyle?: boolean
-    /** * Platform: WEB ONLY */
-    loop?: boolean
-    /** * Platform: WEB ONLY */
-    onCloseAutoFocus?: (event: Event) => void
-    /** * Platform: WEB ONLY */
-    onEscapeKeyDown?: (event: KeyboardEvent) => void
-    /** * Platform: WEB ONLY */
-    onPointerDownOutside?: (event: PointerDownOutsideEvent) => void
-    /** * Platform: WEB ONLY */
-    onFocusOutside?: (event: FocusOutsideEvent) => void
-    /** * Platform: WEB ONLY */
-    onInteractOutside?: (event: PointerDownOutsideEvent | FocusOutsideEvent) => void
-    /** * Platform: WEB ONLY */
-    collisionBoundary?: Element | null | Array<Element | null>
-    /** * Platform: WEB ONLY */
-    sticky?: 'partial' | 'always'
-    /** * Platform: WEB ONLY */
-    hideWhenDetached?: boolean
-}
-
-export interface ForceMountable {
-    forceMount?: true | undefined
-}
+// type RCTComponentDef =
+//     | {
+//           type: 'RCTText'
+//           Component: RNText
+//           Ref: React.Ref<RNText> // ComponentType<T>
+//           Props: TextProps
+//       }
+//     | {
+//           type: 'RCTImage'
+//           Component: RNImage
+//           Ref: React.Ref<RNImage>
+//           Props: ImageProps
+//       }

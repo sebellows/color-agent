@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { AccessibilityProps, Animated, PixelRatio, TouchableOpacity, View } from 'react-native'
 
-import { useHaptics } from '@ui/hooks/use-haptics.native'
 import { StyleSheet } from 'react-native-unistyles'
 
+import { useHaptics } from '../../hooks/use-haptics.native'
 import { Text } from '../text'
 
 type Props = AccessibilityProps & {

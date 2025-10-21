@@ -1,11 +1,10 @@
 import { ReactElement } from 'react'
 import { View, ViewProps } from 'react-native'
 
-// import { Box, BoxProps } from '@ui/components/box';
 import { StyleSheet } from 'react-native-unistyles'
 import { useFocus, useHover } from 'use-events'
 
-import { getPosition } from '../theme/utils'
+import { getPosition } from '../design-system/design-system.utils'
 import { UsePressedState, usePressedState } from './use-pressed-state.native'
 
 // export const Card = (props: ViewProps) => <View style={styles.card} {...props} />

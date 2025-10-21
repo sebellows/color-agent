@@ -2,9 +2,9 @@ import { memo, useState, type ReactNode } from 'react'
 import { Modal, Platform, SafeAreaView, TouchableOpacity, View } from 'react-native'
 
 import { FlashList } from '@shopify/flash-list'
-import { useEffectEvent } from '@ui/hooks/use-effect-event'
 import { StyleSheet } from 'react-native-unistyles'
 
+import { useEffectEvent } from '../hooks/use-effect-event'
 import { Checkbox } from './form/checkbox'
 import { Radio } from './form/radio-input'
 import { SearchField } from './form/search-field'

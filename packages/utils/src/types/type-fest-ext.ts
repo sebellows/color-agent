@@ -1,4 +1,5 @@
-import { IsNever, LiteralUnion } from 'type-fest'
+import { IsNegative, IsNever, LiteralUnion, UnknownArray } from 'type-fest'
+import { IfNotAnyOrNever } from 'type-fest/source/internal'
 
 /**
  * Allows creating a union type by combining primitive types and literal types without
@@ -67,3 +68,20 @@ export type LiteralStringUnion<BaseType> = LiteralUnion<BaseType, string>
 export type If<Type extends boolean, IfBranch, ElseBranch> = IsNever<Type> extends true ? ElseBranch
 : Type extends true ? IfBranch
 : ElseBranch
+
+/**
+ * Create a tuple type of the specified length with elements of the specified type.
+ *
+ * @example
+ * type RGB = TupleOf<3, number> //=> [number, number, number]
+ */
+export type TupleOf<Length extends number, Fill = unknown> = IfNotAnyOrNever<
+    Length,
+    _TupleOf<If<IsNegative<Length>, 0, Length>, Fill, []>,
+    Fill[],
+    []
+>
+
+type _TupleOf<L extends number, Fill, Accumulator extends UnknownArray> = number extends L ? Fill[]
+: L extends Accumulator['length'] ? Accumulator
+: _TupleOf<L, Fill, [...Accumulator, Fill]>

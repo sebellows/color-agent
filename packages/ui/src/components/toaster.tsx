@@ -1,13 +1,13 @@
 import { View } from 'react-native'
 
-import { useHaptics } from '@ui/hooks/use-haptics.native'
-import { type Color } from '@ui/theme/theme.types'
-import { getShadow } from '@ui/theme/utils'
-import { announceForAccessibility } from '@ui/utils/a11y'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import ToastContainer, { type ToastConfigParams } from 'react-native-toast-message'
 import { StyleSheet, useUnistyles } from 'react-native-unistyles'
 
+import { getShadow } from '../design-system/design-system.utils'
+import { useHaptics } from '../hooks/use-haptics.native'
+import { type Color } from '../theme/theme.types'
+import { announceForAccessibility } from '../utils/a11y'
 import { IconButton } from './buttons/icon-button'
 import { Icon, type IconName } from './icon'
 import { Stack } from './layout/stack'
