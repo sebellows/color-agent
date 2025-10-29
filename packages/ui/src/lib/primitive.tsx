@@ -2,7 +2,7 @@ import * as React from 'react'
 
 import * as ReactDOM from 'react-dom'
 
-import { createSlot } from '../components/slot/create-slot'
+import { createSlot } from '@ui/components/primitives/slot/create-slot'
 
 const NODES = [
     'a',

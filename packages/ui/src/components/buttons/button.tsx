@@ -3,7 +3,7 @@ import { ActivityIndicator, TouchableOpacity, type GestureResponderEvent } from 
 import { StyleSheet, useUnistyles } from 'react-native-unistyles'
 
 import { TypographyToken } from '../../design-system/design-tokens/typography-token'
-import { useHaptics } from '../../hooks/use-haptics.native'
+import { useHaptics } from '../../hooks/use-haptics'
 import { Icon } from '../icon'
 import { Stack } from '../layout/stack'
 import { Text } from '../text'

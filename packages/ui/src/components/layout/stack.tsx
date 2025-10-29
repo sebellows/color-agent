@@ -1,11 +1,12 @@
 import type { ReactNode } from 'react'
-import { View, type ViewProps } from 'react-native'
+import { View } from 'react-native'
 
 import { StyleSheet } from 'react-native-unistyles'
 
 import { type Space } from '../../theme/theme.types'
+import { RNView } from '../../types/react-native.types'
 
-export type StackProps = ViewProps & {
+export type StackProps = React.ComponentPropsWithRef<RNView> & {
     spacing: Space | 'none'
     axis: 'x' | 'y'
     align?: 'center' | 'start' | 'end' | 'stretch' | 'baseline'
@@ -13,7 +14,16 @@ export type StackProps = ViewProps & {
     children: ReactNode
 }
 
-export function Stack({ children, axis, spacing, align, justify, style, ...rest }: StackProps) {
+export function Stack({
+    ref,
+    children,
+    axis,
+    spacing,
+    align,
+    justify,
+    style,
+    ...rest
+}: StackProps) {
     styles.useVariants({
         axis,
         align,
@@ -22,7 +32,7 @@ export function Stack({ children, axis, spacing, align, justify, style, ...rest 
     })
 
     return (
-        <View style={[styles.wrapper, style]} {...rest}>
+        <View ref={ref} style={[styles.wrapper, style]} {...rest}>
             {children}
         </View>
     )

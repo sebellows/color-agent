@@ -2,8 +2,7 @@ import { Insets, View, ViewProps, ViewStyle } from 'react-native'
 
 import { createComponent } from '../lib/create-component'
 import { Role } from '../types/a11y'
-import { WebOnlyPressEvents } from '../types/component.types'
-import { RNOnlyProps, RNStyleProps } from '../types/react-native.types'
+import { RNOnlyProps, RNStyleProps, WebOnlyPressEvents } from '../types/react-native.types'
 
 /** Type defining style properties only available on the web. */
 export type WebOnlyCSSProperties = Omit<React.CSSProperties, keyof RNStyleProps>

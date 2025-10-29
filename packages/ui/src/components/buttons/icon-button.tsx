@@ -8,15 +8,18 @@ import Animated, {
 } from 'react-native-reanimated'
 import { StyleSheet, useUnistyles } from 'react-native-unistyles'
 
-import { useHaptics } from '../../hooks/use-haptics.native'
-import { usePressedState } from '../../hooks/use-pressed-state.native'
+import { useHaptics } from '../../hooks/use-haptics'
+import { usePressedState } from '../../hooks/use-pressed-state'
 import { Icon } from '../icon'
+import { Slot } from '@ui/components/primitives/slot'
 import type { IconButtonProps } from './button.types'
 import { getIconColor, getIconWrapperStyle, sizeToIconSize } from './button.utils'
 
 const HIT_SLOP_FACTOR = 1.2
 
 export function IconButton({
+    ref,
+    asChild,
     icon,
     color = 'neutral.fg',
     size = 'normal',
@@ -83,8 +86,11 @@ export function IconButton({
         disabled,
     })
 
+    const Component = asChild ? Slot.Pressable : Pressable
+
     return (
-        <Pressable
+        <Component
+            ref={ref}
             hitSlop={hitSlop}
             onPressIn={onPressIn}
             onPressOut={onPressOut}
@@ -104,7 +110,7 @@ export function IconButton({
                     <Icon name={icon} color={iconColor} size={iconSize} />
                 </Animated.View>
             }
-        </Pressable>
+        </Component>
     )
 }
 

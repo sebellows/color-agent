@@ -6,16 +6,6 @@ const colorSchemes = getColorSchemes(THEME_COLOR_SCHEMES)
 const _light = colorSchemes.neutral(0) // palette.neutral[0]
 const _dark = colorSchemes.neutral(12)
 
-// export const THEME_COLOR_SCHEMES = {
-//     primary: 'violet',
-//     accent: 'orange',
-//     default: 'slate', // 'background' | 'foreground'
-//     neutral: 'slate',
-//     positive: 'emerald',
-//     warning: 'amber',
-//     critical: 'rose',
-// } as const
-
 const primary = {
     // Primary theme accent colors
     actionDefault: colorSchemes.primary(6),
@@ -29,6 +19,7 @@ const primary = {
     line1: colorSchemes.primary(5, 12.5),
     line2: colorSchemes.primary(5, 24),
     line3: colorSchemes.primary(5, 36),
+    line4: colorSchemes.primary(5),
 }
 
 const accent = {
@@ -44,6 +35,7 @@ const accent = {
     line1: colorSchemes.accent(5, 12.5),
     line2: colorSchemes.accent(5, 24),
     line3: colorSchemes.accent(5, 36),
+    line4: colorSchemes.accent(5),
 }
 
 const critical = {
@@ -59,6 +51,7 @@ const critical = {
     line1: colorSchemes.critical(5, 12.5),
     line2: colorSchemes.critical(5, 24),
     line3: colorSchemes.critical(5, 36),
+    line4: colorSchemes.critical(5),
 }
 
 const positive = {
@@ -89,6 +82,7 @@ const warning = {
     line1: colorSchemes.warning(5, 12.5),
     line2: colorSchemes.warning(5, 24),
     line3: colorSchemes.warning(5, 36),
+    line4: colorSchemes.warning(5),
 }
 
 const neutral = {
@@ -104,6 +98,7 @@ const neutral = {
     line1: colorSchemes.neutral(5, 12.5),
     line2: colorSchemes.neutral(5, 24),
     line3: colorSchemes.neutral(5, 36),
+    line4: colorSchemes.neutral(5),
 }
 
 const light = {
@@ -123,6 +118,7 @@ const light = {
     line1: colorSchemes.neutral(6, 12.5),
     line2: colorSchemes.neutral(6, 25),
     line3: colorSchemes.neutral(6, 37.5),
+    line4: colorSchemes.neutral(6),
 
     componentBg: _light,
     componentBgHover: colorSchemes.neutral(3, 20),
@@ -147,6 +143,7 @@ const dark = {
     line1: colorSchemes.neutral(1, 12.5),
     line2: colorSchemes.neutral(1, 25),
     line3: colorSchemes.neutral(1, 37.5),
+    line4: colorSchemes.neutral(1),
 
     componentBg: _dark,
     componentBgHover: colorSchemes.neutral(10, 20),

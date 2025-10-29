@@ -4,6 +4,9 @@ import { defineConfig, Options } from 'tsup'
 
 export default defineConfig((options: Options) => ({
     entry: ['src/index.ts'], // ['src/**/*.{ts,tsx}'],
+    banner: {
+        js: "'use client'",
+    },
     esbuildPlugins: [
         svgrPlugin({ native: true, typescript: true }),
         copy({
@@ -24,7 +27,7 @@ export default defineConfig((options: Options) => ({
     inject: ['./react-shim.mjs'],
     format: ['esm'],
     tsconfig: 'tsconfig.native.json',
-    outDir: 'dist-native',
+    outDir: 'dist',
     clean: true,
     dts: true,
     minify: true,
@@ -37,4 +40,7 @@ export default defineConfig((options: Options) => ({
         '.ttf': 'file',
     },
     ...options,
+    esbuildOptions(options) {
+        options.jsx = 'preserve'
+    },
 }))

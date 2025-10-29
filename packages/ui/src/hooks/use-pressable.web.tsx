@@ -5,7 +5,7 @@ import { StyleSheet } from 'react-native-unistyles'
 import { useFocus, useHover } from 'use-events'
 
 import { getPosition } from '../design-system/design-system.utils'
-import { UsePressedState, usePressedState } from './use-pressed-state.native'
+import { UsePressedState, usePressedState } from './use-pressed-state'
 
 // export const Card = (props: ViewProps) => <View style={styles.card} {...props} />
 

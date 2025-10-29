@@ -184,5 +184,6 @@ function composeContextScopes(...scopes: CreateScope[]) {
     }
 
     createScope.scopeName = baseScope.scopeName
+
     return createScope
 }

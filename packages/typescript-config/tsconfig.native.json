@@ -8,7 +8,7 @@
         "tsBuildInfoFile": "tsconfig.native.tsbuildinfo",
         "jsx": "react-native",
         "jsxImportSource": "react",
-        "lib": ["DOM", "ESNext"]
-    },
-    "exclude": ["./dist", "./dist-*", "./build", "node_modules", "babel.config.js", "metro.config.cjs", "jest.config.js"]
+        "lib": ["DOM", "ESNext"],
+        "noEmit": true
+    }
 }

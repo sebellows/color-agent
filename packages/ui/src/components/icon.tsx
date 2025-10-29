@@ -1,4 +1,3 @@
-import { memo } from 'react'
 import type { AccessibilityProps, ViewStyle } from 'react-native'
 
 import FeatherIcon from '@expo/vector-icons/Feather'
@@ -8,20 +7,14 @@ import type { Color } from '../theme/theme.types'
 
 export type IconName = keyof (typeof FeatherIcon)['glyphMap']
 
-type Props = {
+export type IconProps = AccessibilityProps & {
     name: IconName
     color?: Color
     size?: number
     style?: ViewStyle
 }
 
-export const Icon = memo(function Icon({
-    name,
-    color = 'fg',
-    size = 24,
-    style,
-    ...props
-}: Props & AccessibilityProps) {
+export const Icon = ({ name, color = 'fg', size = 24, style, ...props }: IconProps) => {
     const { theme } = useUnistyles()
     const iconColor = theme.utils.getColor(color)
     return (
@@ -34,4 +27,4 @@ export const Icon = memo(function Icon({
             style={style}
         />
     )
-})
+}

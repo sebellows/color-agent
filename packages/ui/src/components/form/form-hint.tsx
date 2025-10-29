@@ -43,7 +43,7 @@ export const FormHint = ({
     }, [accessibilityHint, hasError, name])
 
     const color = useMemo(() => {
-        if (!initialColor && hasError) {
+        if (hasError) {
             return 'critical.fg'
         }
         return initialColor

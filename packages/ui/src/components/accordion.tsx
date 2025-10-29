@@ -4,7 +4,7 @@ import { TouchableOpacity } from 'react-native'
 import Collapsible, { type CollapsibleProps } from 'react-native-collapsible'
 import { StyleSheet } from 'react-native-unistyles'
 
-import { useHaptics } from '../hooks/use-haptics.native'
+import { useHaptics } from '../hooks/use-haptics'
 import { Color } from '../theme/theme.types'
 import { t } from '../utils/translation'
 import { Icon, type IconName } from './icon'

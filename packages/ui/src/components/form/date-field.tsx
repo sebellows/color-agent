@@ -1,12 +1,12 @@
 import { forwardRef, useImperativeHandle, useMemo, useState } from 'react'
 import { Keyboard, type AccessibilityProps, type ViewStyle } from 'react-native'
 
-import { DateTime } from 'luxon'
 import DatePicker from 'react-native-date-picker'
 import { StyleSheet } from 'react-native-unistyles'
 
-import { useHaptics } from '../../hooks/use-haptics.native'
+import { useHaptics } from '../../hooks/use-haptics'
 import { callAll } from '../../utils/common'
+import { DateTime } from '../../utils/datetime'
 import { type IconName } from '../icon'
 import { Text } from '../text'
 import { InputButton } from './input-button'
@@ -90,7 +90,7 @@ export const DateField = forwardRef(
             <>
                 <InputButton
                     {...props}
-                    value={DateTime.fromJSDate(value).toLocaleString(format)}
+                    value={DateTime.fromDate(value).toLocaleString(format)}
                     label={label}
                     icon={icon}
                     isFocused={isPickerOpen}

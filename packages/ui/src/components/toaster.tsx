@@ -5,7 +5,7 @@ import ToastContainer, { type ToastConfigParams } from 'react-native-toast-messa
 import { StyleSheet, useUnistyles } from 'react-native-unistyles'
 
 import { getShadow } from '../design-system/design-system.utils'
-import { useHaptics } from '../hooks/use-haptics.native'
+import { useHaptics } from '../hooks/use-haptics'
 import { type Color } from '../theme/theme.types'
 import { announceForAccessibility } from '../utils/a11y'
 import { IconButton } from './buttons/icon-button'

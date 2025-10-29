@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react'
-import type { PressableProps, TouchableWithoutFeedbackProps } from 'react-native'
+import type { TouchableWithoutFeedbackProps } from 'react-native'
 
 import { ColorScheme } from '../../design-system/design-tokens/colors.native'
 import { type Color } from '../../theme/theme.types'
+import { SlottablePressableProps } from '../../types/react-native.types'
 import type { IconName } from '../icon'
 
 export type ButtonSize = 'small' | 'normal' | 'large'
@@ -26,7 +27,7 @@ export type ButtonProps = TouchableWithoutFeedbackProps &
         iconPlacement?: 'start' | 'end'
     }
 
-export type IconButtonProps = PressableProps &
+export type IconButtonProps = SlottablePressableProps &
     ButtonOwnProps & {
         icon: IconName
         color?: ButtonColor

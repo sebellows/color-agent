@@ -1,4 +1,4 @@
-import type { TextProps as RNTextProps } from 'react-native'
+// import type { TextProps as RNTextProps } from 'react-native'
 
 import { StyleSheet } from 'react-native-unistyles'
 
@@ -7,7 +7,7 @@ import { TypographyToken } from '../design-system/design-tokens/typography-token
 import { FastText } from '../internal'
 import { Color } from '../theme/theme.types'
 
-export type TextProps = RNTextProps & {
+export type TextProps = React.ComponentPropsWithRef<typeof FastText> & {
     variant?: TypographyToken
     align?: 'left' | 'right' | 'center'
     uppercase?: boolean

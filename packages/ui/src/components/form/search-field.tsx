@@ -7,7 +7,7 @@ import { t } from '../../utils/translation'
 import { Icon } from '../icon'
 import { Stack } from '../layout/stack'
 import { Text } from '../text'
-import { TextInput, type TextInputProps } from './text-input'
+import { TextInput, type TextInputProps } from '@ui/components/text-input/text-input'
 
 type SearchInputProps = TextInputProps & {
     suggestions?: string[]

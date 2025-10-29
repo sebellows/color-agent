@@ -1,0 +1,13 @@
+{
+    "extends": "@coloragent/typescript-config/tsconfig.base.json",
+    "include": ["."],
+    "exclude": ["dist", "node_modules"],
+    "compilerOptions": {
+        "baseUrl": ".",
+        "lib": ["ESNext"],
+        "target": "ESNext",
+        "paths": {
+            "@debug": ["src/index.ts"]
+        }
+    },
+}

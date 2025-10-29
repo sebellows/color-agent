@@ -3,9 +3,8 @@
     "compilerOptions": {
         "baseUrl": ".",
         "rootDir": "./src",
-        "outDir": "./dist-native",
-        "resolveJsonModule": true
+        "outDir": "./dist"
     },
-    "include": ["."],
-    "exclude": ["node_modules", "*.cjs", "*.mjs", "./dist-*", "./build"]
+    "include": ["./src/**/*"],
+    "exclude": ["node_modules", "dist", "build", "metro.config.cjs"]
 }
