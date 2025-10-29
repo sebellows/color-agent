@@ -177,7 +177,8 @@ const Overlay = ({
 Overlay.displayName = 'TooltipOverlay.Native'
 
 /**
- * @info `position`, `top`, `left`, and `maxWidth` style properties are controlled internally. Opt out of this behavior on native by setting `disablePositioningStyle` to `true`.
+ * @info `position`, `top`, `left`, and `maxWidth` style properties are controlled internally.
+ * Opt out of this behavior on native by setting `disablePositioningStyle` to `true`.
  */
 const Content = ({
     ref,

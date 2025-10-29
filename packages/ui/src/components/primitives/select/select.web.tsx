@@ -1,10 +1,10 @@
 import React from 'react'
 import { Pressable, Text, View } from 'react-native'
 
-import { Slot } from '@ui/components/primitives/slot'
-import { useAugmentedRef, useControllableState, useIsomorphicLayoutEffect } from '@ui/hooks'
 import { Select } from 'radix-ui'
 
+import { useAugmentedRef, useControllableState, useIsomorphicLayoutEffect } from '../../../hooks'
+import { Slot } from '../slot'
 import {
     SelectContentProps,
     SelectGroupProps,
