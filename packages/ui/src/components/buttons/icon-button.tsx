@@ -11,7 +11,7 @@ import { StyleSheet, useUnistyles } from 'react-native-unistyles'
 import { useHaptics } from '../../hooks/use-haptics'
 import { usePressedState } from '../../hooks/use-pressed-state'
 import { Icon } from '../icon'
-import { Slot } from '@ui/components/primitives/slot'
+import { Slot } from '../primitives/slot'
 import type { IconButtonProps } from './button.types'
 import { getIconColor, getIconWrapperStyle, sizeToIconSize } from './button.utils'
 

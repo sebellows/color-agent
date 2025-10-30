@@ -1,6 +1,6 @@
 import type { Image } from 'react-native'
 
-import type { ComponentPropsWithAsChild, SlottableViewProps } from '../../../types'
+import type { ComponentPropsWithAsChild, SlottableViewProps } from '../types'
 
 type RootProps = SlottableViewProps & {
     alt: string

@@ -1,6 +1,6 @@
 import { createElement } from 'react'
 
-import { RNImage, RNText, RNView } from '../types/react-native.types'
+import { RNImage, RNText, RNView } from '../types'
 
 /**
  * Hyper-optimized React Native internal component references for better performance in large lists.

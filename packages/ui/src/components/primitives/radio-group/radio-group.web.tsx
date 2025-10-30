@@ -3,7 +3,7 @@ import { GestureResponderEvent, Pressable, View } from 'react-native'
 
 import { RadioGroup } from 'radix-ui'
 
-import { Slot } from '@ui/components/primitives/slot'
+import { Slot } from '../slot'
 import type { IndicatorProps, ItemProps, RootProps } from './radio-group.types'
 
 const RadioGroupContext = React.createContext<RootProps | null>(null)
@@ -52,9 +52,9 @@ function useRadioGroupContext() {
 const Item = ({ ref, asChild, value, onPress: onPressProps, ...props }: ItemProps) => {
     const { onValueChange } = useRadioGroupContext()
 
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (onPressProps) {
-            onPressProps(ev)
+            onPressProps(event)
         }
         onValueChange(value)
     }

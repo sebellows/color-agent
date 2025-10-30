@@ -16,14 +16,14 @@ const Root = ({
     onKeyDown: onKeyDownProp,
     ...props
 }: RootProps) => {
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         onCheckedChange(!checked)
-        onPressProp?.(ev)
+        onPressProp?.(event)
     }
 
-    function onKeyDown(ev: React.KeyboardEvent) {
-        onKeyDownProp?.(ev)
-        if (ev.key === ' ') {
+    function onKeyDown(event: React.KeyboardEvent) {
+        onKeyDownProp?.(event)
+        if (event.key === ' ') {
             onCheckedChange(!checked)
         }
     }

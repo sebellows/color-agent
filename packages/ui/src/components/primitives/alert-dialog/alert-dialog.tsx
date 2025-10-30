@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { BackHandler, Pressable, Text, View, type GestureResponderEvent } from 'react-native'
 
-import { useControllableState } from '../../../hooks'
+import { useControllableState } from '../hooks'
 import { Portal as RNPPortal } from '../portal'
 import { Slot } from '../slot'
 import type {
@@ -68,9 +68,9 @@ const Trigger = ({
 }: TriggerProps) => {
     const { open: value, onOpenChange } = useRootContext()
 
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         onOpenChange(!value)
-        onPressProp?.(ev)
+        onPressProp?.(event)
     }
 
     const Component = asChild ? Slot.Pressable : Pressable
@@ -165,10 +165,10 @@ const Cancel = ({
 }: CancelProps) => {
     const { onOpenChange } = useRootContext()
 
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (disabled) return
         onOpenChange(false)
-        onPressProp?.(ev)
+        onPressProp?.(event)
     }
 
     const Component = asChild ? Slot.Pressable : Pressable
@@ -195,10 +195,10 @@ const Action = ({
 }: ActionProps) => {
     const { onOpenChange } = useRootContext()
 
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (disabled) return
         onOpenChange(false)
-        onPressProp?.(ev)
+        onPressProp?.(event)
     }
 
     const Component = asChild ? Slot.Pressable : Pressable

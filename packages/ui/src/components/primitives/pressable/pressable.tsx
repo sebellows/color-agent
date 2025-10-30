@@ -17,7 +17,7 @@ export type HapticConfig = {
     onLongPress?: PressableHapticFeedbackType
 }
 
-export const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
+export const AnimatedPressable: React.FC = Animated.createAnimatedComponent(Pressable)
 
 type PressableCoreProps = React.ComponentPropsWithRef<typeof RNPressable> &
     Pick<AnimatedProps<RNPressableProps>, 'animatedProps' | 'style' | 'entering' | 'exiting'>

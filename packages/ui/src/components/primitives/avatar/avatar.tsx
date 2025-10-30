@@ -7,7 +7,7 @@ import {
     type ImageSourcePropType,
 } from 'react-native'
 
-import { useIsomorphicLayoutEffect } from '../../../hooks'
+import { useIsomorphicLayoutEffect } from '../hooks'
 import { Slot } from '../slot'
 import type { FallbackProps, ImageProps, RootProps } from './avatar.types'
 

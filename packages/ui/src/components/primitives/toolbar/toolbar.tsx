@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { View, type GestureResponderEvent } from 'react-native'
 
-import { ToggleGroupUtils } from '../../../utils'
 import { Pressable } from '../pressable'
+import { ToggleGroupUtils } from '../primitive.utils'
 import { Slot } from '../slot'
 import type {
     ButtonProps,
@@ -78,7 +78,7 @@ const ToggleItem = ({
 }: ToggleItemProps) => {
     const { type, disabled, value, onValueChange } = useToggleGroupContext()
 
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (disabled || disabledProp) return
         if (type === 'single') {
             onValueChange(ToggleGroupUtils.getNewSingleValue(value, itemValue))
@@ -86,7 +86,7 @@ const ToggleItem = ({
         if (type === 'multiple') {
             onValueChange(ToggleGroupUtils.getNewMultipleValue(value, itemValue))
         }
-        onPressProp?.(ev)
+        onPressProp?.(event)
     }
 
     const isChecked =

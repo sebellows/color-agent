@@ -9,13 +9,13 @@ import {
     View,
 } from 'react-native'
 
+import { Icon } from '../../icon'
 import {
     useAugmentedRef,
     useControllableState,
     useRelativePosition,
     type LayoutPosition,
-} from '../../../hooks'
-import { Icon } from '../../icon'
+} from '../hooks'
 import { Portal as RNPortal } from '../portal'
 import { Slot } from '../slot'
 import {
@@ -140,13 +140,13 @@ const Trigger = ({
         },
     })
 
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (disabled) return
         augmentedRef.current?.measure((_x, _y, width, height, pageX, pageY) => {
             setTriggerPosition({ width, pageX, pageY: pageY, height })
         })
         onOpenChange(!open)
-        onPressProp?.(ev)
+        onPressProp?.(event)
     }
 
     const Component = asChild ? Slot.Pressable : Pressable
@@ -241,13 +241,13 @@ const Overlay = ({
 }: SelectOverlayProps) => {
     const { open, onOpenChange, setTriggerPosition, setContentLayout } = useSelectContext()
 
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (closeOnPress) {
             setTriggerPosition(null)
             setContentLayout(null)
             onOpenChange(false)
         }
-        OnPressProp?.(ev)
+        OnPressProp?.(event)
     }
 
     if (!forceMount) {
@@ -374,7 +374,7 @@ const Item = ({
     const { onOpenChange, value, onValueChange, setTriggerPosition, setContentLayout } =
         useSelectContext()
 
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (closeOnPress) {
             setTriggerPosition(null)
             setContentLayout(null)
@@ -382,7 +382,7 @@ const Item = ({
         }
 
         onValueChange({ value: itemValue, label })
-        onPressProp?.(ev)
+        onPressProp?.(event)
     }
 
     const Component = asChild ? Slot.Pressable : Pressable

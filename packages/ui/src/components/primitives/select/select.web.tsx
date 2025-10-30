@@ -3,7 +3,7 @@ import { Pressable, Text, View } from 'react-native'
 
 import { Select } from 'radix-ui'
 
-import { useAugmentedRef, useControllableState, useIsomorphicLayoutEffect } from '../../../hooks'
+import { useAugmentedRef, useControllableState, useIsomorphicLayoutEffect } from '../hooks'
 import { Slot } from '../slot'
 import {
     SelectContentProps,

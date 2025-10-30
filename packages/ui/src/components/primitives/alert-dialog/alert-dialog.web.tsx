@@ -3,7 +3,7 @@ import { Pressable, Text, View, type GestureResponderEvent } from 'react-native'
 
 import { AlertDialog } from 'radix-ui'
 
-import { useAugmentedRef, useControllableState, useIsomorphicLayoutEffect } from '../../../hooks'
+import { useAugmentedRef, useControllableState, useIsomorphicLayoutEffect } from '../hooks'
 import { Slot } from '../slot'
 import type {
     ActionProps,
@@ -161,9 +161,9 @@ const Cancel = ({
     const augmentedRef = useAugmentedRef({ ref })
     const { onOpenChange, open } = useRootContext()
 
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (onPressProp) {
-            onPressProp(ev)
+            onPressProp(event)
         }
         onOpenChange(!open)
     }
@@ -203,9 +203,9 @@ const Action = ({
     const augmentedRef = useAugmentedRef({ ref })
     const { onOpenChange, open } = useRootContext()
 
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (onPressProp) {
-            onPressProp(ev)
+            onPressProp(event)
         }
         onOpenChange(!open)
     }

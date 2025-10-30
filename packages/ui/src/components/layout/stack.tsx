@@ -3,8 +3,8 @@ import { View } from 'react-native'
 
 import { StyleSheet } from 'react-native-unistyles'
 
+import { RNView } from '../../primitives/types'
 import { type Space } from '../../theme/theme.types'
-import { RNView } from '../../types/react-native.types'
 
 export type StackProps = React.ComponentPropsWithRef<RNView> & {
     spacing: Space | 'none'

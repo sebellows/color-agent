@@ -65,10 +65,10 @@ const Trigger = ({
 }: TriggerProps) => {
     const { onValueChange, value: rootValue, nativeID } = useRootContext()
 
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (disabled) return
         onValueChange(tabValue)
-        onPressProp?.(ev)
+        onPressProp?.(event)
     }
 
     const Component = asChild ? Slot.Pressable : Pressable

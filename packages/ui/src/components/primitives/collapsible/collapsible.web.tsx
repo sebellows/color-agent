@@ -3,7 +3,7 @@ import { Pressable, View, type GestureResponderEvent } from 'react-native'
 
 import { Collapsible } from 'radix-ui'
 
-import { useAugmentedRef, useControllableState, useIsomorphicLayoutEffect } from '../../../hooks'
+import { useAugmentedRef, useControllableState, useIsomorphicLayoutEffect } from '../hooks'
 import { Slot } from '../slot'
 import type { ContentProps, RootContext, RootProps, TriggerProps } from './collapsible.types'
 
@@ -95,8 +95,8 @@ const Trigger = ({
         augRef.dataset.disabled = disabled ? 'true' : undefined
     }, [disabled])
 
-    function onPress(ev: GestureResponderEvent) {
-        onPressProp?.(ev)
+    function onPress(event: GestureResponderEvent) {
+        onPressProp?.(event)
         onOpenChange(!open)
     }
 

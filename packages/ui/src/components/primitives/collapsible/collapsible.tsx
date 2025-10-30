@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { View, type GestureResponderEvent } from 'react-native'
 
-import { useControllableState } from '../../../hooks'
+import { useControllableState } from '../hooks'
 import { Pressable } from '../pressable'
 import { Slot } from '../slot'
 import type { ContentProps, RootContext, RootProps, TriggerProps } from './collapsible.types'
@@ -60,10 +60,10 @@ const Trigger = ({
 }: TriggerProps) => {
     const { disabled, open, onOpenChange, nativeID } = useCollapsibleContext()
 
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (disabled || disabledProp) return
         onOpenChange(!open)
-        onPressProp?.(ev)
+        onPressProp?.(event)
     }
 
     const Component = asChild ? Slot.Pressable : Pressable

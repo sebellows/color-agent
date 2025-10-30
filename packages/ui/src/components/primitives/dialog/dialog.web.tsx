@@ -3,7 +3,7 @@ import { Pressable, Text, View, type GestureResponderEvent } from 'react-native'
 
 import { Dialog } from 'radix-ui'
 
-import { useAugmentedRef, useControllableState, useIsomorphicLayoutEffect } from '../../../hooks'
+import { useAugmentedRef, useControllableState, useIsomorphicLayoutEffect } from '../hooks'
 import { Slot } from '../slot'
 import type {
     CloseProps,

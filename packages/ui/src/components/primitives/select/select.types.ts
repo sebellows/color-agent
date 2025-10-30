@@ -8,7 +8,7 @@ import type {
     SlottablePressableProps,
     SlottableTextProps,
     SlottableViewProps,
-} from '../../../types/react-native.types'
+} from '../types'
 
 export type Option =
     | {

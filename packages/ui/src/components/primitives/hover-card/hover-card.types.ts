@@ -3,7 +3,7 @@ import type {
     PositionedContentProps,
     SlottablePressableProps,
     SlottableViewProps,
-} from '../../../types/react-native.types'
+} from '../types'
 
 interface SharedRootContext {
     open: boolean

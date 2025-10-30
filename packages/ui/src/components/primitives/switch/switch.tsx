@@ -14,10 +14,10 @@ const Root = ({
     'aria-valuetext': ariaValueText,
     ...props
 }: RootProps) => {
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (disabled) return
         onCheckedChange(!checked)
-        onPressProp?.(ev)
+        onPressProp?.(event)
     }
 
     const Component = asChild ? Slot.Pressable : Pressable

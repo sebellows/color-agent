@@ -8,7 +8,7 @@ import {
     type LayoutRectangle,
 } from 'react-native'
 
-import { useRelativePosition, type LayoutPosition } from '../../../hooks'
+import { useRelativePosition, type LayoutPosition } from '../hooks'
 import { Portal as RNPPortal } from '../portal'
 import { Slot } from '../slot'
 import type {
@@ -128,14 +128,14 @@ const Trigger = ({
         [triggerRef.current],
     )
 
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (disabled) return
         triggerRef.current?.measure((_x, _y, width, height, pageX, pageY) => {
             setTriggerPosition({ width, pageX, pageY: pageY, height })
         })
 
         onValueChange(menuValue === value ? '' : menuValue)
-        onPressProp?.(ev)
+        onPressProp?.(event)
     }
 
     const Component = asChild ? Slot.Pressable : Pressable

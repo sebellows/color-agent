@@ -1,8 +1,9 @@
 import * as React from 'react'
 import { GestureResponderEvent, Pressable, View } from 'react-native'
 
-import type { SlottablePressableProps } from '../../../types/react-native.types'
 import { Slot } from '@ui/components/primitives/slot'
+
+import type { SlottablePressableProps } from '../types'
 import type { CheckboxIndicatorProps, CheckboxRootProps } from './checkbox.types'
 
 /**************************************************
@@ -59,11 +60,11 @@ type CheckboxTriggerProps = SlottablePressableProps
 const Trigger = ({ ref, asChild, onPress: onPressProp, ...props }: CheckboxTriggerProps) => {
     const { disabled, checked, onCheckedChange, nativeID } = useCheckboxContext()
 
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (disabled) return
         const newValue = !checked
         onCheckedChange(newValue)
-        onPressProp?.(ev)
+        onPressProp?.(event)
     }
 
     const Component = asChild ? Slot.Pressable : Pressable

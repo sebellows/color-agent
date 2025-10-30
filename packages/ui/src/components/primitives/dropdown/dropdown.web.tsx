@@ -3,8 +3,8 @@ import { GestureResponderEvent, Pressable, Text, View } from 'react-native'
 
 import { DropdownMenu } from 'radix-ui'
 
-import { useAugmentedRef, useControllableState, useIsomorphicLayoutEffect } from '../../../hooks'
-import { EmptyGestureResponderEvent } from '../../../utils/empty-gesture-responder-event'
+import { useAugmentedRef, useControllableState, useIsomorphicLayoutEffect } from '../hooks'
+import { EmptyGestureResponderEvent } from '../primitive.utils'
 import { Slot } from '../slot'
 import type {
     CheckboxItemProps,

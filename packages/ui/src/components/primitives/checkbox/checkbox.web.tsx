@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { GestureResponderEvent, Pressable, View } from 'react-native'
 
+import { Slot } from '@ui/components/primitives/slot'
+import { useAugmentedRef, useIsomorphicLayoutEffect } from '@ui/hooks'
 import { Checkbox } from 'radix-ui'
 
-import { useAugmentedRef, useIsomorphicLayoutEffect } from '@ui/hooks'
-import { Slot } from '@ui/components/primitives/slot'
 import type { CheckboxIndicatorProps, CheckboxRootProps } from './checkbox.types'
 
 const ROOT_NAME = 'CheckboxRoot.Web'
@@ -23,8 +23,8 @@ const Root = ({
 }: CheckboxRootProps) => {
     const augmentedRef = useAugmentedRef({ ref: ref! })
 
-    function onPress(ev: GestureResponderEvent) {
-        onPressProp?.(ev)
+    function onPress(event: GestureResponderEvent) {
+        onPressProp?.(event)
         onCheckedChange(!checked)
     }
 

@@ -1,4 +1,4 @@
-import { SlottablePressableProps, SlottableViewProps } from '../../../types'
+import { SlottablePressableProps, SlottableViewProps } from '../types'
 
 type SingleRootProps = {
     type: 'single'

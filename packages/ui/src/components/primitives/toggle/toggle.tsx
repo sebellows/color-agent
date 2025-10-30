@@ -13,11 +13,11 @@ const Root = ({
     onPress: onPressProp,
     ...props
 }: RootProps) => {
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (disabled) return
         const newValue = !pressed
         onPressedChange(newValue)
-        onPressProp?.(ev)
+        onPressProp?.(event)
     }
 
     const Component = asChild ? Slot.Pressable : Pressable

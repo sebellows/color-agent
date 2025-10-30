@@ -3,8 +3,8 @@ import type { TouchableWithoutFeedbackProps } from 'react-native'
 
 import { ColorScheme } from '../../design-system/design-tokens/colors.native'
 import { type Color } from '../../theme/theme.types'
-import { SlottablePressableProps } from '../../types/react-native.types'
 import type { IconName } from '../icon'
+import { SlottablePressableProps } from '../primitives/types'
 
 export type ButtonSize = 'small' | 'normal' | 'large'
 

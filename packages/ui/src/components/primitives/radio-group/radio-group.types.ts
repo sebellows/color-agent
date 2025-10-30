@@ -1,8 +1,4 @@
-import {
-    ForceMountable,
-    SlottablePressableProps,
-    SlottableViewProps,
-} from '@ui/types/react-native.types'
+import { ForceMountable, SlottablePressableProps, SlottableViewProps } from '../types'
 
 export type RootProps = SlottableViewProps & {
     value: string | undefined

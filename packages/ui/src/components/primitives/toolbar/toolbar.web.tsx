@@ -3,7 +3,7 @@ import { Pressable, View, type GestureResponderEvent } from 'react-native'
 
 import { Toolbar } from 'radix-ui'
 
-import { ToggleGroupUtils } from '../../../utils'
+import { ToggleGroupUtils } from '../primitive.utils'
 import { Slot } from '../slot'
 import type {
     ButtonProps,
@@ -86,7 +86,7 @@ const ToggleItem = ({
 }: ToggleItemProps) => {
     const { type, disabled, value, onValueChange } = useToggleGroupContext()
 
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (disabled || disabledProp) return
         if (type === 'single') {
             onValueChange(ToggleGroupUtils.getNewSingleValue(value, itemValue))
@@ -94,7 +94,7 @@ const ToggleItem = ({
         if (type === 'multiple') {
             onValueChange(ToggleGroupUtils.getNewMultipleValue(value, itemValue))
         }
-        onPressProp?.(ev)
+        onPressProp?.(event)
     }
 
     const Component = asChild ? Slot.Pressable : Pressable

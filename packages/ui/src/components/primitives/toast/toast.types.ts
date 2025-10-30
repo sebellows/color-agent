@@ -1,8 +1,4 @@
-import type {
-    SlottablePressableProps,
-    SlottableTextProps,
-    SlottableViewProps,
-} from '../../../types'
+import type { SlottablePressableProps, SlottableTextProps, SlottableViewProps } from '../types'
 
 type RootProps = SlottableViewProps & {
     open: boolean

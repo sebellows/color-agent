@@ -62,10 +62,10 @@ function useToastContext() {
 const Close = ({ ref, asChild, onPress: onPressProp, disabled = false, ...props }: CloseProps) => {
     const { onOpenChange } = useToastContext()
 
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (disabled) return
         onOpenChange(false)
-        onPressProp?.(ev)
+        onPressProp?.(event)
     }
 
     const Component = asChild ? Slot.Pressable : Pressable
@@ -93,10 +93,10 @@ const Action = ({
 }: ActionProps) => {
     const { onOpenChange } = useToastContext()
 
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (disabled) return
         onOpenChange(false)
-        onPressProp?.(ev)
+        onPressProp?.(event)
     }
 
     const Component = asChild ? Slot.Pressable : Pressable

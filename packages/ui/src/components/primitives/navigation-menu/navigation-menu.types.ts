@@ -3,7 +3,7 @@ import type {
     PositionedContentProps,
     SlottablePressableProps,
     SlottableViewProps,
-} from '../../../types'
+} from '../types'
 
 type RootProps = SlottableViewProps & {
     value: string | undefined

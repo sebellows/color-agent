@@ -1,4 +1,4 @@
-import { SlottableViewProps } from '../../../types'
+import { SlottableViewProps } from '../types'
 
 type RootProps = SlottableViewProps & {
     value?: number | null | undefined

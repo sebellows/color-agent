@@ -4,7 +4,7 @@ import type {
     SlottablePressableProps,
     SlottableTextProps,
     SlottableViewProps,
-} from '../../../types/react-native.types'
+} from '../types'
 
 type RootProps = SlottableViewProps & { onOpenChange?: (open: boolean) => void }
 

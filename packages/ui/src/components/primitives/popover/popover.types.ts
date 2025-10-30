@@ -3,7 +3,7 @@ import type {
     PositionedContentProps,
     SlottablePressableProps,
     SlottableViewProps,
-} from '../../../types/react-native.types'
+} from '../types'
 
 type RootProps = SlottableViewProps & { onOpenChange?: (open: boolean) => void }
 interface PortalProps extends ForceMountable {

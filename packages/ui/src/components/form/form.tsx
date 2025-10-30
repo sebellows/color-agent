@@ -1,19 +1,19 @@
 import React from 'react'
 import { GestureResponderEvent, Pressable, TextInput, TextInputFocusEvent, View } from 'react-native'
 
-import { isNil, isPlainObject, isUndefined } from 'es-toolkit'
+import { isPlainObject } from 'es-toolkit'
 import { get } from 'es-toolkit/compat'
 import { Controller, FieldValues, useForm, UseFormReturn } from 'react-hook-form'
 import { StyleSheet, useUnistyles } from 'react-native-unistyles'
 
 import { composeEventHandlers } from '../../lib/compose-events'
-import { Slot } from '@ui/components/primitives/slot'
+import { Slot } from '../primitives/slot'
 import { FormHint } from './form-hint'
 import { CharacterLimitProps, ClearButtonProps, FormRootProps, FormTriggerProps, TextFieldProps, TextMaskToggleProps } from './form.types'
 import { Stack } from '../layout/stack'
 import { Text } from '../text'
 import { FormLabel, Icon, IconButton } from '@ui/components/primitives'
-import { RNTextInput } from '../../types/react-native.types'
+import { RNTextInput } from '../../types'
 import { useHaptics } from '../../hooks'
 
 /**************************************************

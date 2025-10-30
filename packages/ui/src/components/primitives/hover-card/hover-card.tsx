@@ -7,8 +7,8 @@ import {
     type LayoutRectangle,
 } from 'react-native'
 
-import { useAugmentedRef, useRelativePosition } from '../../../hooks'
-import { LayoutPosition } from '../../../hooks/use-relative-position'
+import { useAugmentedRef, useRelativePosition } from '../hooks'
+import { LayoutPosition } from '../hooks/use-relative-position'
 import { Portal as RNPPortal } from '../portal'
 import { Pressable } from '../pressable'
 import { Slot } from '../slot'
@@ -107,14 +107,14 @@ const Trigger = ({
         },
     })
 
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (disabled) return
         augmentedRef.current?.measure((_x, _y, width, height, pageX, pageY) => {
             setTriggerPosition({ width, pageX, pageY: pageY, height })
         })
 
         onOpenChange(!open)
-        onPressProp?.(ev)
+        onPressProp?.(event)
     }
 
     const Component = asChild ? Slot.Pressable : Pressable
@@ -161,13 +161,13 @@ const Overlay = ({
 }: OverlayProps) => {
     const { open, onOpenChange, setTriggerPosition, setContentLayout } = useRootContext()
 
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (closeOnPress) {
             setTriggerPosition(null)
             setContentLayout(null)
             onOpenChange(false)
         }
-        OnPressProp?.(ev)
+        OnPressProp?.(event)
     }
 
     if (!forceMount && !open) return null

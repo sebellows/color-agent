@@ -3,7 +3,7 @@ import type {
     SlottablePressableProps,
     SlottableTextProps,
     SlottableViewProps,
-} from '../../../types/react-native.types'
+} from '../types'
 
 type RootProps = {
     open?: boolean
@@ -28,11 +28,11 @@ type OverlayProps = ForceMountable & SlottableViewProps
 type ContentProps = ForceMountable &
     SlottableViewProps & {
         /** Platform: WEB ONLY */
-        onOpenAutoFocus?: (ev: Event) => void
+        onOpenAutoFocus?: (event: Event) => void
         /** Platform: WEB ONLY */
-        onCloseAutoFocus?: (ev: Event) => void
+        onCloseAutoFocus?: (event: Event) => void
         /** Platform: WEB ONLY */
-        onEscapeKeyDown?: (ev: Event) => void
+        onEscapeKeyDown?: (event: Event) => void
     }
 
 type TriggerProps = SlottablePressableProps

@@ -1,4 +1,4 @@
-import type { SlottableViewProps } from '../../../types/react-native.types'
+import type { SlottableViewProps } from '../types'
 
 type RootProps = SlottableViewProps & {
     orientation?: 'horizontal' | 'vertical'

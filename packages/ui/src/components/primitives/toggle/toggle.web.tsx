@@ -14,8 +14,8 @@ const Root = ({
     onPress: onPressProp,
     ...props
 }: RootProps) => {
-    function onPress(ev: GestureResponderEvent) {
-        onPressProp?.(ev)
+    function onPress(event: GestureResponderEvent) {
+        onPressProp?.(event)
         onPressedChange(!pressed)
     }
 

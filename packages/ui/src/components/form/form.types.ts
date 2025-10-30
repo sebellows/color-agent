@@ -10,13 +10,13 @@ import {
     ValidationRule,
 } from 'react-hook-form'
 
-import { Space } from '../../theme/theme.types'
 import {
     RNTextInput,
     SlottablePressableProps,
     SlottableTextProps,
     SlottableViewProps,
-} from '../../types/react-native.types'
+} from '../../primitives/types'
+import { Space } from '../../theme/theme.types'
 import { IconName } from '../icon'
 import { StackProps } from '../layout/stack'
 

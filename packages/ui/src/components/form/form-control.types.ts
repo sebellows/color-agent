@@ -1,18 +1,18 @@
 import React from 'react'
 import { ReturnKeyTypeOptions, TextStyle } from 'react-native'
 
+import { Label, LabelProps } from '@ui/components/primitives/label'
 import { Noop } from 'react-hook-form'
 
 import { SizeTokens } from '../../../exports.native'
-import { Color, Space } from '../../theme/theme.types'
 import {
     RNTextInput,
     SlottablePressableProps,
     SlottableTextProps,
     SlottableViewProps,
-} from '../../types/react-native.types'
+} from '../../primitives/types'
+import { Color, Space } from '../../theme/theme.types'
 import { IconName } from '../icon'
-import { Label, LabelProps } from '@ui/components/primitives/label'
 import { StackProps } from '../layout/stack'
 
 type ValidationRule<T> = T | { value: T; message: string }

@@ -1,4 +1,4 @@
-import type { SlottablePressableProps } from '../../../types'
+import type { SlottablePressableProps } from '../types'
 
 type RootProps = SlottablePressableProps & {
     pressed: boolean

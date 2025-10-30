@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { getEntries } from '../utils/get-entries'
+import { getEntries } from '../../../utils/get-entries'
 
 interface AugmentRefProps<T> {
     ref: React.Ref<T> | undefined

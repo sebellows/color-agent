@@ -1,7 +1,7 @@
 import { Pressable, View } from 'react-native'
 
-import type { SlottablePressableProps, SlottableViewProps } from '../../../types'
 import { Slot } from '../slot'
+import type { SlottablePressableProps, SlottableViewProps } from '../types'
 
 type RootProps = SlottableViewProps
 

@@ -1,4 +1,4 @@
-import type { ForceMountable, SlottablePressableProps, SlottableViewProps } from '../../../types'
+import type { ForceMountable, SlottablePressableProps, SlottableViewProps } from '../types'
 
 type RootProps = SlottableViewProps & {
     value: string

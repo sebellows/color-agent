@@ -3,7 +3,7 @@ import { Pressable, View, type GestureResponderEvent } from 'react-native'
 
 import { Popover } from 'radix-ui'
 
-import { useAugmentedRef, useIsomorphicLayoutEffect } from '../../../hooks'
+import { useAugmentedRef, useIsomorphicLayoutEffect } from '../hooks'
 import { Slot } from '../slot'
 import type {
     CloseProps,
@@ -76,9 +76,9 @@ const Trigger = ({
         },
     })
 
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (onPressProp) {
-            onPressProp(ev)
+            onPressProp(event)
         }
         onOpenChange(!open)
     }
@@ -164,9 +164,9 @@ const Close = ({ ref, asChild, onPress: onPressProp, disabled, ...props }: Close
     const augmentedRef = useAugmentedRef({ ref })
     const { onOpenChange, open } = useRootContext()
 
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (onPressProp) {
-            onPressProp(ev)
+            onPressProp(event)
         }
         onOpenChange(!open)
     }

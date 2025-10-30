@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Dimensions, type LayoutRectangle, type ScaledSize } from 'react-native'
 
-import { Insets } from '../types/react-native.types'
+import { Insets } from '../types'
 
 type UseRelativePositionArgs = Omit<
     GetContentStyleArgs,

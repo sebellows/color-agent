@@ -1,8 +1,4 @@
-import type {
-    ForceMountable,
-    SlottablePressableProps,
-    SlottableViewProps,
-} from '../../../types/react-native.types'
+import type { ForceMountable, SlottablePressableProps, SlottableViewProps } from '../types'
 
 interface RootContext {
     open: boolean

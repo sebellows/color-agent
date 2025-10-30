@@ -2,7 +2,7 @@ import type {
     ForceMountable,
     SlottablePressableProps,
     SlottableViewProps,
-} from '../../types/react-native.types'
+} from '../../primitives/types'
 
 type CheckboxRootProps = SlottablePressableProps & {
     checked: boolean

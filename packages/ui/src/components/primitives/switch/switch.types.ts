@@ -1,4 +1,4 @@
-import { SlottablePressableProps, SlottableViewProps } from '../../../types'
+import { SlottablePressableProps, SlottableViewProps } from '../types'
 
 type RootProps = SlottablePressableProps & {
     checked: boolean
@@ -7,7 +7,7 @@ type RootProps = SlottablePressableProps & {
     /**
      * Platform: WEB ONLY
      */
-    onKeyDown?: (ev: React.KeyboardEvent) => void
+    onKeyDown?: (event: React.KeyboardEvent) => void
 }
 
 type ThumbProps = SlottableViewProps

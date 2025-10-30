@@ -1,4 +1,4 @@
-// import { ComponentType, ComponentTypeName } from '../../types/react-native.types'
+// import { ComponentType, ComponentTypeName } from '../../primitives/types'
 
 // export type SlotProps<T extends ComponentTypeName> = React.ComponentPropsWithoutRef<
 //     ComponentType<T>
@@ -11,8 +11,8 @@
 // export type ViewSlotProps = SlotProps<'View'>
 // export type PressableSlotProps = SlotProps<'Pressable'> & {
 //     /** Platform: WEB ONLY */
-//     onKeyDown?: (ev: React.KeyboardEvent) => void
+//     onKeyDown?: (event: React.KeyboardEvent) => void
 //     /** * Platform: WEB ONLY */
-//     onKeyUp?: (ev: React.KeyboardEvent) => void
+//     onKeyUp?: (event: React.KeyboardEvent) => void
 // }
 // export type TextSlotProps = SlotProps<'Text'>

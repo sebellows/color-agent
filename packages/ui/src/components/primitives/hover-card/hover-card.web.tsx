@@ -3,7 +3,7 @@ import { Pressable, View } from 'react-native'
 
 import { HoverCard } from 'radix-ui'
 
-import { useAugmentedRef } from '../../../hooks'
+import { useAugmentedRef } from '../hooks'
 import { Slot } from '../slot'
 import type {
     ContentProps,

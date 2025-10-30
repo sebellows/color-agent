@@ -8,8 +8,8 @@ import {
     type LayoutRectangle,
 } from 'react-native'
 
-import { useAugmentedRef, useControllableState, useRelativePosition } from '../../../hooks'
-import { LayoutPosition } from '../../../hooks/use-relative-position'
+import { useAugmentedRef, useControllableState, useRelativePosition } from '../hooks'
+import { LayoutPosition } from '../hooks/use-relative-position'
 import { Portal as RNPPortal } from '../portal'
 import { Pressable } from '../pressable'
 import { Slot } from '../slot'

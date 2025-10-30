@@ -3,7 +3,7 @@ import { Pressable, View, type GestureResponderEvent } from 'react-native'
 
 import { Tooltip } from 'radix-ui'
 
-import { useAugmentedRef, useIsomorphicLayoutEffect } from '../../../hooks'
+import { useAugmentedRef, useIsomorphicLayoutEffect } from '../hooks'
 import { Slot } from '../slot'
 import type {
     ContentProps,
@@ -88,9 +88,9 @@ const Trigger = ({
         },
     })
 
-    function onPress(ev: GestureResponderEvent) {
+    function onPress(event: GestureResponderEvent) {
         if (onPressProp) {
-            onPressProp(ev)
+            onPressProp(event)
         }
         onOpenChange(!open)
     }

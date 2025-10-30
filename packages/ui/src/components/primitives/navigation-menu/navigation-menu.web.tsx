@@ -3,8 +3,8 @@ import { GestureResponderEvent, Pressable, View } from 'react-native'
 
 import { NavigationMenu } from 'radix-ui'
 
-import { useAugmentedRef, useIsomorphicLayoutEffect } from '../../../hooks'
-import { EmptyGestureResponderEvent } from '../../../utils'
+import { useAugmentedRef, useIsomorphicLayoutEffect } from '../hooks'
+import { EmptyGestureResponderEvent } from '../primitive.utils'
 import { Slot } from '../slot'
 import type {
     ContentProps,
@@ -117,16 +117,16 @@ const Trigger = ({
 }: TriggerProps) => {
     const { value: rootValue, onValueChange } = useRootContext()
     const { value } = useItemContext()
-    function onKeyDown(ev: React.KeyboardEvent) {
-        onKeyDownProp?.(ev)
-        if (ev.key === ' ') {
+    function onKeyDown(event: React.KeyboardEvent) {
+        onKeyDownProp?.(event)
+        if (event.key === ' ') {
             onPressProp?.(EmptyGestureResponderEvent)
             onValueChange(value === rootValue ? '' : value)
         }
     }
 
-    function onPress(ev: GestureResponderEvent) {
-        onPressProp?.(ev)
+    function onPress(event: GestureResponderEvent) {
+        onPressProp?.(event)
         onValueChange(value === rootValue ? '' : value)
     }
 
@@ -196,16 +196,16 @@ const Link = ({
 }: LinkProps) => {
     const { onValueChange } = useRootContext()
 
-    function onKeyDown(ev: React.KeyboardEvent) {
-        onKeyDownProp?.(ev)
-        if (ev.key === 'Enter' || ev.key === ' ') {
+    function onKeyDown(event: React.KeyboardEvent) {
+        onKeyDownProp?.(event)
+        if (event.key === 'Enter' || event.key === ' ') {
             onPressProp?.(EmptyGestureResponderEvent)
             onValueChange('')
         }
     }
 
-    function onPress(ev: GestureResponderEvent) {
-        onPressProp?.(ev)
+    function onPress(event: GestureResponderEvent) {
+        onPressProp?.(event)
         onValueChange('')
     }
 

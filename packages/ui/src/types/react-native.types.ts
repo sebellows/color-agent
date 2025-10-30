@@ -55,34 +55,6 @@ export type RNOnlyProps =
     | 'dir'
     | 'focusable'
 
-/**************************************************
- * Slot Component Props
- **************************************************/
-
-export type ComponentPropsWithAsChild<T extends React.ElementType> =
-    React.ComponentPropsWithRef<T> & { asChild?: boolean }
-
-export type SlottableViewProps = ComponentPropsWithAsChild<RNView>
-
-export type SlottablePressableProps = ComponentPropsWithAsChild<RNPressable> & {
-    /** Platform: WEB ONLY */
-    onKeyDown?: (ev: React.KeyboardEvent) => void
-    /** Platform: WEB ONLY */
-    onKeyUp?: (ev: React.KeyboardEvent) => void
-}
-
-export type SlottableTextProps = ComponentPropsWithAsChild<RNText>
-
-/**
- * More narrowed down type descriptor than React Native's `Insets` interface.
- */
-export interface Insets {
-    top?: number
-    bottom?: number
-    left?: number
-    right?: number
-}
-
 export type ViewElement = HTMLElement | InstanceType<RNView>
 export type TextElement = HTMLElement | InstanceType<RNText>
 
@@ -99,47 +71,3 @@ export type WebOnlyPressEvents = Pick<
         onHoverIn?: DivAttributes['onMouseEnter']
         onHoverOut?: DivAttributes['onMouseLeave']
     }
-
-type PointerDownOutsideEvent = CustomEvent<{ originalEvent: PointerEvent }>
-type FocusOutsideEvent = CustomEvent<{ originalEvent: FocusEvent }>
-
-/**
- * Certain props are only available on the native version of the component.
- * @docs For the web version, see the Radix documentation https://www.radix-ui.com/primitives
- */
-export interface PositionedContentProps {
-    forceMount?: true | undefined
-    style?: ViewStyle
-    alignOffset?: number
-    insets?: Insets
-    avoidCollisions?: boolean
-    align?: 'start' | 'center' | 'end'
-    side?: 'top' | 'bottom'
-    sideOffset?: number
-    /**
-     * Platform: NATIVE ONLY
-     */
-    disablePositioningStyle?: boolean
-    /** Platform: WEB ONLY */
-    loop?: boolean
-    /** Platform: WEB ONLY */
-    onCloseAutoFocus?: (event: Event) => void
-    /** Platform: WEB ONLY */
-    onEscapeKeyDown?: (event: KeyboardEvent) => void
-    /** Platform: WEB ONLY */
-    onPointerDownOutside?: (event: PointerDownOutsideEvent) => void
-    /** Platform: WEB ONLY */
-    onFocusOutside?: (event: FocusOutsideEvent) => void
-    /** Platform: WEB ONLY */
-    onInteractOutside?: (event: PointerDownOutsideEvent | FocusOutsideEvent) => void
-    /** Platform: WEB ONLY */
-    collisionBoundary?: Element | null | Array<Element | null>
-    /** Platform: WEB ONLY */
-    sticky?: 'partial' | 'always'
-    /** Platform: WEB ONLY */
-    hideWhenDetached?: boolean
-}
-
-export interface ForceMountable {
-    forceMount?: true | undefined
-}

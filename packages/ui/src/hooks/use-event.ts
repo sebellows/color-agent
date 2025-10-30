@@ -1,7 +1,7 @@
 import { useCallback, useRef } from 'react'
 
 import { AnyFunction } from '../types'
-import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect'
+import { useIsomorphicLayoutEffect } from '../components/primitives/hooks/use-isomorphic-layout-effect'
 
 /**
  * Keeps a reference to the current value easily

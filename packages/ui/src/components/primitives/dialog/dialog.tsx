@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { BackHandler, GestureResponderEvent, Pressable, Text, View } from 'react-native'
 
-import { useControllableState } from '../../../hooks'
+import { useControllableState } from '../hooks'
 import { Portal as RNPPortal } from '../portal'
 import { Slot } from '../slot'
 import type {
