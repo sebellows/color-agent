@@ -3,7 +3,7 @@ import { TouchableOpacity, View } from 'react-native'
 
 import { StyleSheet } from 'react-native-unistyles'
 
-import { Icon } from '../icon'
+import { Icon } from '../ui/icon'
 
 type Props = {
     accessibilityLabel?: string

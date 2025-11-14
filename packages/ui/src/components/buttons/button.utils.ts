@@ -1,6 +1,6 @@
 import { type StyleProp, type ViewStyle } from 'react-native'
 
-import { getColorSchemeVariants } from '../../design-system/design-system.utils'
+import { getColorSchemeVariant } from '../../design-system/design-system.utils'
 import { type Theme } from '../../theme/theme'
 import { type Color } from '../../theme/theme.types'
 import { type ButtonProps, type ButtonSize, type IconButtonProps } from './button.types'
@@ -84,7 +84,7 @@ const getColor = ({
         case 'soft':
         case 'outlined':
         case 'plain':
-            const variantColors = getColorSchemeVariants(color)
+            const variantColors = getColorSchemeVariant(color)
             return color === 'primary' ? 'primary.bg' : variantColors.fg
         default:
             return 'fgMuted'

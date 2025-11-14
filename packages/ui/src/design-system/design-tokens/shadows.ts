@@ -11,6 +11,17 @@ const SHADOW_COLOR_12 = {
     hsla: `hsl(229 85% 5% / ${SHADOW_OPACITY_12})`,
 }
 
+export const boxShadows = {
+    '2xs': `0 1px ${SHADOW_COLOR_12.hsla}`,
+    xs: `0 1px 2px 0px ${SHADOW_COLOR_12.hsla}`,
+    sm: `0 1px 3px 0px ${SHADOW_COLOR_20.hsla}, 0 1px 2px -1px ${SHADOW_COLOR_12.hsla}`,
+    md: `0 4px 6px -1px ${SHADOW_COLOR_20.hsla}, 0 2px 4px -2px ${SHADOW_COLOR_12.hsla}`,
+    lg: `0 10px 15px -3px ${SHADOW_COLOR_20.hsla}, 0 4px 6px -4px ${SHADOW_COLOR_12.hsla}`,
+    xl: `0 20px 25px -5px ${SHADOW_COLOR_20.hsla}, 0 10px 10px -5px ${SHADOW_COLOR_12.hsla}`,
+    '2xl': `0 25px 50px -12px ${SHADOW_COLOR_20.hsla}`,
+}
+export type ShadowToken = keyof typeof boxShadows
+
 export const shadows = {
     hard1: {
         boxShadow: `-2px 2px 8px 0px ${SHADOW_COLOR_20.hsla}`,

@@ -60,6 +60,7 @@ type SubProps = SlottableViewProps & {
 }
 
 type SubTriggerProps = SlottablePressableProps & {
+    inset?: boolean
     textValue?: string
 }
 

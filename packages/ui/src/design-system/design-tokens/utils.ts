@@ -107,6 +107,7 @@ export type FontConfig<K extends FontConfigType = FontConfigType> = Extract<
 >
 export type FontConfigFamilies<K extends FontConfigType> = FontConfig<K>['families']
 type FontFamilyWeightKey<K extends FontConfigType> = keyof FontConfigFamilies<K>
+// type _FontFamily = ValueOf<FontConfigFamilies<FontConfigType>, FontFamilyWeightKey<FontConfigType>>
 // export type FontFamilyWeightKey<K extends FontConfigType> = FontConfigFamilyKey<K>
 
 export type FontWeightKey<K extends FontConfigType | undefined = undefined> =
@@ -201,6 +202,20 @@ type ShadowValue = {
     blurRadius: number
     spreadDistance: number
     inset?: boolean
+}
+
+/**
+ * NOTE: Assigning the React Native type BoxShadowValue as the returned object,
+ * while true, makes Unistyles deeply unhappy.
+ */
+export function getShadowStyles<T extends Record<string, string>>(definitions: T) {
+    const shadows = {} as { [K in keyof T]: string }
+    const entries = Object.entries(definitions) as [keyof T, string][]
+
+    return entries.reduce((acc, [key, value]) => {
+        acc[key] = value
+        return acc
+    }, shadows)
 }
 
 /**

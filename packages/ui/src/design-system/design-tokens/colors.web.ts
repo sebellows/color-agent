@@ -107,7 +107,7 @@ const light = {
     bgMuted: colorSchemes.neutral(4),
     bgMutedHover: colorSchemes.neutral(5),
     bgSubtle: colorSchemes.neutral(1),
-    bgOverlay: colorSchemes.neutral(11, 66),
+    bgOverlay: colorSchemes.neutral(11, 8),
 
     focusRing: colorSchemes.neutral(6),
     line1: colorSchemes.neutral(6, 12.5),
@@ -131,7 +131,7 @@ const dark = {
     bgMuted: colorSchemes.neutral(10),
     bgMutedHover: colorSchemes.neutral(9),
     bgSubtle: colorSchemes.neutral(8),
-    bgOverlay: colorSchemes.neutral(11, 66),
+    bgOverlay: colorSchemes.neutral(11, 8),
 
     focusRing: colorSchemes.neutral(1),
     line1: colorSchemes.neutral(1, 12.5),

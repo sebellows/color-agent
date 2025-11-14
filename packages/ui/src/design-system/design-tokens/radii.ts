@@ -1,11 +1,13 @@
 export const radii = {
     xs: 2,
     sm: 4,
-    default: 8,
-    md: 12,
-    lg: 16,
-    xl: 24,
-    '2xl': 32,
+    default: 6,
+    md: 6,
+    lg: 8,
+    xl: 12,
+    '2xl': 16,
+    '3xl': 24,
+    '4xl': 32,
     full: 999,
 }
 

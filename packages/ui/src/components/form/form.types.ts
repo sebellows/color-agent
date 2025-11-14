@@ -17,7 +17,7 @@ import {
     SlottableViewProps,
 } from '../../primitives/types'
 import { Space } from '../../theme/theme.types'
-import { IconName } from '../icon'
+import { IconName } from '../ui/icon'
 import { StackProps } from '../layout/stack'
 
 export type FormHandlers<TFieldValues extends FieldValues = FieldValues> = {

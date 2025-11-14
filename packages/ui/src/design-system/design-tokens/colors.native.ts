@@ -112,7 +112,7 @@ const light = {
     bgMuted: colorSchemes.neutral(4),
     bgMutedHover: colorSchemes.neutral(5),
     bgSubtle: colorSchemes.neutral(1),
-    bgOverlay: colorSchemes.neutral(11, 66),
+    bgOverlay: colorSchemes.neutral(11, 8),
 
     focusRing: colorSchemes.neutral(6),
     line1: colorSchemes.neutral(6, 12.5),
@@ -120,6 +120,7 @@ const light = {
     line3: colorSchemes.neutral(6, 37.5),
     line4: colorSchemes.neutral(6),
 
+    componentFg: _dark,
     componentBg: _light,
     componentBgHover: colorSchemes.neutral(3, 20),
     componentBgPressed: colorSchemes.neutral(3, 33.33),
@@ -137,7 +138,7 @@ const dark = {
     bgMuted: colorSchemes.neutral(10),
     bgMutedHover: colorSchemes.neutral(9),
     bgSubtle: colorSchemes.neutral(8),
-    bgOverlay: colorSchemes.neutral(11, 66),
+    bgOverlay: colorSchemes.neutral(11, 8),
 
     focusRing: colorSchemes.neutral(1),
     line1: colorSchemes.neutral(1, 12.5),
@@ -145,6 +146,7 @@ const dark = {
     line3: colorSchemes.neutral(1, 37.5),
     line4: colorSchemes.neutral(1),
 
+    componentFg: _light,
     componentBg: _dark,
     componentBgHover: colorSchemes.neutral(10, 20),
     componentBgPressed: colorSchemes.neutral(10, 33.33),
@@ -169,3 +171,4 @@ export type ColorToken = `${ColorSchemeToken}.${ColorSchemeVariantToken}`
 
 export type ColorScheme = keyof Omit<Colors, 'light' | 'dark'>
 export type ColorVariant = keyof Colors[ColorScheme]
+export type ColorSchemeProp = keyof typeof light | keyof typeof dark

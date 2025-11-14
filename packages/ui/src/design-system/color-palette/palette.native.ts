@@ -3,6 +3,7 @@ import Color, { Coords } from 'colorjs.io'
 import { isNumber } from 'es-toolkit/compat'
 
 import { THEME_COLOR_SCHEMES } from '../../theme/theme.const'
+import { normalizeAlpha } from './color.utils'
 import { rawColorPalette } from './raw-colors'
 import {
     CustomColorSchemes,
@@ -13,18 +14,6 @@ import {
     ThemeColorSchemeMap,
     ThemeColorSchemes,
 } from './types'
-
-function normalizeAlpha(alpha?: number) {
-    if (typeof alpha === 'number') {
-        if (alpha <= 1.0) {
-            alpha = alpha <= 0 ? 0 : alpha
-        } else if (alpha > 1) {
-            alpha = alpha > 100 ? 100 : alpha
-            alpha = alpha / 100
-        }
-    }
-    return alpha
-}
 
 export function toHslString(values: Coords, alpha = 1): HslValueString {
     return new Color({ space: 'oklch', coords: values, alpha: normalizeAlpha(alpha) })

@@ -1,16 +1,14 @@
 import * as React from 'react'
 import { GestureResponderEvent, Pressable, View } from 'react-native'
 
-import { Slot } from '@ui/components/primitives/slot'
-
-import type { SlottablePressableProps } from '../types'
-import type { CheckboxIndicatorProps, CheckboxRootProps } from './checkbox.types'
+import { Slot } from '../slot'
+import type { IndicatorProps, RootProps, TriggerProps } from './checkbox.types'
 
 /**************************************************
  * Checkbox Root/Context
  **************************************************/
 
-type RootContext = CheckboxRootProps & {
+type RootContext = RootProps & {
     nativeID?: string
 }
 
@@ -24,7 +22,7 @@ const Root = ({
     onCheckedChange,
     nativeID,
     ...props
-}: CheckboxRootProps) => {
+}: RootProps) => {
     return (
         <CheckboxContext.Provider
             value={{
@@ -55,9 +53,7 @@ function useCheckboxContext() {
  * Checkbox Trigger
  **************************************************/
 
-type CheckboxTriggerProps = SlottablePressableProps
-
-const Trigger = ({ ref, asChild, onPress: onPressProp, ...props }: CheckboxTriggerProps) => {
+const Trigger = ({ ref, asChild, onPress: onPressProp, ...props }: TriggerProps) => {
     const { disabled, checked, onCheckedChange, nativeID } = useCheckboxContext()
 
     function onPress(event: GestureResponderEvent) {
@@ -92,7 +88,7 @@ Trigger.displayName = 'CheckboxTrigger.Native'
  * Checkbox Indicator
  **************************************************/
 
-const Indicator = ({ ref, asChild, forceMount, ...props }: CheckboxIndicatorProps) => {
+const Indicator = ({ ref, asChild, forceMount, ...props }: IndicatorProps) => {
     const { checked, disabled } = useCheckboxContext()
 
     if (!forceMount) {

@@ -3,7 +3,7 @@ import { TouchableOpacity, View, type ViewStyle } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
 
 import { type ButtonProps } from '../buttons/button.types'
-import { Icon, type IconName } from '../icon'
+import { Icon, type IconName } from '../ui/icon'
 import { Stack } from '../layout/stack'
 import { Text } from '../text'
 

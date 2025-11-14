@@ -4,7 +4,7 @@ import { TouchableOpacity, type TextInput as RNTextInput } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
 
 import { t } from '../../utils/translation'
-import { Icon } from '../icon'
+import { Icon } from '../ui/icon'
 import { Stack } from '../layout/stack'
 import { Text } from '../text'
 import { TextInput, type TextInputProps } from '@ui/components/text-input/text-input'

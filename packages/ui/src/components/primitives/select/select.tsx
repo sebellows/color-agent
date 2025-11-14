@@ -9,7 +9,7 @@ import {
     View,
 } from 'react-native'
 
-import { Icon } from '../../icon'
+import { Icon } from '../../ui/icon'
 import {
     useAugmentedRef,
     useControllableState,

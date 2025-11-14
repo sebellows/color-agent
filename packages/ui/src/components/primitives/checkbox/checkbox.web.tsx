@@ -1,15 +1,15 @@
 import * as React from 'react'
 import { GestureResponderEvent, Pressable, View } from 'react-native'
 
-import { Slot } from '@ui/components/primitives/slot'
-import { useAugmentedRef, useIsomorphicLayoutEffect } from '@ui/hooks'
 import { Checkbox } from 'radix-ui'
 
-import type { CheckboxIndicatorProps, CheckboxRootProps } from './checkbox.types'
+import { useAugmentedRef, useIsomorphicLayoutEffect } from '../hooks'
+import { Slot } from '../slot'
+import type { IndicatorProps, RootProps } from './checkbox.types'
 
 const ROOT_NAME = 'CheckboxRoot.Web'
 
-const CheckboxContext = React.createContext<CheckboxRootProps | null>(null)
+const CheckboxContext = React.createContext<RootProps | null>(null)
 
 const Root = ({
     ref,
@@ -20,7 +20,7 @@ const Root = ({
     onPress: onPressProp,
     role: _role,
     ...props
-}: CheckboxRootProps) => {
+}: RootProps) => {
     const augmentedRef = useAugmentedRef({ ref: ref! })
 
     function onPress(event: GestureResponderEvent) {
@@ -86,7 +86,7 @@ function useCheckboxContext() {
 
 const INDICATOR_NAME = 'CheckboxIndicator.Web'
 
-const Indicator = ({ ref, asChild, forceMount, ...props }: CheckboxIndicatorProps) => {
+const Indicator = ({ ref, asChild, forceMount, ...props }: IndicatorProps) => {
     const { checked, disabled } = useCheckboxContext()
     const augmentedRef = useAugmentedRef({ ref: ref! })
 
@@ -109,6 +109,7 @@ const Indicator = ({ ref, asChild, forceMount, ...props }: CheckboxIndicatorProp
     }, [disabled])
 
     const Component = asChild ? Slot.View : View
+
     return (
         <Checkbox.Indicator forceMount={forceMount} asChild>
             <Component ref={ref} {...props} />

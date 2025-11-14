@@ -7,7 +7,7 @@ import { StyleSheet } from 'react-native-unistyles'
 import { useHaptics } from '../hooks/use-haptics'
 import { Color } from '../theme/theme.types'
 import { t } from '../utils/translation'
-import { Icon, type IconName } from './icon'
+import { Icon, type IconName } from './ui/icon'
 import { Stack } from './layout/stack'
 import { Text } from './text'
 

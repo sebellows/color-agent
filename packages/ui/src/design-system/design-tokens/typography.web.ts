@@ -147,6 +147,30 @@ export const typography = {
         letterSpacing: 0,
         textTransform: 'none',
     },
+    bodyLarge: {
+        ...getMappedFontFamily('body', 400),
+        ...resolveSizeProps(ROOT_FONT_SIZE * 1.125),
+        letterSpacing: 0,
+        textTransform: 'none',
+    },
+    bodyLargeMedium: {
+        ...getMappedFontFamily('body', 500),
+        ...resolveSizeProps(ROOT_FONT_SIZE * 1.125),
+        letterSpacing: 0,
+        textTransform: 'none',
+    },
+    bodyLargeSemiBold: {
+        ...getMappedFontFamily('body', 600),
+        ...resolveSizeProps(ROOT_FONT_SIZE * 1.125),
+        letterSpacing: 0,
+        textTransform: 'none',
+    },
+    bodyLargeBold: {
+        ...getMappedFontFamily('body', 700),
+        ...resolveSizeProps(ROOT_FONT_SIZE * 1.125),
+        letterSpacing: 0,
+        textTransform: 'none',
+    },
     detail: {
         ...getMappedFontFamily('body', 400),
         ...resolveSizeProps(12),

@@ -7,7 +7,7 @@ import { StyleSheet } from 'react-native-unistyles'
 import { useHaptics } from '../../hooks/use-haptics'
 import { callAll } from '../../utils/common'
 import { DateTime } from '../../utils/datetime'
-import { type IconName } from '../icon'
+import { type IconName } from '../ui/icon'
 import { Text } from '../text'
 import { InputButton } from './input-button'
 

@@ -4,7 +4,7 @@ import { ReturnKeyTypeOptions, TextStyle } from 'react-native'
 import { Label, LabelProps } from '@ui/components/primitives/label'
 import { Noop } from 'react-hook-form'
 
-import { SizeTokens } from '../../../exports.native'
+import { SizeToken } from '../../../exports.native'
 import {
     RNTextInput,
     SlottablePressableProps,
@@ -12,8 +12,8 @@ import {
     SlottableViewProps,
 } from '../../primitives/types'
 import { Color, Space } from '../../theme/theme.types'
-import { IconName } from '../icon'
 import { StackProps } from '../layout/stack'
+import { IconName } from '../ui/icon'
 
 type ValidationRule<T> = T | { value: T; message: string }
 
@@ -134,7 +134,7 @@ export type FormControlProps = SlottableViewProps & {
 
     icon?: IconName
     iconColor?: Color | string
-    iconSize?: SizeTokens | number
+    iconSize?: SizeToken | number
 
     /******************************
      * MaskedText Component Props

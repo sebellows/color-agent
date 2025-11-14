@@ -1,14 +1,15 @@
-import { get } from 'es-toolkit/compat'
+import { get, isNumber } from 'es-toolkit/compat'
 import { StyleSheet } from 'react-native-unistyles'
+import { Get } from 'type-fest'
 
 import { Config } from '../config'
-import { absoluteFill, flexCenter } from '../design-system/design-system.utils'
 import { breakpoints } from '../design-system/design-tokens/breakpoints'
 import { colors } from '../design-system/design-tokens/colors.native'
+import { containers } from '../design-system/design-tokens/containers'
 import { radii } from '../design-system/design-tokens/radii'
-import { shadows } from '../design-system/design-tokens/shadows'
-import { sizes } from '../design-system/design-tokens/sizes'
-import { spacing } from '../design-system/design-tokens/spacing'
+import { boxShadows, shadows } from '../design-system/design-tokens/shadows'
+import { sizes, SizeToken } from '../design-system/design-tokens/sizes'
+import { spacing, SpacingToken } from '../design-system/design-tokens/spacing'
 import { TypographyToken } from '../design-system/design-tokens/typography-token'
 import { typography as _typography } from '../design-system/design-tokens/typography.native'
 import {
@@ -18,38 +19,54 @@ import {
     getLetterSpacings,
     getLineHeights,
     getShadows,
+    getShadowStyles,
     TypographyDefinitions,
 } from '../design-system/design-tokens/utils'
 import { zIndices } from '../design-system/design-tokens/z-indices'
-import { KeyPathOf } from '../types'
-import { getEntries } from '../utils/get-entries'
+import { KeyPathOf } from '../types/common'
+import { absoluteFill, flexCenter } from './theme.utils'
 
 const typography = _typography as TypographyDefinitions
 const { light, dark, ...colorSchemes } = colors
 
 const themeCommon = {
-    radii,
-    space: spacing,
-    typography,
+    boxShadows: getShadowStyles(boxShadows),
+    containers,
     fonts: getFonts(typography),
     fontSizes: getFontSizes(typography),
+    fontStyle: {
+        normal: 'normal',
+        italic: 'italic',
+    },
     fontWeights: getFontWeights(typography),
     letterSpacings: getLetterSpacings(typography),
     lineHeights: getLineHeights(typography),
-    boxShadows: Object.fromEntries(
-        getEntries(shadows).map(([key, value]) => [key, value.boxShadow]),
-    ),
+    radii,
+    typography,
     shadows: getShadows(shadows),
     sizes,
+    space: spacing,
     zIndices,
-    gap: (value: number) => value * Config.get('theme.SPACING_UNIT'),
+    gap: (value: number | SpacingToken) =>
+        isNumber(value) ? value * Config.get('theme.SPACING_UNIT')
+        : value === 'auto' ? 0
+        : spacing[value],
     utils: {
         absoluteFill,
         flexCenter,
-        getColor: (token: KeyPathOf<typeof colors>) => {
+        getColor: <Token extends KeyPathOf<typeof colors>>(
+            token: Token,
+        ): Get<typeof colors, Token> => {
             const color = get(colors, token)
-            if (color) return color
+            if (color) return color as Get<typeof colors, Token>
             throw new Error(`Color token "${token}" not found in theme colors.`)
+        },
+        getSize: (token: SizeToken) => {
+            const sizeIndex = sizes.findIndex(sz => sz === token)
+            if (sizeIndex !== -1) {
+                return { width: sizes[sizeIndex], height: sizes[sizeIndex] }
+            }
+            throw new Error(`There is no size option of ${token} configured in the theme.`)
         },
         getTypography: (token: TypographyToken) => {
             const typo = get(typography, token)
@@ -93,98 +110,3 @@ StyleSheet.configure({
         initialTheme: 'light',
     },
 })
-
-// export function generateTheme(colorScheme: ColorSchemeName) {
-//     const colorThemes = getThemeColors(PlatformEnv.mobile)
-
-//     return createTheme({
-//         colors: colorScheme === 'dark' ? colorThemes.dark : colorThemes.light,
-//         rounded: {
-//             xs: 2,
-//             sm: 4,
-//             md: 6,
-//             lg: 8,
-//             xl: 12,
-//             '2xl': 16,
-//             '3xl': 24,
-//             '4xl': 32,
-//             full: 1000,
-//         },
-//         spacing: getSpacingVariants(PlatformEnv.mobile),
-//         breakpoints,
-//         sizes: getSizeVariants(PlatformEnv.mobile),
-//         transitions: transitions,
-//         zIndices,
-//         buttonVariants: {
-//             defaults: {
-//                 maxWidth: 200,
-//                 borderRadius: 'md',
-//                 paddingVertical: 'sm',
-//                 paddingHorizontal: 'md',
-//                 backgroundColor: 'cardBackground',
-//                 color: 'cardForeground',
-//                 textAlign: 'center',
-//             },
-//             accent: {
-//                 color: 'accentForeground',
-//                 backgroundColor: 'accentBackground',
-//             },
-//             secondary: {
-//                 color: 'secondaryForeground',
-//                 backgroundColor: 'secondaryBackground',
-//             },
-//             muted: {
-//                 color: 'mutedForeground',
-//                 backgroundColor: 'mutedBackground',
-//             },
-//             icon: {
-//                 width: 'auto',
-//                 padding: 'sm',
-//                 borderRadius: 'full',
-//                 aspectRatio: 1,
-//             },
-//         },
-//         textVariants: getTextVariants({ platform: PlatformEnv.mobile }),
-//         layoutVariants: {
-//             centered: {
-//                 display: 'flex',
-//                 alignItems: 'center',
-//                 justifyContent: 'center',
-//             },
-//             absoluteFill: StyleSheet.absoluteFill,
-//         },
-//         cardVariants: {
-//             defaults: {
-//                 backgroundColor: 'cardBackground',
-//                 color: 'cardForeground',
-//             },
-//             cardHeader: {
-//                 padding: 'md',
-//                 flexDirection: 'row',
-//                 columnGap: 'md',
-//                 borderRadiusTopLeft: 'sm',
-//                 borderRadiusTopRight: 'sm',
-//             },
-//             cardContent: {
-//                 paddingHorizontal: 'md',
-//                 paddingBottom: 'md',
-//                 flexDirection: 'column',
-//                 columnGap: 'md',
-//             },
-//             cardFooter: {
-//                 paddingHorizontal: 'md',
-//                 paddingBottom: 'md',
-//                 flexDirection: 'row',
-//                 columnGap: 'md',
-//                 borderRadiusBottomLeft: 'sm',
-//                 borderRadiusBottomRight: 'sm',
-//             },
-//             accent: {
-//                 backgroundColor: 'accentBackground',
-//             },
-//             secondary: {
-//                 backgroundColor: 'secondaryBackground',
-//             },
-//         },
-//     })
-// }

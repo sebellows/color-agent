@@ -1,3 +1,5 @@
+import React from 'react'
+
 import { Stack, StackProps } from '../layout/stack'
 import * as LabelPrimitive from '../primitives/label'
 

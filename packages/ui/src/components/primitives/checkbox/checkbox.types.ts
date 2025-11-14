@@ -4,12 +4,14 @@ import type {
     SlottableViewProps,
 } from '../../primitives/types'
 
-type CheckboxRootProps = SlottablePressableProps & {
+type RootProps = SlottablePressableProps & {
     checked: boolean
     onCheckedChange: (checked: boolean) => void
     disabled?: boolean
 }
 
-type CheckboxIndicatorProps = ForceMountable & SlottableViewProps
+type TriggerProps = SlottablePressableProps
 
-export type { CheckboxIndicatorProps, CheckboxRootProps }
+type IndicatorProps = ForceMountable & SlottableViewProps
+
+export type { IndicatorProps, RootProps, TriggerProps }

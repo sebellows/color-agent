@@ -9,7 +9,7 @@ import { useHaptics } from '../hooks/use-haptics'
 import { type Color } from '../theme/theme.types'
 import { announceForAccessibility } from '../utils/a11y'
 import { IconButton } from './buttons/icon-button'
-import { Icon, type IconName } from './icon'
+import { Icon, type IconName } from './ui/icon'
 import { Stack } from './layout/stack'
 import { Text } from './text'
 
