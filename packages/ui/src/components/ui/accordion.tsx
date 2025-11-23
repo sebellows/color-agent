@@ -161,9 +161,7 @@ const styles = StyleSheet.create(theme => ({
             },
         },
         _web: {
-            transitionProperty: 'all',
-            transitionDuration: '200ms',
-            animate: isExpanded ? 'accordion-down 0.2s ease-out' : 'accordion-up 0.2s ease-out',
+            _classNames: isExpanded ? 'animate-accordion-down' : 'animate-accordion-up',
         },
     }),
     innerContent: {

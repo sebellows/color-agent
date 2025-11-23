@@ -3,26 +3,26 @@ import { Platform, StyleSheet } from 'react-native'
 import Animated, { FadeIn } from 'react-native-reanimated'
 
 import * as HoverCardPrimitive from '../primitives/hover-card'
-import { ThemeStyleProps, uiStyles } from './styles'
+import { uiStyles } from './styles'
 import { TextStyleContext } from './text'
+import { WithThemeStyleProps } from './util.types'
 
 const HoverCard = HoverCardPrimitive.Root
 
 const HoverCardTrigger = HoverCardPrimitive.Trigger
+
+const { animated, card } = uiStyles
 
 const HoverCardContent = ({
     ref,
     style,
     align = 'center',
     sideOffset = 4,
-    border,
-    boxShadow,
-    padding = 'md',
     size = 64,
     zIndex = '50',
     ...props
-}: HoverCardPrimitive.ContentProps & ThemeStyleProps) => {
-    //   const { open } = HoverCardPrimitive.useRootContext()
+}: WithThemeStyleProps<HoverCardPrimitive.ContentProps>) => {
+    const { open } = HoverCardPrimitive.useRootContext()
 
     return (
         <HoverCardPrimitive.Portal>
@@ -37,7 +37,8 @@ const HoverCardContent = ({
                             sideOffset={sideOffset}
                             style={
                                 [
-                                    uiStyles.card({ border, boxShadow, size, zIndex }),
+                                    card.main({ size, zIndex, ...props }),
+                                    animated.toggle({ open }),
                                     style,
                                 ] as HoverCardPrimitive.ContentProps['style']
                             }

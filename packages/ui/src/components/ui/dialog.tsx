@@ -18,10 +18,11 @@ const DialogPortal = DialogPrimitive.Portal
 const DialogClose = DialogPrimitive.Close
 
 const DialogOverlayWeb = ({ ref, style, ...props }: DialogPrimitive.OverlayProps) => {
-    // const { open } = DialogPrimitive.useRootContext();
+    const { open } = DialogPrimitive.useRootContext()
+
     return (
         <DialogPrimitive.Overlay
-            style={[styles.overlay, style as StyleProp<ViewStyle>]}
+            style={[styles.overlay, styles.overlayWeb({ open }), style as StyleProp<ViewStyle>]}
             {...props}
             ref={ref}
         />
@@ -160,7 +161,12 @@ const styles = StyleSheet.create(theme => ({
         ...theme.utils.flexCenter,
         ...theme.utils.absoluteFill,
     },
-    content: ({ border }) => ({
+    overlayWeb: ({ open }) => ({
+        _web: {
+            _classNames: open ? 'fade-in' : 'fade-out',
+        },
+    }),
+    content: ({ border, open }) => ({
         color: theme.colors.bg,
         gap: theme.gap(4),
         maxWidth: theme.containers.lg,
@@ -168,6 +174,13 @@ const styles = StyleSheet.create(theme => ({
         boxShadow: theme.boxShadows.lg,
         borderRadius: theme.radii.lg,
         ...getBorder(theme, border),
+
+        _web: {
+            _classNames:
+                open ?
+                    ['fade-in', 'zoom-in', 'zoom-in-95']
+                :   ['fade-out', 'zoom-out', 'zoom-out-95'],
+        },
     }),
 }))
 

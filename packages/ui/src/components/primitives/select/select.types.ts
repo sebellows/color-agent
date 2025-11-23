@@ -1,7 +1,6 @@
 import { ViewStyle } from 'react-native'
 
-import { IconProps } from '@ui/components/icon'
-
+import { IconProps as UiIconProps } from '../../ui/icon'
 import type {
     ForceMountable,
     PositionedContentProps,
@@ -23,7 +22,7 @@ export interface SharedRootContext {
     disabled?: boolean
 }
 
-export type SelectRootProps = SlottableViewProps & {
+export type RootProps = SlottableViewProps & {
     value?: Option
     defaultValue?: Option
     onValueChange?: (option: Option) => void
@@ -37,16 +36,15 @@ export type SelectRootProps = SlottableViewProps & {
     required?: boolean
 }
 
-export type SelectTriggerProps = SlottablePressableProps
+export type TriggerProps = SlottablePressableProps
 
-export type SelectValueProps = SlottableTextProps & {
+export type ValueProps = SlottableTextProps & {
     placeholder: string
 }
 
-export type SelectIconProps = SlottableViewProps &
-    IconProps & { selectIconWrapperStyle?: ViewStyle }
+export type IconProps = SlottableViewProps & UiIconProps & { selectIconWrapperStyle?: ViewStyle }
 
-export interface SelectPortalProps extends ForceMountable {
+export interface PortalProps extends ForceMountable {
     children: React.ReactNode
     /** Platform: NATIVE ONLY */
     hostName?: string
@@ -54,33 +52,33 @@ export interface SelectPortalProps extends ForceMountable {
     container?: HTMLElement | null | undefined
 }
 
-export type SelectOverlayProps = ForceMountable &
+export type OverlayProps = ForceMountable &
     SlottablePressableProps & {
         closeOnPress?: boolean
     }
 
-export type SelectContentProps = SlottableViewProps &
+export type ContentProps = SlottableViewProps &
     PositionedContentProps & {
         /** Platform: WEB ONLY */
         position?: 'popper' | 'item-aligned' | undefined
     }
 
-export type SelectItemProps = SlottablePressableProps & {
+export type ItemProps = SlottablePressableProps & {
     value: string
     label: string
     closeOnPress?: boolean
 }
 
-export type SelectItemTextProps = Omit<SlottableTextProps, 'children'>
+export type ItemTextProps = Omit<SlottableTextProps, 'children'>
 
-export type SelectItemIndicatorProps = SlottableViewProps & ForceMountable
+export type ItemIndicatorProps = SlottableViewProps & ForceMountable
 
-export type SelectGroupProps = SlottableViewProps
+export type GroupProps = SlottableViewProps
 
-export type SelectLabelProps = SlottableTextProps
+export type LabelProps = SlottableTextProps
 
-export type SelectSeparatorProps = SlottableViewProps & { decorative?: boolean }
+export type SeparatorProps = SlottableViewProps & { decorative?: boolean }
 
-export type SelectScrollButtonProps = React.ComponentPropsWithoutRef<'div'>
+export type ScrollButtonProps = React.ComponentPropsWithoutRef<'div'>
 
-export type SelectViewportProps = React.ComponentPropsWithoutRef<'div'>
+export type ViewportProps = React.ComponentPropsWithoutRef<'div'>

@@ -13,6 +13,8 @@ export enum PlatformEnv {
     'web' = 'web',
 }
 
+export type Direction = 'top' | 'right' | 'bottom' | 'left'
+
 export type KeyPathOf<T extends AnyRecord> = LiteralUnion<
     ToString<
         | Paths<T, { bracketNotation: false; maxRecursionDepth: 2 }>

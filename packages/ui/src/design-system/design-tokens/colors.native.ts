@@ -1,4 +1,7 @@
+import { Get, ValueOf } from 'type-fest'
+
 import { THEME_COLOR_SCHEMES } from '../../theme/theme.const'
+import { KeyPathOf } from '../../types/common'
 import { getColorSchemes } from '../color-palette/palette.native'
 
 const colorSchemes = getColorSchemes(THEME_COLOR_SCHEMES)
@@ -164,11 +167,23 @@ export const colors = {
     dark,
 }
 
-type Colors = typeof colors
-type ColorSchemeToken = keyof Colors
-type ColorSchemeVariantToken = keyof Colors[ColorSchemeToken]
-export type ColorToken = `${ColorSchemeToken}.${ColorSchemeVariantToken}`
+type _Colors = typeof colors
 
-export type ColorScheme = keyof Omit<Colors, 'light' | 'dark'>
-export type ColorVariant = keyof Colors[ColorScheme]
-export type ColorSchemeProp = keyof typeof light | keyof typeof dark
+type ColorSchemes = Pick<_Colors, 'light' | 'dark'>
+export type ColorScheme = keyof ColorSchemes
+type ColorSchemeTokens = ValueOf<ColorSchemes, ColorScheme>
+export type ColorSchemeToken = keyof ColorSchemeTokens
+
+type ColorVariants = Omit<_Colors, ColorScheme>
+export type ColorVariant = keyof ColorVariants
+type ColorVariantTokens = ValueOf<ColorVariants, ColorVariant>
+export type ColorVariantToken = keyof ColorVariantTokens
+// type InnerColorVariant = keyof ColorVariants[ColorVariant]
+// export type ColorVariantToken = Exclude<KeyPathOf<ColorVariants>, keyof ColorVariants> // keyof ColorVariantTokens
+
+export type ColorToken = ColorSchemeToken | Exclude<KeyPathOf<ColorVariants>, keyof ColorVariants> // ColorSchemeToken | `${ColorVariant}.${ColorVariantToken}`
+export type ColorValue =
+    | ColorSchemeTokens[ColorSchemeToken]
+    | ColorVariants[ColorVariant][ColorVariantToken]
+
+export type Colors = ColorSchemeTokens & ColorVariants

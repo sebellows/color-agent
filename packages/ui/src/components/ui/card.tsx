@@ -11,7 +11,7 @@ import {
     getColorSchemeVariant,
     typography,
 } from '../../design-system/design-system.utils'
-import { ColorScheme } from '../../design-system/design-tokens/colors.native'
+import { ColorVariant } from '../../design-system/design-tokens/colors.native'
 import { radii, RadiiToken } from '../../design-system/design-tokens/radii'
 import { ShadowToken } from '../../design-system/design-tokens/shadows'
 import { RNText, RNView } from '../../types'
@@ -20,7 +20,7 @@ import { TextStyleContext } from './text'
 type CardProps = React.ComponentPropsWithRef<RNView> & {
     borderRadius?: RadiiToken
     shadow?: ShadowToken
-    variant?: ColorScheme
+    variant?: ColorVariant
     dark?: boolean
     border?: boolean
 }

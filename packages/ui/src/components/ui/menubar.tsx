@@ -9,8 +9,9 @@ import { Color, Space } from '../../theme/theme.types'
 import { isWeb } from '../../utils'
 import * as MenubarPrimitive from '../primitives/menubar'
 import { Icon } from './icon'
-import { ThemeStyleProps, uiStyles } from './styles'
+import { uiStyles } from './styles'
 import { TextStyleContext } from './text'
+import { WithThemeStyleProps } from './util.types'
 
 const MenubarMenu = MenubarPrimitive.Menu
 
@@ -21,6 +22,19 @@ const MenubarPortal = MenubarPrimitive.Portal
 const MenubarSub = MenubarPrimitive.Sub
 
 const MenubarRadioGroup = MenubarPrimitive.RadioGroup
+
+const {
+    animated,
+    checkbox,
+    content,
+    item,
+    label,
+    radio,
+    separator,
+    shortcut,
+    trigger,
+    subtrigger,
+} = uiStyles
 
 const Menubar = ({
     ref,
@@ -39,10 +53,7 @@ const MenubarTrigger = ({ ref, style, ...props }: MenubarPrimitive.TriggerProps)
     return (
         <MenubarPrimitive.Trigger
             ref={ref}
-            style={[
-                uiStyles.trigger({ isActive: value === itemValue }),
-                style as StyleProp<ViewStyle>,
-            ]}
+            style={[trigger.main({ isActive: value === itemValue }), style as StyleProp<ViewStyle>]}
             {...props}
         />
     )
@@ -62,10 +73,10 @@ const MenubarSubTrigger = ({
         : open ? 'chevron-up'
         : 'chevron-down'
     return (
-        <TextStyleContext.Provider value={uiStyles.subtriggerContext({ open })}>
+        <TextStyleContext.Provider value={subtrigger.textContext({ open })}>
             <MenubarPrimitive.SubTrigger
                 ref={ref}
-                style={[uiStyles.subtrigger({ open, inset }), style as StyleProp<ViewStyle>]}
+                style={[subtrigger.main({ open, inset }), style as StyleProp<ViewStyle>]}
                 {...props}
             >
                 <>{children}</>
@@ -80,16 +91,16 @@ const MenubarSubContent = ({
     ref,
     style,
     ...props
-}: MenubarPrimitive.SubContentProps & ThemeStyleProps) => {
-    // const { open } = MenubarPrimitive.useSubContext()
-    // 'z-50 min-w-[8rem] overflow-hidden rounded-md border mt-1 border-border bg-popover p-1 shadow-md shadow-foreground/5 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
-    // open ?
-    //     'web:animate-in web:fade-in-0 web:zoom-in-95'
-    // :   'web:animate-out web:fade-out-0 web:zoom-out ',
+}: WithThemeStyleProps<MenubarPrimitive.SubContentProps>) => {
+    const { open } = MenubarPrimitive.useSubContext()
     return (
         <MenubarPrimitive.SubContent
             ref={ref}
-            style={[uiStyles.card({ padding: 'xxs', zIndex: '50', ...props }), style]}
+            style={[
+                content.main({ padding: 'xxs', zIndex: '50', ...props }),
+                animated.toggleSubcontent({ open }),
+                style,
+            ]}
             {...props}
         />
     )
@@ -102,15 +113,17 @@ const MenubarContent = ({
     portalHost,
     ...props
 }: MenubarPrimitive.ContentProps & { portalHost?: string }) => {
-    // const { value } = MenubarPrimitive.useRootContext()
-    // const { value: itemValue } = MenubarPrimitive.useMenuContext()
+    const { value } = MenubarPrimitive.useRootContext()
+    const { value: itemValue } = MenubarPrimitive.useMenuContext()
+
     return (
         <MenubarPrimitive.Portal hostName={portalHost}>
             <MenubarPrimitive.Content
                 ref={ref}
                 style={
                     [
-                        uiStyles.card({ padding: 'xxs', zIndex: '50', ...props }),
+                        content.main({ padding: 'xxs', zIndex: '50', ...props }),
+                        animated.toggle({ open: value === itemValue }),
                         style,
                     ] as MenubarPrimitive.ContentProps['style']
                 }
@@ -127,13 +140,10 @@ const MenubarItem = ({
     inset,
     ...props
 }: MenubarPrimitive.ItemProps & { inset?: boolean }) => (
-    <TextStyleContext.Provider value={uiStyles.itemContext}>
+    <TextStyleContext.Provider value={item.textContext}>
         <MenubarPrimitive.Item
             ref={ref}
-            style={[
-                uiStyles.item({ disabled: props?.disabled, inset }),
-                style as StyleProp<ViewStyle>,
-            ]}
+            style={[item.main({ disabled: props?.disabled, inset }), style as StyleProp<ViewStyle>]}
             {...props}
         />
     </TextStyleContext.Provider>
@@ -150,11 +160,11 @@ const MenubarCheckboxItem = ({
 }: MenubarPrimitive.CheckboxItemProps & { size?: SizeToken }) => (
     <MenubarPrimitive.CheckboxItem
         ref={ref}
-        style={[uiStyles.checkbox(props), style as StyleProp<ViewStyle>]}
+        style={[checkbox.main(props), style as StyleProp<ViewStyle>]}
         checked={checked}
         {...props}
     >
-        <View style={uiStyles.checkboxIndicator({ size })}>
+        <View style={checkbox.indicator({ size })}>
             <MenubarPrimitive.ItemIndicator>
                 <Icon name="check" size={size} color="fg" />
             </MenubarPrimitive.ItemIndicator>
@@ -179,13 +189,13 @@ const MenubarRadioItem = ({
 }) => (
     <MenubarPrimitive.RadioItem
         ref={ref}
-        style={[uiStyles.radio(props), style as StyleProp<ViewStyle>]}
+        style={[radio.main(props), style as StyleProp<ViewStyle>]}
         {...props}
     >
-        <View style={uiStyles.radioIndicator({ size })}>
+        <View style={radio.indicator({ size })}>
             <MenubarPrimitive.ItemIndicator>
                 <View
-                    style={uiStyles.indicatorInner({ size: indicatorSize, color: indicatorColor })}
+                    style={radio.indicatorInner({ size: indicatorSize, color: indicatorColor })}
                 />
             </MenubarPrimitive.ItemIndicator>
         </View>
@@ -200,7 +210,7 @@ const MenubarLabel = ({
     inset,
     ...props
 }: MenubarPrimitive.LabelProps & { inset?: boolean }) => (
-    <MenubarPrimitive.Label ref={ref} style={[uiStyles.label({ inset }), style]} {...props} />
+    <MenubarPrimitive.Label ref={ref} style={[label.main({ inset }), style]} {...props} />
 )
 MenubarLabel.displayName = MenubarPrimitive.Label.displayName
 
@@ -210,18 +220,17 @@ const MenubarSeparator = ({
     style,
     ...props
 }: MenubarPrimitive.SeparatorProps & { gap?: Space }) => (
-    <MenubarPrimitive.Separator ref={ref} style={[uiStyles.separator({ gap }), style]} {...props} />
+    <MenubarPrimitive.Separator ref={ref} style={[separator.main({ gap }), style]} {...props} />
 )
 MenubarSeparator.displayName = MenubarPrimitive.Separator.displayName
 
 const MenubarShortcut = ({ style, ...props }: React.ComponentPropsWithoutRef<typeof Text>) => {
-    return <Text style={[uiStyles.shortcut, style]} {...props} />
+    return <Text style={[shortcut.main, style]} {...props} />
 }
 MenubarShortcut.displayName = 'MenubarShortcut'
 
 const styles = StyleSheet.create(theme => ({
     container: ({ height }) => ({
-        // 'flex flex-row h-10 native:h-12 items-center space-x-1 rounded-md border border-border bg-background p-1'
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',

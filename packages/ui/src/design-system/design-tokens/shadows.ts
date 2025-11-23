@@ -20,7 +20,8 @@ export const boxShadows = {
     xl: `0 20px 25px -5px ${SHADOW_COLOR_20.hsla}, 0 10px 10px -5px ${SHADOW_COLOR_12.hsla}`,
     '2xl': `0 25px 50px -12px ${SHADOW_COLOR_20.hsla}`,
 }
-export type ShadowToken = keyof typeof boxShadows
+type BoxShadowToken = keyof typeof boxShadows
+export type ShadowToken = BoxShadowToken
 
 export const shadows = {
     hard1: {

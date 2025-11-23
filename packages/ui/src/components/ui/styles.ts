@@ -1,281 +1,148 @@
-import { HTMLInputTypeAttribute } from 'react'
+import { CSSProperties, HTMLInputTypeAttribute } from 'react'
 import { TextInputProps } from 'react-native'
 
-import { isUndefined } from 'es-toolkit'
+import { AnyRecord } from '@coloragent/utils'
 import { StyleSheet } from 'react-native-unistyles'
-import { Simplify } from 'type-fest'
 
 import {
     getBorder,
-    getBoxShadow,
     getColor,
-    getPadding,
+    getPaddingX,
+    getPaddingY,
     getRingOffsetStyles,
     getSizeVariant,
-    RingOffsetStyleProps,
+    getSpaceValue,
     typography,
 } from '../../design-system/design-system.utils'
-import { ShadowToken } from '../../design-system/design-tokens/shadows'
 import { SizeToken } from '../../design-system/design-tokens/sizes'
-import { ZIndicesToken } from '../../design-system/design-tokens/z-indices'
-import { Color, Space, UnistylesTheme } from '../../theme/theme.types'
+import { Color, Space } from '../../theme/theme.types'
 import { isWeb } from '../../utils'
-
-export type ThemeStyleProps = Simplify<
-    {
-        border?: boolean | number
-        boxShadow?: ShadowToken
-        padding?: Space
-        size?: SizeToken
-        zIndex?: ZIndicesToken
-    } & RingOffsetStyleProps
->
+import { SlottableTextProps } from '../primitives/types'
+import { resolveThemeProps } from './ui.utils'
+import { WithInset, WithThemeStyleProps } from './util.types'
 
 const DEFAULT_SIZE = isWeb ? 40 : 48
 
-export function stateVariantResolver(
-    theme: UnistylesTheme,
-    color: Color,
-    property: 'color' | 'backgroundColor' | 'borderColor' = 'color',
-) {
-    const _color = getColor(theme, color)
+type PseudoClass = '_active' | '_focus' | '_hover'
 
-    return {
-        _active: {
-            [property]: _color,
-        },
-        _focus: {
-            [property]: _color,
-        },
-        _hover: {
-            [property]: _color,
-        },
+function applyPseudoStyles<Styles extends CSSProperties>(
+    styles: Styles,
+    ...pseudoClasses: ('_active' | '_focus' | '_hover')[]
+) {
+    if (!pseudoClasses.length) {
+        pseudoClasses = ['_active', '_focus', '_hover']
     }
+    return pseudoClasses.reduce(
+        (acc, pc) => {
+            acc[pc] = styles
+            return acc
+        },
+        {} as Record<PseudoClass, Styles>,
+    )
 }
 
-export const uiStyles = StyleSheet.create(theme => {
-    return {
-        card: <Props extends ThemeStyleProps>(
-            { border = true, boxShadow = 'md', padding, size, zIndex }: Props = {} as Props,
-        ) => ({
-            // 'z-50 w-64 rounded-md border border-border bg-popover p-4 shadow-md shadow-foreground/5 web:outline-none web:cursor-auto data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
-            // open
-            //   ? 'web:animate-in  web:fade-in-0 web:zoom-in-95'
-            //   : 'web:animate-out web:fade-out-0 web:zoom-out-95 ',
-            backgroundColor: theme.colors.componentBg,
-            borderRadius: theme.radii.md,
-            ...getBorder(theme, border),
-            ...getBoxShadow(theme, boxShadow),
-            overflow: 'hidden',
-            padding: !isUndefined(padding) ? theme.space[padding] : undefined,
-            zIndex: !isUndefined(zIndex) ? theme.zIndices[zIndex] : undefined,
-            minWidth: 128,
-            width: !isUndefined(size) ? getSizeVariant(size).width : undefined,
-        }),
-        input: <Props extends ThemeStyleProps>({
-            border = true,
-            boxShadow = 'md',
-            size = DEFAULT_SIZE,
-            zIndex = '50',
-            ringOffsetColor,
-            ringOffsetWidth,
-            ringOpacity,
-            ...props
-        }: Props & {
-            type?: HTMLInputTypeAttribute
-            editable?: boolean
-            placeholderTextColor?: TextInputProps['placeholderTextColor']
-        }) => {
-            // 'web:flex h-10 native:h-12 web:w-full rounded-md border border-input bg-background px-3 web:py-2 text-base lg:text-sm native:text-lg native:leading-[1.25] text-foreground placeholder:text-muted-foreground web:ring-offset-background file:border-0 file:bg-transparent file:font-medium web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2',
-            // props.editable === false && 'opacity-50 web:cursor-not-allowed',
-            const isFile = props?.type === 'file'
-            const isEditable = !!props?.editable
+// type VariantProp = 'color' | 'backgroundColor' | 'borderColor'
+// export function stateVariantResolver(
+//     theme: UnistylesTheme,
+//     color: Color,
+//     ...properties: VariantProp[]
+// ) {
+//     let stateProps: Partial<Record<VariantProp, string>> = {}
+//     const _color = getColor(theme, color)
+//     if (properties.length < 2) {
+//         const [prop = 'color'] = properties
+//         stateProps[prop] = _color
+//     } else {
+//         stateProps = properties.reduce((acc, prop) => {
+//             if (
+//                 ['primary', 'accent', 'critical', 'neutral', 'positive', 'warning'].includes(color)
+//             ) {
+//                 switch (prop) {
+//                     case 'color':
+//                         acc[prop] = getColor(theme, `${color}.fg`)
+//                         break
+//                     case 'backgroundColor':
+//                         acc[prop] = getColor(theme, `${color}.bg`)
+//                         break
+//                     case 'borderColor':
+//                         acc[prop] = getColor(theme, `${color}.line2`)
+//                         break
+//                 }
+//             } else {
+//                 acc[prop] = color
+//             }
+//             return acc
+//         }, {})
+//     }
 
-            return {
-                display: 'flex',
-                backgroundColor: theme.colors.componentBg,
-                borderRadius: theme.radii.md,
-                ...(isFile ?
-                    { borderWidth: 0, backgroundColor: 'transparent' }
-                :   getBorder(theme, border)),
-                color: theme.colors.fg,
-                ...typography(theme, { xs: 'body', lg: 'bodySmall' }),
-                height: getSizeVariant(size).height,
-                width: '100%',
-                ...getPadding(theme, 'sm', 'left', 'right'),
-                ...getPadding(theme, 'default', 'top', 'bottom'),
-                ...(isFile && { fontWeight: theme.fontWeights.bodyMedium }),
-                opacity: isEditable ? 0.5 : 1,
-                _web: {
-                    ...(isEditable && { cursor: 'not-allowed' }),
-                    '_focus-visible': {
-                        outline: 'none',
-                        ...getRingOffsetStyles(theme, {
-                            ringOffsetColor: 'primary',
-                            ringOffsetWidth,
-                            ringOpacity,
-                        }),
-                    },
-                    _placeholder: {
-                        color: theme.colors.fgMuted,
-                    },
-                },
-            }
+//     return {
+//         _active: stateProps,
+//         _focus: stateProps,
+//         _hover: stateProps,
+//     }
+// }
+
+type SlideProps = {
+    open?: boolean
+    dir: 'top' | 'right' | 'bottom' | 'left'
+    enter?: '80' | 'full' | undefined
+    exit?: '80' | 'full' | undefined
+}
+
+const itemStyles = StyleSheet.create(theme => ({
+    main: ({ disabled, inset, justifyContent = 'center' }) => ({
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent,
+        position: 'relative',
+        borderRadius: theme.radii.sm,
+        gap: theme.gap('default'),
+        paddingLeft: inset ? theme.space.default : theme.space.xs,
+        paddingRight: theme.space.xs,
+        ...getPaddingY(theme, 'xs'),
+        opacity: disabled ? 0.5 : undefined,
+        pointerEvents: disabled ? 'none' : undefined,
+        _active: {
+            backgroundColor: theme.colors.accent.bg,
         },
-        separator: ({ gap = 'xxs' }: { gap?: number | Space } = {}) => {
-            const gapAmt = theme.gap(gap)
-            return {
-                height: 1,
-                backgroundColor: theme.colors.line2,
-                marginLeft: 0 - gapAmt,
-                marginTop: gapAmt,
-                marginBottom: gapAmt,
-            }
-        },
-        shortcut: {
-            color: theme.colors.fgMuted,
-            marginLeft: 'auto',
-            ...typography(theme, 'labelSmall'),
-        },
-        label: ({ inset }) => ({
-            paddingLeft: inset ? theme.space.lg : theme.space.default,
-            paddingRight: theme.space.default,
-            ...getPadding(theme, 'xs', 'top', 'bottom'),
-            ...typography(theme, 'bodySmallSemiBold'),
-            _web: {
-                cursor: 'default',
-            },
-        }),
-        radio: ({ disabled }) => ({
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            position: 'relative',
-            borderRadius: theme.radii.sm,
-            paddingLeft: theme.space.lg,
-            paddingRight: theme.space.xs,
-            paddingTop: theme.space.xs,
-            opacity: disabled ? 0.5 : undefined,
-            pointerEvents: disabled ? 'none' : undefined,
-            _active: {
-                backgroundColor: theme.colors.accent.bg,
-            },
-            _web: {
-                cursor: 'default',
-                outline: 'none',
-                _focus: {
-                    backgroundColor: theme.colors.accent.bg,
-                },
-            },
-        }),
-        radioIndicator: ({ size = 14 }: { size?: SizeToken } = {}) => ({
-            position: 'absolute',
-            left: theme.space.xxs,
-            ...theme.utils.flexCenter,
-            ...getSizeVariant(size),
-        }),
-        indicatorInner: ({ color = 'fg', size = 8 }: { color?: Color; size?: SizeToken } = {}) => ({
-            backgroundColor: getColor(theme, color),
-            borderRadius: theme.radii.full,
-            ...getSizeVariant(size),
-        }),
-        checkbox: ({ disabled }) => ({
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            position: 'relative',
-            borderRadius: theme.radii.sm,
-            paddingLeft: theme.space.lg,
-            paddingRight: theme.space.xs,
-            ...getPadding(theme, isWeb ? 'xs' : 'default', 'top', 'bottom'),
-            opacity: disabled ? 0.5 : undefined,
-            pointerEvents: disabled ? 'none' : undefined,
-            _active: {
-                backgroundColor: theme.colors.accent.bg,
-            },
-            _web: {
-                cursor: 'default',
-                outline: 'none',
-                _focus: {
-                    backgroundColor: theme.colors.accent.bg,
-                },
-            },
-        }),
-        checkboxIndicator: ({ size = 14 }: { size?: SizeToken } = {}) => ({
-            ...theme.utils.flexCenter,
-            position: 'absolute',
-            left: theme.space.xxs,
-            ...getSizeVariant(size),
-        }),
-        item: ({ disabled, inset }) => ({
-            ...theme.utils.flexCenter,
-            position: 'relative',
-            borderRadius: theme.radii.sm,
-            gap: theme.gap('default'),
-            paddingLeft: inset ? theme.space.default : theme.space.xs,
-            paddingRight: theme.space.xs,
-            ...getPadding(theme, 'xs', 'top', 'bottom'),
-            opacity: disabled ? 0.5 : undefined,
-            pointerEvents: disabled ? 'none' : undefined,
-            _web: {
-                cursor: 'default',
-                outline: 'none',
-                _active: {
-                    backgroundColor: theme.colors.accent.bg,
-                },
-                _focus: {
-                    backgroundColor: theme.colors.accent.bg,
-                },
-                _hover: {
-                    backgroundColor: theme.colors.accent.bg,
-                },
-            },
-        }),
-        itemContext: {
-            userSelect: 'none',
-            color: theme.colors.componentFg,
-            ...typography(theme, isWeb ? 'bodySmall' : 'body'),
+        _web: {
+            cursor: 'default',
+            outline: 'none',
             _focus: {
-                color: theme.colors.accent.fg,
+                backgroundColor: theme.colors.accent.bg,
+            },
+            _hover: {
+                backgroundColor: theme.colors.accent.bg,
             },
         },
-        overlay: {
-            ...(isWeb ? theme.utils.absoluteFill : {}),
+    }),
+    textContext: {
+        userSelect: 'none',
+        color: theme.colors.componentFg,
+        ...typography(theme, isWeb ? 'bodySmall' : 'body'),
+        _focus: {
+            color: theme.colors.accent.fg,
         },
-        subtrigger: ({ open, inset }) => ({
-            // 'flex flex-row web:cursor-default web:select-none items-center gap-2 web:focus:bg-accent active:bg-accent web:hover:bg-accent rounded-sm px-2 py-1.5 native:py-2 web:outline-none',
-            // open && 'bg-accent', inset && 'pl-8',
+    },
+}))
+
+const triggerStyles = StyleSheet.create(theme => ({
+    main: <Props extends WithThemeStyleProps<{ isActive?: boolean }>>({
+        border,
+        borderColor,
+        isActive,
+        justifyContent = 'center',
+    }: Props) => {
+        return {
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            gap: theme.gap(2),
-            userSelect: 'none',
-            backgroundColor: !isWeb && open ? theme.colors.accent.bg : undefined,
-            paddingLeft: theme.space[inset ? 'lg' : 'default'],
-            paddingRight: theme.space.default,
-            ...getPadding(theme, isWeb ? 'xxs' : 'default', 'top', 'bottom'),
-            _web: {
-                cursor: 'default',
-                outline: 'none',
-                ...stateVariantResolver(theme, 'accent.bg'),
-            },
-        }),
-        subtriggerContext: ({ open }) => ({
-            // 'select-none text-sm native:text-lg text-primary',
-            // open && 'native:text-accent-foreground',
-            userSelect: 'none',
-            color: !isWeb && open ? theme.colors.accent.fg : theme.colors.primary.fg,
-            ...typography(theme, isWeb ? 'bodySmall' : 'bodyLarge'),
-        }),
-        trigger: ({ isActive }) => ({
-            // 'flex flex-row web:cursor-default web:select-none items-center rounded-sm px-3 py-1.5 text-sm native:h-10 native:px-5 native:py-0 font-medium web:outline-none web:focus:bg-accent active:bg-accent web:focus:text-accent-foreground',
-            // value === itemValue && 'bg-accent text-accent-foreground',
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
+            justifyContent,
+            ...(border ? getBorder(theme, true, { borderColor }) : {}),
             borderRadius: theme.radii.sm,
-            ...getPadding(theme, isWeb ? 'sm' : 'md', 'left', 'right'),
-            ...getPadding(theme, isWeb ? 'xs' : 'none', 'top', 'bottom'),
+            ...getPaddingX(theme, isWeb ? 'sm' : 'md'),
+            ...getPaddingY(theme, isWeb ? 'xs' : 'none'),
             ...typography(theme, 'bodySmallMedium'),
             ...(isActive ?
                 {
@@ -294,6 +161,315 @@ export const uiStyles = StyleSheet.create(theme => {
                     color: getColor(theme, 'accent.fg'),
                 },
             },
+        }
+    },
+}))
+
+const subTriggerStyles = StyleSheet.create(theme => ({
+    main: ({ open, inset }) => ({
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: theme.gap(2),
+        userSelect: 'none',
+        backgroundColor: !isWeb && open ? theme.colors.accent.bg : undefined,
+        paddingLeft: theme.space[inset ? 'lg' : 'default'],
+        paddingRight: theme.space.default,
+        ...getPaddingY(theme, isWeb ? 'xxs' : 'default'),
+        _web: {
+            cursor: 'default',
+            outline: 'none',
+            ...applyPseudoStyles({ color: getColor(theme, 'accent.bg') }),
+        },
+    }),
+    textContext: ({ open }) => ({
+        userSelect: 'none',
+        color: !isWeb && open ? theme.colors.accent.fg : theme.colors.primary.fg,
+        ...typography(theme, isWeb ? 'bodySmall' : 'bodyLarge'),
+    }),
+}))
+
+const cardStyles = StyleSheet.create(theme => ({
+    main: <
+        Props extends AnyRecord,
+        UiProps extends WithThemeStyleProps<Props> = WithThemeStyleProps<Props>,
+    >(
+        {
+            backgroundColor = 'componentBg',
+            border = true,
+            borderRadius = 'md',
+            boxShadow = 'md',
+            ...props
+        }: UiProps = {} as UiProps,
+    ) => ({
+        ...resolveThemeProps(theme, { backgroundColor, border, borderRadius, boxShadow, ...props }),
+        overflow: 'hidden',
+        minWidth: 128,
+    }),
+}))
+
+const animatedStyles = StyleSheet.create(_theme => ({
+    fadeToggle: ({ active }) => ({
+        _web: {
+            _classNames: active ? 'fade-in' : 'fade-out',
+        },
+    }),
+    toggle: ({ open }) => ({
+        _web: {
+            _classNames:
+                open ?
+                    ['fade-in', 'zoom-in', 'zoom-in-95']
+                :   ['fade-out', 'zoom-out', 'zoom-out-95'],
+        },
+    }),
+    toggleSubcontent: ({ open }) => ({
+        _web: {
+            _classNames:
+                open ? ['fade-in', 'zoom-in', 'zoom-in-95'] : ['fade-out', 'zoom-out', 'zoom-out'],
+        },
+    }),
+    slideToggle: ({ open, dir, enter, exit }: SlideProps) => {
+        const inSuffix = !enter ? '' : `-${enter}`
+        const outSuffix = !exit ? '' : `-${exit}`
+        return {
+            _web: {
+                _classNames:
+                    open ?
+                        ['fade-in', `slide-in-${dir}${inSuffix}`]
+                    :   ['fade-out', `slide-out-${dir}${outSuffix}`],
+            },
+        }
+    },
+}))
+
+const popperStyles = StyleSheet.create(theme => ({
+    main: ({ usePopper, ref }) => {
+        if (usePopper) return {}
+        const dataSide = ref.current?.getAttribute?.('data-side')
+        let offset: number = 0
+        let translate = dataSide === 'left' || dataSide === 'right' ? 'translateX' : 'translateY'
+        if (dataSide) {
+            if (dataSide === 'left' || dataSide === 'top') {
+                offset = getSpaceValue(theme, '-xxs')
+            } else {
+                offset = getSpaceValue(theme, 'xxs')
+            }
+        }
+        return {
+            _web: {
+                transform: `${translate}(${offset}px)`,
+            },
+        }
+    },
+}))
+
+const inputStyles = StyleSheet.create(theme => ({
+    main: <
+        Props extends AnyRecord,
+        UiProps extends WithThemeStyleProps<Props> = WithThemeStyleProps<Props>,
+    >({
+        border = true,
+        boxShadow = 'md',
+        size = DEFAULT_SIZE,
+        zIndex = '50',
+        ringOffsetColor,
+        ringOffsetWidth,
+        ringOpacity,
+        ...props
+    }: UiProps & {
+        type?: HTMLInputTypeAttribute
+        editable?: boolean
+        placeholderTextColor?: TextInputProps['placeholderTextColor']
+    }) => {
+        const isFile = props?.type === 'file'
+        const isEditable = !!props?.editable
+
+        return {
+            display: 'flex',
+            backgroundColor: theme.colors.componentBg,
+            borderRadius: theme.radii.md,
+            ...(isFile ?
+                { borderWidth: 0, backgroundColor: 'transparent' }
+            :   getBorder(theme, border)),
+            color: theme.colors.fg,
+            ...typography(theme, { xs: 'body', lg: 'bodySmall' }),
+            height: getSizeVariant(size).height,
+            width: '100%',
+            ...getPaddingX(theme, 'sm'),
+            ...getPaddingY(theme, 'default'),
+            ...(isFile && { fontWeight: theme.fontWeights.bodyMedium }),
+            opacity: isEditable ? 0.5 : 1,
+            _web: {
+                ...(isEditable && { cursor: 'not-allowed' }),
+                ...getRingOffsetStyles(theme, {
+                    ringOffsetColor: 'primary',
+                    ringOffsetWidth,
+                    ringOpacity,
+                }),
+                _placeholder: {
+                    color: theme.colors.fgMuted,
+                },
+            },
+        }
+    },
+}))
+
+const radioStyles = StyleSheet.create(theme => ({
+    main: ({ disabled }: { disabled?: null | boolean | undefined } = {}) => ({
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        position: 'relative',
+        borderRadius: theme.radii.sm,
+        paddingLeft: theme.space.lg,
+        paddingRight: theme.space.xs,
+        paddingTop: theme.space.xs,
+        opacity: disabled ? 0.5 : undefined,
+        pointerEvents: disabled ? 'none' : undefined,
+        _active: {
+            backgroundColor: theme.colors.accent.bg,
+        },
+        _web: {
+            cursor: 'default',
+            outline: 'none',
+            _focus: {
+                backgroundColor: theme.colors.accent.bg,
+            },
+        },
+    }),
+    indicator: ({ size = 14 }: { size?: SizeToken } = {}) => ({
+        position: 'absolute',
+        left: theme.space.xxs,
+        ...theme.utils.flexCenter,
+        ...getSizeVariant(size),
+    }),
+    indicatorInner: ({ color = 'fg', size = 8 }: { color?: Color; size?: SizeToken } = {}) => ({
+        backgroundColor: getColor(theme, color),
+        borderRadius: theme.radii.full,
+        ...getSizeVariant(size),
+    }),
+}))
+
+const checkboxStyles = StyleSheet.create(theme => ({
+    main: <Props extends { disabled?: boolean | null | undefined }>(
+        { disabled }: Props = {} as Props,
+    ) => ({
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        position: 'relative',
+        borderRadius: theme.radii.sm,
+        paddingLeft: theme.space.lg,
+        paddingRight: theme.space.xs,
+        ...getPaddingY(theme, isWeb ? 'xs' : 'default'),
+        opacity: disabled ? 0.5 : undefined,
+        pointerEvents: disabled ? 'none' : undefined,
+        _active: {
+            backgroundColor: theme.colors.accent.bg,
+        },
+        _web: {
+            cursor: 'default',
+            outline: 'none',
+            _focus: {
+                backgroundColor: theme.colors.accent.bg,
+            },
+        },
+    }),
+    indicator: ({ size = 14 }: { size?: SizeToken } = {}) => ({
+        ...theme.utils.flexCenter,
+        position: 'absolute',
+        left: theme.space.xxs,
+        ...getSizeVariant(size),
+    }),
+}))
+
+export type UiLabelProps<Props extends SlottableTextProps> = WithThemeStyleProps<WithInset<Props>>
+
+const labelStyles = StyleSheet.create(theme => ({
+    main: <Props extends SlottableTextProps>({
+        inset,
+        padding,
+        ...props
+    }: UiLabelProps<Props>) => ({
+        ...resolveThemeProps(theme, {
+            padding: padding ?? {
+                top: 'xs',
+                right: 'default',
+                bottom: 'xs',
+                left: inset ? 'lg' : 'default',
+            },
+            ...props,
         }),
-    }
-})
+        // paddingLeft: inset ? theme.space.lg : theme.space.default,
+        // paddingRight: theme.space.default,
+        // ...getPaddingY(theme, 'xs'),
+        ...typography(theme, isWeb ? 'bodySmallSemiBold' : 'bodySemiBold'),
+        _web: {
+            cursor: 'default',
+        },
+    }),
+    wrapper: {
+        _web: {
+            cursor: 'default',
+        },
+    },
+}))
+
+const separatorStyles = StyleSheet.create(theme => ({
+    main: ({ gap = 'xxs' }: { gap?: number | Space } = {}) => {
+        const gapAmt = theme.gap(gap)
+        return {
+            height: 1,
+            backgroundColor: theme.colors.line2,
+            marginLeft: 0 - gapAmt,
+            marginTop: gapAmt,
+            marginBottom: gapAmt,
+        }
+    },
+}))
+
+const shortcutStyles = StyleSheet.create(theme => ({
+    main: {
+        color: theme.colors.fgMuted,
+        marginLeft: 'auto',
+        ...typography(theme, 'labelSmall'),
+    },
+}))
+
+const overlayStyles = StyleSheet.create(theme => ({
+    main: {
+        ...(isWeb ? theme.utils.absoluteFill : {}),
+    },
+}))
+
+export const uiStyles = {
+    /** Web-only animation styles */
+    animated: animatedStyles,
+
+    /** Content container styles */
+    card: cardStyles,
+    content: cardStyles, // alias
+
+    /** Horizontal Rule */
+    separator: separatorStyles,
+
+    /** Styles for common child items within a list component */
+    item: itemStyles,
+
+    /** Actionable item styles: Select arrow, buttons, etc. */
+    trigger: triggerStyles,
+    subtrigger: subTriggerStyles,
+    shortcut: shortcutStyles,
+
+    /** Form-related styles */
+    label: labelStyles,
+    checkbox: checkboxStyles,
+    input: inputStyles,
+    radio: radioStyles,
+
+    /** Overlay background styles */
+    overlay: overlayStyles,
+
+    /** 3rd-Party library-related styling */
+    popper: popperStyles,
+}

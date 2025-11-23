@@ -10,7 +10,9 @@ import { RNText } from '../../types'
 import { isWeb } from '../../utils'
 import * as DropdownMenuPrimitive from '../primitives/dropdown'
 import { Icon } from './icon'
+import { UiLabelProps, uiStyles } from './styles'
 import { TextStyleContext } from './text'
+import { WithInset, WithThemeStyleProps } from './util.types'
 
 const DropdownMenu = DropdownMenuPrimitive.Root
 const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger
@@ -53,11 +55,12 @@ const DropdownMenuSubContent = ({
     style,
     ...props
 }: DropdownMenuPrimitive.SubContentProps) => {
-    // const { open } = DropdownMenuPrimitive.useSubContext()
+    const { open } = DropdownMenuPrimitive.useSubContext()
+
     return (
         <DropdownMenuPrimitive.SubContent
             ref={ref}
-            style={[styles.subcontent, style as StyleProp<ViewStyle>]}
+            style={[styles.subcontent({ open }), style as StyleProp<ViewStyle>]}
             {...props}
         />
     )
@@ -105,7 +108,7 @@ const DropdownMenuItem = ({
 }: DropdownMenuPrimitive.ItemProps & {
     inset?: boolean
 }) => (
-    <TextStyleContext.Provider value={styles.itemContext({ disabled: props.disabled, inset })}>
+    <TextStyleContext.Provider value={styles.itemContext}>
         <DropdownMenuPrimitive.Item
             ref={ref}
             style={[
@@ -132,8 +135,8 @@ const DropdownMenuCheckboxItem = ({
         checked={checked}
         {...props}
     >
-        <View style={[styles.toggleInputItem, getSizeVariant(iconSize)]}>
-            <DropdownMenuPrimitive.ItemIndicator>
+        <View style={[uiStyles.checkbox.main(), getSizeVariant(iconSize)]}>
+            <DropdownMenuPrimitive.ItemIndicator style={uiStyles.checkbox.indicator()}>
                 <Icon name="check" size={iconSize} color="fg" />
             </DropdownMenuPrimitive.ItemIndicator>
         </View>
@@ -151,12 +154,12 @@ const DropdownMenuRadioItem = ({
 }: DropdownMenuPrimitive.RadioItemProps & { iconSize?: SizeToken | number }) => (
     <DropdownMenuPrimitive.RadioItem
         ref={ref}
-        style={[styles.toggleInputWrapper, style] as StyleProp<ViewStyle>}
+        style={[uiStyles.radio.main(), style] as StyleProp<ViewStyle>}
         {...props}
     >
-        <View style={[styles.toggleInputItem, getSizeVariant(iconSize)]}>
+        <View style={[uiStyles.radio.indicator(), getSizeVariant(iconSize)]}>
             <DropdownMenuPrimitive.ItemIndicator>
-                <View style={styles.radioIndicator} />
+                <View style={uiStyles.radio.indicatorInner()} />
             </DropdownMenuPrimitive.ItemIndicator>
         </View>
         <>{children}</>
@@ -167,60 +170,66 @@ DropdownMenuRadioItem.displayName = DropdownMenuPrimitive.RadioItem.displayName
 const DropdownMenuLabel = ({
     ref,
     style,
-    inset,
     ...props
-}: DropdownMenuPrimitive.LabelProps & { inset?: boolean }) => (
-    <DropdownMenuPrimitive.Label ref={ref} style={[styles.label({ inset }), style]} {...props} />
+}: UiLabelProps<DropdownMenuPrimitive.LabelProps>) => (
+    <DropdownMenuPrimitive.Label
+        ref={ref}
+        style={[
+            uiStyles.label.main(props) as UiLabelProps<DropdownMenuPrimitive.LabelProps>['style'],
+            style,
+        ]}
+        {...props}
+    />
 )
 DropdownMenuLabel.displayName = DropdownMenuPrimitive.Label.displayName
 
 const DropdownMenuSeparator = ({ ref, style, ...props }: DropdownMenuPrimitive.SeparatorProps) => (
     <DropdownMenuPrimitive.Separator
         ref={ref}
-        style={[styles.separator, style] as StyleProp<ViewStyle>}
+        style={[uiStyles.separator.main, style] as StyleProp<ViewStyle>}
         {...props}
     />
 )
 DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName
 
 const DropdownMenuShortcut = ({ style, ...props }: React.ComponentPropsWithoutRef<RNText>) => {
-    return <Text style={[styles.shortcut, style]} {...props} />
+    return <Text style={[uiStyles.shortcut.main, style]} {...props} />
 }
 DropdownMenuShortcut.displayName = 'DropdownMenuShortcut'
 
 const styles = StyleSheet.create(theme => ({
-    shortcut: {
-        // 'ml-auto text-xs native:text-sm tracking-widest text-muted-foreground',
-        marginLeft: 'auto',
-        color: theme.colors.fgMuted,
-        ...typography(theme, 'label'),
-    },
-    separator: ({ gap = 'xxs' }: { gap?: number | Space } = {}) => {
-        return {
-            // '-mx-1 my-1 h-px bg-border'
-            height: 1,
-            backgroundColor: theme.colors.line2,
-            marginLeft: -theme.gap(gap),
-            marginTop: theme.gap(gap),
-            marginBottom: theme.gap(gap),
-        }
-    },
-    label: ({ inset }) => ({
-        ...typography(theme, 'label'),
-        color: theme.colors.fg,
-        paddingLeft: inset ? theme.space.lg : theme.space.default,
-        paddingRight: theme.space.default,
-        paddingTop: theme.space.xs,
-        paddingBottom: theme.space.xs,
-        _web: {
-            cursor: 'default',
-        },
-    }),
-    radioIndicator: {
-        backgroundColor: theme.colors.bg,
-        borderRadius: theme.radii.full,
-        ...getSizeVariant(8),
-    },
+    // shortcut: {
+    //     // 'ml-auto text-xs native:text-sm tracking-widest text-muted-foreground',
+    //     marginLeft: 'auto',
+    //     color: theme.colors.fgMuted,
+    //     ...typography(theme, 'label'),
+    // },
+    // separator: ({ gap = 'xxs' }: { gap?: number | Space } = {}) => {
+    //     return {
+    //         // '-mx-1 my-1 h-px bg-border'
+    //         height: 1,
+    //         backgroundColor: theme.colors.line2,
+    //         marginLeft: -theme.gap(gap),
+    //         marginTop: theme.gap(gap),
+    //         marginBottom: theme.gap(gap),
+    //     }
+    // },
+    // label: ({ inset }) => ({
+    //     ...typography(theme, 'label'),
+    //     color: theme.colors.fg,
+    //     paddingLeft: inset ? theme.space.lg : theme.space.default,
+    //     paddingRight: theme.space.default,
+    //     paddingTop: theme.space.xs,
+    //     paddingBottom: theme.space.xs,
+    //     _web: {
+    //         cursor: 'default',
+    //     },
+    // }),
+    // radioIndicator: {
+    //     backgroundColor: theme.colors.bg,
+    //     borderRadius: theme.radii.full,
+    //     ...getSizeVariant(8),
+    // },
     toggleInputItem: {
         ...theme.utils.flexCenter,
         position: 'absolute',
@@ -280,7 +289,7 @@ const styles = StyleSheet.create(theme => ({
             pointerEvents: disabled ? 'none' : undefined,
         },
     }),
-    itemContext: ({ disabled, inset }) => ({
+    itemContext: {
         // select-none text-sm native:text-lg text-popover-foreground web:group-focus:text-accent-foreground
         userSelect: 'none',
         color: theme.colors.componentFg,
@@ -288,8 +297,8 @@ const styles = StyleSheet.create(theme => ({
         _focus: {
             color: theme.colors.accent.actionDefault,
         },
-    }),
-    content: {
+    },
+    content: ({ open }) => ({
         // open ?
         //     'web:animate-in web:fade-in-0 web:zoom-in-95'
         // :   'web:animate-out web:fade-out-0 web:zoom-out-95',
@@ -302,8 +311,14 @@ const styles = StyleSheet.create(theme => ({
         padding: theme.space.xxs,
         boxShadow: theme.boxShadows.md,
         ...getBorder(theme, true),
-    },
-    subcontent: {
+        _web: {
+            _classNames:
+                open ?
+                    ['fade-in', 'zoom-in', 'zoom-in-95']
+                :   ['fade-out', 'zoom-out', 'zoom-out-95'],
+        },
+    }),
+    subcontent: ({ open }) => ({
         // open ?
         //     'web:animate-in web:fade-in-0 web:zoom-in-95'
         // :   'web:animate-out web:fade-out-0 web:zoom-out ',
@@ -316,7 +331,10 @@ const styles = StyleSheet.create(theme => ({
         padding: theme.space.xxs,
         boxShadow: theme.boxShadows.md,
         ...getBorder(theme, true),
-    },
+        _web: {
+            _classNames: open ? ['fade-in', 'zoom-in', 'zoom-in-95'] : ['fade-out', 'zoom-out'],
+        },
+    }),
     subtriggerWrapper: ({ open }) => ({
         color: open ? theme.colors.primary.actionDefault : theme.colors.accent.actionDefault,
         userSelect: 'none',

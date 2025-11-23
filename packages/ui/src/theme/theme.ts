@@ -1,10 +1,9 @@
 import { get, isNumber } from 'es-toolkit/compat'
-import { StyleSheet } from 'react-native-unistyles'
-import { Get } from 'type-fest'
+import { StyleSheet, useUnistyles } from 'react-native-unistyles'
 
 import { Config } from '../config'
 import { breakpoints } from '../design-system/design-tokens/breakpoints'
-import { colors } from '../design-system/design-tokens/colors.native'
+import { colors, ColorToken, ColorValue } from '../design-system/design-tokens/colors.native'
 import { containers } from '../design-system/design-tokens/containers'
 import { radii } from '../design-system/design-tokens/radii'
 import { boxShadows, shadows } from '../design-system/design-tokens/shadows'
@@ -23,11 +22,19 @@ import {
     TypographyDefinitions,
 } from '../design-system/design-tokens/utils'
 import { zIndices } from '../design-system/design-tokens/z-indices'
-import { KeyPathOf } from '../types/common'
 import { absoluteFill, flexCenter } from './theme.utils'
 
 const typography = _typography as TypographyDefinitions
-const { light, dark, ...colorSchemes } = colors
+const { light, dark, ...colorVariants } = colors
+
+type GetColor = <Token extends ColorToken>(token: Token) => ColorValue
+const getColor: GetColor = <Token extends ColorToken>(token: Token): ColorValue => {
+    const color = get(colors, token)
+    if (!color) {
+        throw new Error(`Color token "${token}" not found in theme colors.`)
+    }
+    return color as ColorValue
+}
 
 const themeCommon = {
     boxShadows: getShadowStyles(boxShadows),
@@ -54,13 +61,7 @@ const themeCommon = {
     utils: {
         absoluteFill,
         flexCenter,
-        getColor: <Token extends KeyPathOf<typeof colors>>(
-            token: Token,
-        ): Get<typeof colors, Token> => {
-            const color = get(colors, token)
-            if (color) return color as Get<typeof colors, Token>
-            throw new Error(`Color token "${token}" not found in theme colors.`)
-        },
+        getColor,
         getSize: (token: SizeToken) => {
             const sizeIndex = sizes.findIndex(sz => sz === token)
             if (sizeIndex !== -1) {
@@ -76,20 +77,27 @@ const themeCommon = {
     },
 }
 
-const lightColors = Object.assign({}, light, colorSchemes)
-const darkColors = Object.assign({}, dark, colorSchemes)
+const lightColors = Object.assign({}, light, colorVariants)
+const darkColors = Object.assign({}, dark, colorVariants)
+
+export const colorSchemes = {
+    light: lightColors,
+    dark: darkColors,
+}
 
 const lightTheme = {
     colors: lightColors,
     ...themeCommon,
 }
+Object.defineProperty(lightTheme, 'name', { value: 'light' })
 
 const darkTheme = {
     colors: darkColors,
     ...themeCommon,
 }
+Object.defineProperty(darkTheme, 'name', { value: 'dark' })
 
-const appThemes = {
+export const appThemes = {
     light: lightTheme,
     dark: darkTheme,
 }
@@ -107,6 +115,14 @@ StyleSheet.configure({
     themes: appThemes,
     breakpoints,
     settings: {
-        initialTheme: 'light',
+        // WARNING: (per Unistyles docs) Setting initial theme and enabling adaptive themes at
+        // the same time will throw an error as this options are mutually exclusive.
+        adaptiveThemes: true,
+        // initialTheme: 'light',
     },
 })
+
+export function getInverseColorScheme() {
+    const { colorScheme } = useUnistyles().rt
+    return colorScheme !== 'dark' ? darkColors : lightColors
+}

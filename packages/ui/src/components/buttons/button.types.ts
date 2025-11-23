@@ -1,14 +1,14 @@
 import type { ReactNode } from 'react'
 import type { TouchableWithoutFeedbackProps } from 'react-native'
 
-import { ColorScheme } from '../../design-system/design-tokens/colors.native'
+import { ColorVariantToken } from '../../design-system/design-tokens/colors.native'
 import { type Color } from '../../theme/theme.types'
-import type { IconName } from '../icon'
 import { SlottablePressableProps } from '../primitives/types'
+import type { IconName } from '../ui/icon'
 
 export type ButtonSize = 'small' | 'normal' | 'large'
 
-export type ButtonColor = ColorScheme | Color
+export type ButtonColor = ColorVariantToken | Color
 
 export type ButtonVariant = 'filled' | 'soft' | 'outlined' | 'plain'
 

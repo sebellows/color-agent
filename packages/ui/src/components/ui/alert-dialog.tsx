@@ -1,10 +1,10 @@
 import * as React from 'react'
-import { View } from 'react-native'
+import { Platform, View } from 'react-native'
 
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated'
 import { StyleSheet } from 'react-native-unistyles'
 
 import { PropsWithVariant } from '../../types'
-import { isWeb } from '../../utils'
 import * as AlertDialogPrimitive from '../primitives/alert-dialog'
 import { buttonStyles } from './button'
 import { TextStyleContext } from './text'
@@ -15,18 +15,38 @@ const AlertDialogTrigger = AlertDialogPrimitive.Trigger
 
 const AlertDialogPortal = AlertDialogPrimitive.Portal
 
-const AlertDialogOverlay = ({ ref, style, ...props }: AlertDialogPrimitive.OverlayProps) => {
+const AlertDialogOverlayWeb = ({ ref, style, ...props }: AlertDialogPrimitive.OverlayProps) => {
     const { open } = AlertDialogPrimitive.useRootContext()
     return (
         <AlertDialogPrimitive.Overlay
-            style={[styles.overlay({ open }), style]}
+            style={[styles.overlay, styles.overlayWeb({ open }), style]}
             {...props}
             ref={ref}
-            asChild={!isWeb}
         />
     )
 }
-AlertDialogOverlay.displayName = 'AlertDialogOverlay'
+AlertDialogOverlayWeb.displayName = 'AlertDialogOverlayWeb'
+
+const AlertDialogOverlayNative = ({
+    ref,
+    children,
+    style,
+    ...props
+}: AlertDialogPrimitive.OverlayProps) => {
+    return (
+        <AlertDialogPrimitive.Overlay style={[styles.overlay, style]} {...props} ref={ref} asChild>
+            <Animated.View entering={FadeIn.duration(150)} exiting={FadeOut.duration(150)}>
+                {children}
+            </Animated.View>
+        </AlertDialogPrimitive.Overlay>
+    )
+}
+AlertDialogOverlayNative.displayName = 'AlertDialogOverlayNative'
+
+const AlertDialogOverlay = Platform.select({
+    web: AlertDialogOverlayWeb,
+    default: AlertDialogOverlayNative,
+})
 
 const AlertDialogContent = ({
     ref,
@@ -137,7 +157,7 @@ const styles = StyleSheet.create(theme => ({
         },
         gap: theme.gap(2),
     },
-    overlay: ({ open }) => ({
+    overlay: {
         ...StyleSheet.absoluteFillObject,
         justifyContent: 'center',
         alignItems: 'center',
@@ -145,10 +165,10 @@ const styles = StyleSheet.create(theme => ({
         zIndex: 50,
         backgroundColor: theme.colors.bgOverlay,
         borderRadius: theme.radii.lg,
+    },
+    overlayWeb: ({ open }) => ({
         _web: {
-            transitionProperty: 'opacity',
-            transitionDuration: '150ms',
-            opacity: open ? 1 : 0,
+            _classNames: open ? ['fade-in'] : ['fade-out'],
         },
     }),
     content: ({ open }) => ({
@@ -161,10 +181,10 @@ const styles = StyleSheet.create(theme => ({
         boxShadow: theme.boxShadows.lg,
         _web: {
             outlineStyle: 'none',
-            transitionProperty: 'all',
-            transitionDuration: '200ms',
-            opacity: open ? 1 : 0,
-            transform: open ? 'scale(1)' : 'scale(0.95)',
+            _classNames:
+                open ?
+                    ['fade-in', 'zoom-in', 'zoom-in-95']
+                :   ['fade-out', 'zoom-out', 'zoom-out-95'],
         },
     }),
 }))

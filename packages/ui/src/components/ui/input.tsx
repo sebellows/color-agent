@@ -12,6 +12,8 @@ type InputProps = Omit<React.ComponentPropsWithRef<RNTextInput>, 'placeholderTex
     placeholderTextColor?: TextInputProps['placeholderTextColor'] | Color
 }
 
+const { input } = uiStyles
+
 const Input = ({ ref, style, placeholderTextColor, ...props }: InputProps) => {
     const { theme } = useUnistyles()
     const placeholderColor = getColor(theme, placeholderTextColor ?? 'fgMuted')
@@ -19,7 +21,7 @@ const Input = ({ ref, style, placeholderTextColor, ...props }: InputProps) => {
     return (
         <TextInput
             ref={ref}
-            style={[uiStyles.input(props), style]}
+            style={[input.main(props), style]}
             placeholderTextColor={placeholderColor}
             {...props}
         />

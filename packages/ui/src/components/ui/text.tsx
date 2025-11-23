@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { Text as RNText, TextStyle } from 'react-native'
 
-import { StyleSheet, useUnistyles } from 'react-native-unistyles'
+import { StyleSheet } from 'react-native-unistyles'
 
-import { getColorVariants, typography } from '../../design-system/design-system.utils'
+import { getColorVariants, getTypographyVariants } from '../../design-system/design-system.utils'
 import { TypographyToken } from '../../design-system/design-tokens/typography-token'
 import { Color } from '../../theme/theme.types'
 import { Slot } from '../primitives/slot'
@@ -29,25 +29,26 @@ const Text = ({
     align = 'left',
     uppercase = false,
     color = 'fg',
+    fontStyle,
     variant = 'body',
     style,
     ...props
 }: TextProps) => {
     const { variant: ctxVariant, ...styleContext } = React.useContext(TextStyleContext) ?? {}
-    const { theme } = useUnistyles()
 
     styles.useVariants({
         align,
         uppercase,
         color,
+        fontStyle,
         variant,
     })
 
-    const textStyles = typography(theme, ctxVariant ?? variant)
+    // const textStyles = typography(theme, ctxVariant ?? variant)
 
     const Component = asChild ? Slot.Text : RNText
 
-    return <Component ref={ref} style={[styles.text, styleContext, textStyles, style]} {...props} />
+    return <Component ref={ref} style={[styles.text, styleContext, style]} {...props} />
 }
 
 Text.displayName = 'Text'
@@ -55,12 +56,7 @@ Text.displayName = 'Text'
 const styles = StyleSheet.create(theme => ({
     text: {
         variants: {
-            variant: Object.fromEntries(
-                Object.keys(theme.typography).map(key => [
-                    key,
-                    typography(theme, key as TypographyToken),
-                ]),
-            ),
+            variant: getTypographyVariants(theme),
             color: getColorVariants(theme),
             fontStyle: {
                 normal: { fontStyle: 'normal' },

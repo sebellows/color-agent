@@ -8,6 +8,7 @@ import { RNText } from '../../types'
 import { isWeb } from '../../utils'
 import * as ContextMenuPrimitive from '../primitives/context-menu'
 import { Icon } from './icon'
+import { uiStyles } from './styles'
 import { TextStyleContext } from './text'
 
 const ContextMenu = ContextMenuPrimitive.Root
@@ -30,7 +31,7 @@ const ContextMenuSubTrigger = ({
         : 'chevron-down'
 
     return (
-        <TextStyleContext.Provider value={styles.subtriggerContext({ open })}>
+        <TextStyleContext.Provider value={uiStyles.subtrigger.textContext({ open })}>
             <ContextMenuPrimitive.SubTrigger
                 ref={ref}
                 style={[styles.subtrigger({ inset, open }), style as StyleProp<ViewStyle>]}
@@ -66,12 +67,19 @@ const ContextMenuContent = ({
     overlayStyle?: StyleProp<ViewStyle>
     portalHost?: string
 }) => {
+    const { open } = ContextMenuPrimitive.useRootContext()
+
     return (
         <ContextMenuPrimitive.Portal hostName={portalHost}>
             <ContextMenuPrimitive.Overlay style={[overlayStyle, styles.overlay]}>
                 <ContextMenuPrimitive.Content
                     ref={ref}
-                    style={[styles.content, style] as ContextMenuPrimitive.ContentProps['style']}
+                    style={
+                        [
+                            styles.content({ open }),
+                            style,
+                        ] as ContextMenuPrimitive.ContentProps['style']
+                    }
                     {...props}
                 />
             </ContextMenuPrimitive.Overlay>
@@ -134,10 +142,10 @@ const ContextMenuRadioItem = ({
 }: ContextMenuPrimitive.RadioItemProps) => (
     <ContextMenuPrimitive.RadioItem
         ref={ref}
-        style={[styles.radio({ disabled: props?.disabled }), style as StyleProp<ViewStyle>]}
+        style={[uiStyles.radio.main({ disabled: props?.disabled }), style as StyleProp<ViewStyle>]}
         {...props}
     >
-        <View style={styles.radioIndicator}>
+        <View style={uiStyles.radio.indicator()}>
             <ContextMenuPrimitive.ItemIndicator>
                 <View style={styles.indicatorInner} />
             </ContextMenuPrimitive.ItemIndicator>
@@ -153,72 +161,29 @@ const ContextMenuLabel = ({
     inset,
     ...props
 }: ContextMenuPrimitive.LabelProps & { inset?: boolean }) => (
-    <ContextMenuPrimitive.Label ref={ref} style={[styles.label({ inset }), style]} {...props} />
+    <ContextMenuPrimitive.Label
+        ref={ref}
+        style={[uiStyles.label.main({ inset }), style]}
+        {...props}
+    />
 )
 ContextMenuLabel.displayName = ContextMenuPrimitive.Label.displayName
 
 const ContextMenuSeparator = ({ ref, style, ...props }: ContextMenuPrimitive.SeparatorProps) => (
-    <ContextMenuPrimitive.Separator ref={ref} style={[styles.separator, style]} {...props} />
+    <ContextMenuPrimitive.Separator
+        ref={ref}
+        style={[uiStyles.separator.main(), style]}
+        {...props}
+    />
 )
 ContextMenuSeparator.displayName = ContextMenuPrimitive.Separator.displayName
 
 const ContextMenuShortcut = ({ style, ...props }: React.ComponentPropsWithoutRef<RNText>) => {
-    return <Text style={[styles.shortcut, style]} {...props} />
+    return <Text style={[uiStyles.shortcut.main, style]} {...props} />
 }
 ContextMenuShortcut.displayName = 'ContextMenuShortcut'
 
 const styles = StyleSheet.create(theme => ({
-    separator: {
-        height: 1,
-        marginLeft: 0 - theme.space.xxs,
-        marginTop: theme.space.xxs,
-        marginBottom: theme.space.xxs,
-        backgroundColor: theme.colors.line2,
-    },
-    shortcut: {
-        marginLeft: 'auto',
-        color: theme.colors.fgMuted,
-        ...typography(theme, 'labelSmall'),
-    },
-    label: ({ inset }) => ({
-        ...typography(theme, 'bodySmallSemiBold'),
-        paddingLeft: inset ? theme.space.lg : theme.space.default,
-        paddingRight: theme.space.default,
-        paddingTop: theme.space.xs,
-        paddingBottom: theme.space.xs,
-        _web: {
-            cursor: 'default',
-        },
-    }),
-    radio: ({ disabled }) => ({
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        position: 'relative',
-        borderRadius: theme.radii.sm,
-        paddingLeft: theme.space.lg,
-        paddingRight: theme.space.xs,
-        paddingTop: theme.space.xs,
-        opacity: disabled ? 0.5 : undefined,
-        pointerEvents: disabled ? 'none' : undefined,
-        _active: {
-            backgroundColor: theme.colors.accent.bg,
-        },
-        _web: {
-            cursor: 'default',
-            outline: 'none',
-            _focus: {
-                backgroundColor: theme.colors.accent.bg,
-            },
-        },
-    }),
-    radioIndicator: {
-        ...theme.utils.flexCenter,
-        position: 'absolute',
-        left: theme.space.xxs,
-        width: 14,
-        height: 14,
-    },
     indicatorInner: {
         backgroundColor: theme.colors.fg,
         width: 8,
@@ -290,7 +255,7 @@ const styles = StyleSheet.create(theme => ({
     overlay: {
         ...(isWeb ? theme.utils.absoluteFill : {}),
     },
-    content: {
+    content: ({ open }: { open?: boolean }) => ({
         zIndex: theme.zIndices[50],
         minWidth: 128,
         overflow: 'hidden',
@@ -299,7 +264,14 @@ const styles = StyleSheet.create(theme => ({
         borderColor: theme.colors.line2,
         backgroundColor: theme.colors.componentBg,
         boxShadow: theme.boxShadows.md,
-    },
+
+        _web: {
+            _classNames:
+                open ?
+                    ['fade-in', 'zoom-in', 'zoom-in-95']
+                :   ['fade-out', 'zoom-out', 'zoom-out-95'],
+        },
+    }),
     subContent: ({ open }: { open?: boolean }) => ({
         zIndex: theme.zIndices[50],
         minWidth: 128,
@@ -310,12 +282,10 @@ const styles = StyleSheet.create(theme => ({
         borderRadius: theme.radii.md,
         padding: theme.space.xxs,
         boxShadow: theme.boxShadows.md,
-    }),
-    subtriggerContext: ({ open }: { open?: boolean }) => ({
-        // select-none text-sm native:text-lg text-primary
-        color: open ? theme.colors.accent.fg : theme.colors.primary.fg,
-        userSelect: 'none',
-        ...typography(theme, 'body'),
+
+        _web: {
+            _classNames: open ? ['fade-in', 'zoom-in', 'zoom-in-95'] : ['fade-out', 'zoom-out'],
+        },
     }),
     subtrigger: ({ inset, open }: { inset?: boolean; open?: boolean }) => ({
         ...theme.utils.flexCenter,

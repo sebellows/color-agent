@@ -9,7 +9,7 @@ import {
     View,
 } from 'react-native'
 
-import { Icon } from '../../ui/icon'
+import { Icon as UiIcon } from '../../ui/icon'
 import {
     useAugmentedRef,
     useControllableState,
@@ -19,29 +19,29 @@ import {
 import { Portal as RNPortal } from '../portal'
 import { Slot } from '../slot'
 import {
-    SelectContentProps,
-    SelectGroupProps,
-    SelectIconProps,
-    SelectItemIndicatorProps,
-    SelectItemProps,
-    SelectItemTextProps,
-    SelectLabelProps,
-    SelectOverlayProps,
-    SelectPortalProps,
-    SelectRootProps,
-    SelectScrollButtonProps,
-    SelectSeparatorProps,
-    SelectTriggerProps,
-    SelectValueProps,
-    SelectViewportProps,
+    ContentProps,
+    GroupProps,
+    IconProps,
+    ItemIndicatorProps,
+    ItemProps,
+    ItemTextProps,
+    LabelProps,
+    OverlayProps,
+    PortalProps,
+    RootProps,
+    ScrollButtonProps,
+    SeparatorProps,
     SharedRootContext,
+    TriggerProps,
+    ValueProps,
+    ViewportProps,
 } from './select.types'
 
 /**************************************************
  * Select
  **************************************************/
 
-interface SelectContextValue extends SharedRootContext {
+interface ContextValue extends SharedRootContext {
     open: boolean
     onOpenChange: (open: boolean) => void
     triggerPosition: LayoutPosition | null
@@ -51,7 +51,7 @@ interface SelectContextValue extends SharedRootContext {
     nativeID: string
 }
 
-const SelectContext = React.createContext<SelectContextValue | null>(null)
+const SelectContext = React.createContext<ContextValue | null>(null)
 
 const Root = ({
     ref,
@@ -62,7 +62,7 @@ const Root = ({
     onOpenChange: onOpenChangeProp,
     disabled,
     ...viewProps
-}: SelectRootProps) => {
+}: RootProps) => {
     const nativeID = React.useId()
     const [value, onValueChange] = useControllableState({
         prop: valueProp,
@@ -101,7 +101,7 @@ const Root = ({
 
 Root.displayName = 'Select.Native'
 
-function useSelectContext() {
+function useRootContext() {
     const context = React.useContext(SelectContext)
     if (!context) {
         throw new Error(
@@ -121,8 +121,8 @@ const Trigger = ({
     onPress: onPressProp,
     disabled = false,
     ...props
-}: SelectTriggerProps) => {
-    const { open, onOpenChange, disabled: disabledRoot, setTriggerPosition } = useSelectContext()
+}: TriggerProps) => {
+    const { open, onOpenChange, disabled: disabledRoot, setTriggerPosition } = useRootContext()
 
     const augmentedRef = useAugmentedRef({
         ref: ref!,
@@ -170,8 +170,8 @@ Trigger.displayName = 'SelectTrigger.Native'
  * Select Value
  **************************************************/
 
-const Value = ({ ref, asChild, placeholder, ...props }: SelectValueProps) => {
-    const { value } = useSelectContext()
+const Value = ({ ref, asChild, placeholder, ...props }: ValueProps) => {
+    const { value } = useRootContext()
 
     const Component = asChild ? Slot.Text : Text
 
@@ -188,7 +188,7 @@ Value.displayName = 'SelectValue.Native'
  * Select Icon
  **************************************************/
 
-const SelectIcon = ({
+const Icon = ({
     ref,
     asChild,
     name,
@@ -197,24 +197,24 @@ const SelectIcon = ({
     style: iconStyle,
     selectIconWrapperStyle,
     ...props
-}: SelectIconProps) => {
+}: IconProps) => {
     const Component = asChild ? Slot.View : View
 
     return (
         <Component aria-hidden style={selectIconWrapperStyle} {...props}>
-            <Icon name={name} color={color} size={size} style={iconStyle} />
+            <UiIcon name={name} color={color} size={size} style={iconStyle} />
         </Component>
     )
 }
 
-SelectIcon.displayName = 'SelectIcon.Native'
+Icon.displayName = 'SelectIcon.Native'
 
 /**************************************************
  * Select Portal
  **************************************************/
 
-function Portal({ forceMount, hostName, children }: SelectPortalProps) {
-    const value = useSelectContext()
+function Portal({ forceMount, hostName, children }: PortalProps) {
+    const value = useRootContext()
 
     if (!value.triggerPosition || (!forceMount && !value.open)) return null
 
@@ -238,8 +238,8 @@ const Overlay = ({
     onPress: OnPressProp,
     closeOnPress = true,
     ...props
-}: SelectOverlayProps) => {
-    const { open, onOpenChange, setTriggerPosition, setContentLayout } = useSelectContext()
+}: OverlayProps) => {
+    const { open, onOpenChange, setTriggerPosition, setContentLayout } = useRootContext()
 
     function onPress(event: GestureResponderEvent) {
         if (closeOnPress) {
@@ -282,7 +282,7 @@ const Content = ({
     disablePositioningStyle,
     position: _position,
     ...props
-}: SelectContentProps) => {
+}: ContentProps) => {
     const {
         open,
         onOpenChange,
@@ -291,7 +291,7 @@ const Content = ({
         triggerPosition,
         setContentLayout,
         setTriggerPosition,
-    } = useSelectContext()
+    } = useRootContext()
 
     React.useEffect(() => {
         const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -356,7 +356,7 @@ function onStartShouldSetResponder() {
  * Select Item
  **************************************************/
 
-const SelectItemContext = React.createContext<{
+const ItemContext = React.createContext<{
     itemValue: string
     label: string
 } | null>(null)
@@ -370,9 +370,9 @@ const Item = ({
     disabled = false,
     closeOnPress = true,
     ...props
-}: SelectItemProps) => {
+}: ItemProps) => {
     const { onOpenChange, value, onValueChange, setTriggerPosition, setContentLayout } =
-        useSelectContext()
+        useRootContext()
 
     function onPress(event: GestureResponderEvent) {
         if (closeOnPress) {
@@ -387,7 +387,7 @@ const Item = ({
 
     const Component = asChild ? Slot.Pressable : Pressable
     return (
-        <SelectItemContext.Provider value={{ itemValue, label }}>
+        <ItemContext.Provider value={{ itemValue, label }}>
             <Component
                 ref={ref}
                 role="option"
@@ -402,17 +402,17 @@ const Item = ({
                 }}
                 {...props}
             />
-        </SelectItemContext.Provider>
+        </ItemContext.Provider>
     )
 }
 
 Item.displayName = 'SelectItem.Native'
 
 function useItemContext() {
-    const context = React.useContext(SelectItemContext)
+    const context = React.useContext(ItemContext)
     if (!context) {
         throw new Error(
-            'SelectItem compound components cannot be rendered outside of a SelectItem component',
+            'SelectItem compound components cannot be rendered outside of a Item component',
         )
     }
     return context
@@ -422,7 +422,7 @@ function useItemContext() {
  * Select Item Text
  **************************************************/
 
-const ItemText = ({ ref, asChild, ...props }: SelectItemTextProps) => {
+const ItemText = ({ ref, asChild, ...props }: ItemTextProps) => {
     const { label } = useItemContext()
 
     const Component = asChild ? Slot.Text : Text
@@ -440,9 +440,9 @@ ItemText.displayName = 'SelectItemText.Native'
  * Select Item Indicator
  **************************************************/
 
-const ItemIndicator = ({ ref, asChild, forceMount, ...props }: SelectItemIndicatorProps) => {
+const ItemIndicator = ({ ref, asChild, forceMount, ...props }: ItemIndicatorProps) => {
     const { itemValue } = useItemContext()
-    const { value } = useSelectContext()
+    const { value } = useRootContext()
 
     if (!forceMount) {
         if (value?.value !== itemValue) {
@@ -460,7 +460,7 @@ ItemIndicator.displayName = 'SelectItemIndicator.Native'
  * Select Group
  **************************************************/
 
-const Group = ({ ref, asChild, ...props }: SelectGroupProps) => {
+const Group = ({ ref, asChild, ...props }: GroupProps) => {
     const Component = asChild ? Slot.View : View
     return <Component ref={ref} role="group" {...props} />
 }
@@ -471,7 +471,7 @@ Group.displayName = 'SelectGroup.Native'
  * Select Label
  **************************************************/
 
-const Label = ({ ref, asChild, ...props }: SelectLabelProps) => {
+const Label = ({ ref, asChild, ...props }: LabelProps) => {
     const Component = asChild ? Slot.Text : Text
     return <Component ref={ref} {...props} />
 }
@@ -482,33 +482,33 @@ Label.displayName = 'SelectLabel.Native'
  * Select Separator
  **************************************************/
 
-const Separator = ({ ref, asChild, ...props }: SelectSeparatorProps) => {
+const Separator = ({ ref, asChild, ...props }: SeparatorProps) => {
     const Component = asChild ? Slot.View : View
     return <Component ref={ref} {...props} />
 }
 
 Separator.displayName = 'SelectSeparator.Native'
 
-const ScrollUpButton = ({ children }: SelectScrollButtonProps) => {
+const ScrollUpButton = ({ children }: ScrollButtonProps) => {
     return <>{children}</>
 }
 ScrollUpButton.displayName = 'SelectScrollUpButton.Native'
 
-const ScrollDownButton = ({ children }: SelectScrollButtonProps) => {
+const ScrollDownButton = ({ children }: ScrollButtonProps) => {
     return <>{children}</>
 }
 ScrollDownButton.displayName = 'SelectScrollDownButton.Native'
 
-const Viewport = ({ children }: SelectViewportProps) => {
+const Viewport = ({ children }: ViewportProps) => {
     return <>{children}</>
 }
 Viewport.displayName = 'SelectViewport.Native'
 
-export const Select = {
+export {
     Root,
     Content,
     Group,
-    Icon: SelectIcon,
+    Icon,
     Item,
     ItemIndicator,
     ItemText,
@@ -521,4 +521,5 @@ export const Select = {
     Trigger,
     Value,
     Viewport,
+    useRootContext,
 }
