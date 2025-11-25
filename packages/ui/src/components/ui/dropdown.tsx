@@ -5,14 +5,12 @@ import { StyleSheet, useUnistyles } from 'react-native-unistyles'
 
 import { getBorder, getSizeVariant, typography } from '../../design-system/design-system.utils'
 import { SizeToken } from '../../design-system/design-tokens/sizes'
-import { Space } from '../../theme/theme.types'
 import { RNText } from '../../types'
 import { isWeb } from '../../utils'
 import * as DropdownMenuPrimitive from '../primitives/dropdown'
 import { Icon } from './icon'
 import { UiLabelProps, uiStyles } from './styles'
 import { TextStyleContext } from './text'
-import { WithInset, WithThemeStyleProps } from './util.types'
 
 const DropdownMenu = DropdownMenuPrimitive.Root
 const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger
@@ -159,7 +157,7 @@ const DropdownMenuRadioItem = ({
     >
         <View style={[uiStyles.radio.indicator(), getSizeVariant(iconSize)]}>
             <DropdownMenuPrimitive.ItemIndicator>
-                <View style={uiStyles.radio.indicatorInner()} />
+                <View style={uiStyles.radio.indicatorInner() as ViewStyle} />
             </DropdownMenuPrimitive.ItemIndicator>
         </View>
         <>{children}</>
@@ -198,38 +196,6 @@ const DropdownMenuShortcut = ({ style, ...props }: React.ComponentPropsWithoutRe
 DropdownMenuShortcut.displayName = 'DropdownMenuShortcut'
 
 const styles = StyleSheet.create(theme => ({
-    // shortcut: {
-    //     // 'ml-auto text-xs native:text-sm tracking-widest text-muted-foreground',
-    //     marginLeft: 'auto',
-    //     color: theme.colors.fgMuted,
-    //     ...typography(theme, 'label'),
-    // },
-    // separator: ({ gap = 'xxs' }: { gap?: number | Space } = {}) => {
-    //     return {
-    //         // '-mx-1 my-1 h-px bg-border'
-    //         height: 1,
-    //         backgroundColor: theme.colors.line2,
-    //         marginLeft: -theme.gap(gap),
-    //         marginTop: theme.gap(gap),
-    //         marginBottom: theme.gap(gap),
-    //     }
-    // },
-    // label: ({ inset }) => ({
-    //     ...typography(theme, 'label'),
-    //     color: theme.colors.fg,
-    //     paddingLeft: inset ? theme.space.lg : theme.space.default,
-    //     paddingRight: theme.space.default,
-    //     paddingTop: theme.space.xs,
-    //     paddingBottom: theme.space.xs,
-    //     _web: {
-    //         cursor: 'default',
-    //     },
-    // }),
-    // radioIndicator: {
-    //     backgroundColor: theme.colors.bg,
-    //     borderRadius: theme.radii.full,
-    //     ...getSizeVariant(8),
-    // },
     toggleInputItem: {
         ...theme.utils.flexCenter,
         position: 'absolute',

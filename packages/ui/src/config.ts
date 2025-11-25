@@ -1,22 +1,21 @@
 import { AnyRecord, getKeys } from '@coloragent/utils'
 import { merge } from 'es-toolkit'
 import { get, set } from 'es-toolkit/compat'
-import { Get, LiteralUnion, Paths } from 'type-fest'
-import { ToString } from 'type-fest/source/internal'
+import { Get, Paths } from 'type-fest'
 
 import { StorageEngine, StorageRegistry } from './lib/storage'
 
 const SPACING_UNIT = 4 as const
 
-type KeyPath<T extends AnyRecord> =
-    | readonly string[]
-    | LiteralUnion<
-          ToString<
-              | Paths<T, { bracketNotation: false; maxRecursionDepth: 2 }>
-              | Paths<T, { bracketNotation: true; maxRecursionDepth: 2 }>
-          >,
-          string
-      >
+// type KeyPath<T extends AnyRecord> =
+//     | readonly string[]
+//     | LiteralUnion<
+//           ToString<
+//               | Paths<T, { bracketNotation: false; maxRecursionDepth: 2 }>
+//               | Paths<T, { bracketNotation: true; maxRecursionDepth: 2 }>
+//           >,
+//           string
+//       >
 
 export type Configuration = {
     storage: {
@@ -54,7 +53,7 @@ const isNestedPath = (path: string | symbol | string[]) => {
     return Array.isArray(path) && path.length > 0
 }
 
-const isNestedConfigPath = <T extends AnyRecord>(path: KeyPath<T>) => {
+const isNestedConfigPath = <T extends AnyRecord>(path: Paths<T>) => {
     if (typeof path === 'string' && path.includes('.')) {
         return path.split('.').length > 1
     }
@@ -90,7 +89,7 @@ const handler: ProxyHandler<Configuration> = {
 }
 
 class ConfigImpl<TConfig extends Configuration = Configuration> {
-    private static _instance: ConfigImpl
+    // private static _instance: ConfigImpl
     private _config: TConfig
 
     private constructor(config: TConfig) {
@@ -98,28 +97,29 @@ class ConfigImpl<TConfig extends Configuration = Configuration> {
     }
 
     static getInstance<TConfig extends Configuration = Configuration>(config: TConfig): ConfigImpl {
-        if (!ConfigImpl._instance) {
-            ConfigImpl._instance = new ConfigImpl(config)
-        }
-        return ConfigImpl._instance
+        return new ConfigImpl(config)
+        // if (!ConfigImpl._instance) {
+        //     ConfigImpl._instance = new ConfigImpl(config)
+        // }
+        // return ConfigImpl._instance
     }
 
-    get<TPath extends KeyPath<TConfig>>(key: TPath): Get<Configuration, TPath> {
-        if (isNestedConfigPath(key)) {
+    get<TPath extends Paths<TConfig>>(key: TPath): Get<Configuration, TPath> {
+        if (isNestedConfigPath<TConfig>(key)) {
             return get(this._config, key) as Get<Configuration, TPath>
         }
         return this._config[key as keyof Configuration] as Get<Configuration, TPath>
     }
 
-    set<TPath extends KeyPath<TConfig>, TValue>(key: TPath, value: TValue): void {
-        if (isNestedConfigPath(key)) {
+    set<TPath extends Paths<TConfig>, TValue>(key: TPath, value: TValue): void {
+        if (isNestedConfigPath<TConfig>(key)) {
             set(this._config, key, value)
         } else {
             this._config[key as keyof Configuration] = value as any
         }
     }
 
-    has<TPath extends KeyPath<TConfig>>(key: TPath): boolean {
+    has<TPath extends Paths<TConfig>>(key: TPath): boolean {
         return Boolean(this.get(key))
     }
 
@@ -132,7 +132,10 @@ class ConfigImpl<TConfig extends Configuration = Configuration> {
     }
 }
 
-let Config: ConfigImpl
+export const EMPTY_CONFIG = {}
+export type EMPTY_CONFIG = typeof EMPTY_CONFIG
+
+let Config: ConfigImpl = ConfigImpl.getInstance(BaseConfig) // | EMPTY_CONFIG = EMPTY_CONFIG
 
 export function defineConfig<TConfig extends Partial<Configuration>>(customConfig: TConfig) {
     if (Config) {
@@ -147,3 +150,4 @@ export function defineConfig<TConfig extends Partial<Configuration>>(customConfi
 }
 
 export { Config }
+export default Config

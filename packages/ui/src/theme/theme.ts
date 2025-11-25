@@ -7,9 +7,9 @@ import { colors, ColorToken, ColorValue } from '../design-system/design-tokens/c
 import { containers } from '../design-system/design-tokens/containers'
 import { radii } from '../design-system/design-tokens/radii'
 import { boxShadows, shadows } from '../design-system/design-tokens/shadows'
-import { sizes, SizeToken } from '../design-system/design-tokens/sizes'
+import { sizes } from '../design-system/design-tokens/sizes'
 import { spacing, SpacingToken } from '../design-system/design-tokens/spacing'
-import { TypographyToken } from '../design-system/design-tokens/typography-token'
+// import { TypographyToken } from '../design-system/design-tokens/typography-token'
 import { typography as _typography } from '../design-system/design-tokens/typography.native'
 import {
     getFonts,
@@ -27,14 +27,14 @@ import { absoluteFill, flexCenter } from './theme.utils'
 const typography = _typography as TypographyDefinitions
 const { light, dark, ...colorVariants } = colors
 
-type GetColor = <Token extends ColorToken>(token: Token) => ColorValue
-const getColor: GetColor = <Token extends ColorToken>(token: Token): ColorValue => {
-    const color = get(colors, token)
-    if (!color) {
-        throw new Error(`Color token "${token}" not found in theme colors.`)
-    }
-    return color as ColorValue
-}
+// type GetColor = <Token extends ColorToken>(token: Token) => ColorValue
+// const getColor: GetColor = <Token extends ColorToken>(token: Token): ColorValue => {
+//     const color = get(colors, token)
+//     if (!color) {
+//         throw new Error(`Color token "${token}" not found in theme colors.`)
+//     }
+//     return color as ColorValue
+// }
 
 const themeCommon = {
     boxShadows: getShadowStyles(boxShadows),
@@ -61,19 +61,19 @@ const themeCommon = {
     utils: {
         absoluteFill,
         flexCenter,
-        getColor,
-        getSize: (token: SizeToken) => {
-            const sizeIndex = sizes.findIndex(sz => sz === token)
-            if (sizeIndex !== -1) {
-                return { width: sizes[sizeIndex], height: sizes[sizeIndex] }
-            }
-            throw new Error(`There is no size option of ${token} configured in the theme.`)
-        },
-        getTypography: (token: TypographyToken) => {
-            const typo = get(typography, token)
-            if (typo) return typo
-            throw new Error(`Typography token "${token}" not found in theme typography.`)
-        },
+        // getColor,
+        // getSize: (token: SizeToken) => {
+        //     const sizeIndex = sizes.findIndex(sz => sz === token)
+        //     if (sizeIndex !== -1) {
+        //         return { width: sizes[sizeIndex], height: sizes[sizeIndex] }
+        //     }
+        //     throw new Error(`There is no size option of ${token} configured in the theme.`)
+        // },
+        // getTypography: (token: TypographyToken) => {
+        //     const typo = get(typography, token)
+        //     if (typo) return typo
+        //     throw new Error(`Typography token "${token}" not found in theme typography.`)
+        // },
     },
 }
 

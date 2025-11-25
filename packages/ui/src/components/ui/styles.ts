@@ -18,8 +18,8 @@ import { SizeToken } from '../../design-system/design-tokens/sizes'
 import { Color, Space } from '../../theme/theme.types'
 import { isWeb } from '../../utils'
 import { SlottableTextProps } from '../primitives/types'
+import { WithThemeStyleProps } from './style.types'
 import { resolveThemeProps } from './ui.utils'
-import { WithInset, WithThemeStyleProps } from './util.types'
 
 const DEFAULT_SIZE = isWeb ? 40 : 48
 
@@ -153,12 +153,12 @@ const triggerStyles = StyleSheet.create(theme => ({
             _web: {
                 outline: 'none',
                 _active: {
-                    backgroundColor: getColor(theme, 'accent.bg'),
-                    color: getColor(theme, 'accent.fg'),
+                    backgroundColor: getColor(theme, 'accent.bg') as string,
+                    color: getColor(theme, 'accent.fg') as string,
                 },
                 _focus: {
-                    backgroundColor: getColor(theme, 'accent.bg'),
-                    color: getColor(theme, 'accent.fg'),
+                    backgroundColor: getColor(theme, 'accent.bg') as string,
+                    color: getColor(theme, 'accent.fg') as string,
                 },
             },
         }
@@ -351,8 +351,13 @@ const radioStyles = StyleSheet.create(theme => ({
 }))
 
 const checkboxStyles = StyleSheet.create(theme => ({
-    main: <Props extends { disabled?: boolean | null | undefined }>(
-        { disabled }: Props = {} as Props,
+    main: <Props extends WithThemeStyleProps<{ disabled?: boolean | null | undefined }>>(
+        {
+            disabled,
+            justifyContent = 'center',
+            borderRadius = 'sm',
+            padding = {},
+        }: Props = {} as Props,
     ) => ({
         display: 'flex',
         flexDirection: 'row',

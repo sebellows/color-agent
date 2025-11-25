@@ -1,11 +1,17 @@
 import { ColorValue, ViewStyle } from 'react-native'
 
-import { assertUnreachable, getKeys, variadic } from '@coloragent/utils'
+import { assertUnreachable, getKeys } from '@coloragent/utils'
 import ColorIO, { ColorTypes } from 'colorjs.io'
-import { isError, isPlainObject, upperFirst } from 'es-toolkit'
+import { isError, isPlainObject, partial, upperFirst } from 'es-toolkit'
 import { get, isNumber } from 'es-toolkit/compat'
-import { Get, ValueOf } from 'type-fest'
 
+import {
+    BreakpointStyleProp,
+    RingOffsetStyleProps,
+    StylePropValue,
+    ThemeItemVariant,
+} from '../components/ui/style.types'
+import { $Unistyle } from '../lib/unistyles/stylesheet'
 import { Theme } from '../theme/theme'
 import { UnistylesTheme } from '../theme/theme.types'
 import { ActionState, KeyPathOf } from '../types/common'
@@ -20,51 +26,58 @@ import {
     type ColorVariant,
 } from './design-tokens/colors.native'
 import { radii, RadiiToken } from './design-tokens/radii'
-import { boxShadows, ShadowsToken, ShadowToken } from './design-tokens/shadows'
-import { isSizeToken, sizes, SizeToken } from './design-tokens/sizes'
+import { boxShadows, ShadowToken } from './design-tokens/shadows'
+import { sizes, SizeToken } from './design-tokens/sizes'
 import { NegativeSpacingToken, SpacingToken } from './design-tokens/spacing'
 import { TypographyToken } from './design-tokens/typography-token'
 import { typography as typographyTokens } from './design-tokens/typography.native'
 import { TypographyDefinition } from './design-tokens/utils'
 import { ZIndicesToken } from './design-tokens/z-indices'
 
-type ThemeConfigObject = Exclude<UnistylesTheme, Function>
-type ThemeConfigKey = keyof ThemeConfigObject
-type ThemeConfigToken<K extends ThemeConfigKey> = keyof UnistylesTheme[K]
-
-// type ComposedRecord<Key extends PropertyKey, Value = any> = Partial<Record<Key, Value>>
-type BreakpointValues<
-    ThemeKey extends ThemeConfigKey,
-    Token extends keyof UnistylesTheme[ThemeKey] = keyof UnistylesTheme[ThemeKey],
-> = {
-    [Key in BreakpointToken]: Token
-}
-type BreakpointTokenMap<
-    ThemeKey extends ThemeConfigKey,
-    Token extends keyof UnistylesTheme[ThemeKey] = keyof UnistylesTheme[ThemeKey],
-> = BreakpointValues<ThemeKey, Token>
-// type ThemeConfigVariant<T extends PropertyKey> = T | BreakpointTokenMap<T>
-
-export type WithBreakpoints<
-    ThemeKey extends ThemeConfigKey,
-    VariantKey extends ThemeConfigToken<ThemeKey>,
-    Key extends BreakpointToken = BreakpointToken,
-> = { [K in Key]: UnistylesTheme[ThemeKey][VariantKey] }
-
-type ThemeConfigVariant<
-    ThemeKey extends ThemeConfigKey,
-    Token extends ThemeConfigToken<ThemeKey> = ThemeConfigToken<ThemeKey>,
-> = Token | Partial<BreakpointTokenMap<ThemeKey, Token>>
-
 const breakpointKeys = getKeys(breakpoints)
-function isBreakpointTokenMap<T extends ThemeConfigKey>(
-    props: unknown,
-): props is BreakpointTokenMap<T> {
-    return (
-        isPlainObject(props) &&
-        Object.keys(props).every(prop => breakpointKeys.includes(prop as BreakpointToken))
-    )
+
+function parseBreakpointValues<
+    Value,
+    StyleKeys extends $Unistyle.StyleKey,
+    Result = $Unistyle.Values[StyleKeys], // extends any = Value,
+    BpObj = Value extends infer BP extends BreakpointStyleProp<any> ? BP : Value,
+>(
+    obj: BpObj,
+
+    fn: (...args: any[]) => Result,
+    ...args: any[]
+) {
+    if (!isBreakpointValue(obj)) {
+        return fn(obj, ...args)
+    }
+    return getEntries(obj).reduce((acc, [bp, val]) => {
+        acc[bp] = fn(val, ...args)
+        return acc
+    }, {} as Result)
 }
+
+// function resolveBreakpointThemeValue<
+//     Key extends ThemeKey,
+//     Value extends BreakpointStyleProp<ThemeConfigKey<Key>>,
+// >(
+//     theme: Theme,
+//     value: Value,
+//     parseFn: <TKey extends ThemeConfigKey<Key>>(
+//         theme: Theme,
+//         val: TKey,
+//         ..._args: any[]
+//     ) => Theme[Key][TKey],
+// ) {
+//     return getEntries(value).reduce(
+//         (acc, [bp, v]) => {
+//             if (typeof bp === 'string') {
+//                 acc[bp] = parseFn(theme, v)
+//             }
+//             return acc
+//         },
+//         {} as { [K in keyof Value]: ValueOf<Theme[Key]> },
+//     )
+// }
 
 export function resolveComponentColorScheme<T>(
     scheme: ThemeColorScheme,
@@ -150,18 +163,60 @@ export function setColorAlpha(color: ColorTypes, alpha?: number) {
     return new ColorIO(cs, coords, normalizeAlpha(alpha)).toString()
 }
 
-export function getColor(theme: Theme, color: ColorValue | ColorToken, alpha?: number) {
-    let c = get(theme.colors, color)
-    if (isNumber(alpha)) {
-        return setColorAlpha(c ?? color, alpha)
-    }
-
-    if (c) return c
-
-    return new ColorIO(color as string).toString()
+type BreakpointValues<V> = { [Key in BreakpointToken]: V }
+type BreakpointStyleValues<StyleKey extends $Unistyle.StyleKey | $Unistyle.NestedKey> = {
+    [Key in BreakpointToken]: StyleKey extends $Unistyle.StyleKey ? $Unistyle.Styles[StyleKey]
+    : StyleKey extends $Unistyle.NestedKey ? $Unistyle.NestedStyles[StyleKey]
+    : never
 }
 
-type TypographyVariant = ThemeConfigVariant<'typography', TypographyToken>
+export function isBreakpointValue<V = any>(value: unknown): value is BreakpointValues<V> {
+    return (
+        isPlainObject(value) &&
+        getKeys(value).every(key => breakpointKeys.includes(key as BreakpointToken))
+    )
+}
+
+function _getColor(color: string, alpha?: number) {
+    // const colorValue = color as Extract<typeof color, string>
+
+    // let c = get(theme.colors, colorValue)
+    if (isNumber(alpha)) {
+        return setColorAlpha(color, alpha)
+    }
+
+    // if (c) return c
+
+    return new ColorIO(color).toString()
+}
+export function getColor(
+    theme: Theme,
+    color: string | ColorToken | ThemeItemVariant<ColorToken>,
+    alpha?: number,
+): StyleValues<'color'>['color'] {
+    return parseBreakpointValues(color, c => _getColor(get(theme.colors, c, c), alpha))
+    // if (isBreakpointValue(color)) {
+    //     return getEntries(color).reduce((acc, [bp, c]) => {
+    //         if (!isPlainObject(c)) {
+    //             Object.assign(acc, { [bp]: getColor(theme, c, alpha) })
+    //         }
+    //         return acc
+    //     }, {} as BreakpointStyleProp<'color'>)
+    // }
+
+    // const colorValue = color as Extract<typeof color, string>
+
+    // let c = get(theme.colors, colorValue)
+    // if (isNumber(alpha)) {
+    //     return setColorAlpha(c ?? color, alpha)
+    // }
+
+    // if (c) return c
+
+    // return new ColorIO(colorValue).toString()
+}
+
+// type TypographyVariant = ThemeConfigVariant<'typography', TypographyToken>
 
 export const getTypographyVariants = (theme: UnistylesTheme) => {
     return getKeys(theme.typography).reduce(
@@ -173,7 +228,7 @@ export const getTypographyVariants = (theme: UnistylesTheme) => {
     )
 }
 
-export const typography = (theme: UnistylesTheme, variant: TypographyVariant) => {
+export const typography = (theme: UnistylesTheme, variant: TypographyToken) => {
     if (isPlainObject(variant)) {
         return getEntries(variant).reduce(
             (acc, [bp, token]) => {
@@ -208,43 +263,51 @@ export const typography = (theme: UnistylesTheme, variant: TypographyVariant) =>
     } as TypographyDefinition
 }
 
-export function getShadow(theme: UnistylesTheme, variant: ShadowsToken) {
-    return [theme.shadows[variant]]
+export function getShadow(theme: UnistylesTheme, variant: ThemeItemVariant<ShadowToken>) {
+    if (isBreakpointValue(variant)) {
+        return getEntries(variant).reduce((acc, [bp, shadow]) => {
+            acc[bp] = theme.boxShadows[shadow]
+            return acc
+        }, {} as BreakpointStyleValues<'boxShadow'>)
+    }
 }
 
-type RingOffsetWidth = 0 | 1 | 2 | 4 | 8
-type RingOffsetColor = ThemeColorScheme | 'default'
-
-export type RingOffsetStyleProps = {
-    ringOffsetWidth?: RingOffsetWidth
-    ringOffsetColor?: RingOffsetColor
-    ringOpacity?: number
-}
+// type RingOffsetWidth = 0 | 1 | 2 | 4 | 8
+// type RingOffsetColor = ThemeColorScheme | 'default'
 
 const DEFAULT_RING_OPACITY = 1 as const
 const DEFAULT_RING_SHADOW = `0 1px 2px 0 ${new ColorIO('oklch', [0, 0, 0], 0.05)}` as const
 
+const defaultRingOffsetProps: RingOffsetStyleProps = {
+    ringOffsetWidth: 2,
+    ringOffsetColor: 'primary.focusRing',
+    ringOpacity: 0.8,
+}
+
 export function getRingOffsetStyles(
     theme: Theme,
-    {
-        ringOffsetWidth = 2,
-        ringOffsetColor = 'primary',
-        ringOpacity = 0.8,
-    }: RingOffsetStyleProps = {},
+    ringOffsetProps: RingOffsetStyleProps = {},
     initialRingOffsetProps: RingOffsetStyleProps = {},
 ) {
     const initialProps = Object.assign(
-        {
-            ringOffsetWidth: 0,
-            ringOffsetColor: 'default',
-            ringOpacity: 0,
-        },
+        defaultRingOffsetProps,
         initialRingOffsetProps,
-    )
-    const colorKey = `${ringOffsetColor}.focusRing`
-    const alpha = ringOpacity < DEFAULT_RING_OPACITY ? ringOpacity : undefined
-    const offsetColor = getColor(theme, colorKey, alpha)
-    const initialOffsetColor = getColor(theme, initialProps.ringOffsetColor, ringOpacity)
+    ) as Required<RingOffsetStyleProps>
+
+    const initialOffsetColor = getColor(
+        theme,
+        initialProps.ringOffsetColor,
+        initialProps.ringOpacity,
+    ) as string
+
+    const { ringOffsetColor, ringOffsetWidth, ringOpacity } = {
+        ...initialProps,
+        ...ringOffsetProps,
+    }
+    const colorKey = ringOffsetColor
+    const alpha = ringOpacity < DEFAULT_RING_OPACITY ? ringOpacity : DEFAULT_RING_OPACITY
+    const offsetColor = getColor(theme, colorKey, alpha) as string
+
     return {
         boxShadow: `0 0 0 ${initialProps.ringOffsetWidth}px ${initialOffsetColor}, ${DEFAULT_RING_SHADOW}`,
         _focus: {
@@ -311,54 +374,110 @@ export function getMargin(
     )
 }
 
-type SpacingTokenObject = Partial<Record<Direction, SpacingToken>>
-
-const directions: Direction[] = ['top', 'right', 'bottom', 'left'] as const
-
-function isSpacingTokenObject(obj: unknown): obj is SpacingTokenObject {
-    return isPlainObject(obj) && Object.keys(obj).every(k => directions.includes(k as Direction))
-}
-
-type SpacingTokenArg = SpacingToken | SpacingTokenObject | undefined
-// type SpacingTokenArgs = (SpacingToken | SpacingTokenObject | undefined)[]
-
-type Padding = Partial<
-    Pick<ViewStyle, 'padding' | 'paddingBottom' | 'paddingLeft' | 'paddingRight' | 'paddingTop'>
->
-
-export function getPadding(theme: UnistylesTheme, ...tokens: SpacingTokenArg[]): Padding {
-    const variants = variadic(...tokens) as SpacingTokenArg[]
-    const padding: Padding = {}
-
-    if (variants.length === 1 && variants[0] !== undefined) {
-        const firstVariant = variants[0]
-        if (isSpacingTokenObject(firstVariant)) {
-            return getEntries<SpacingTokenObject>(firstVariant).reduce((acc, [dir, variant]) => {
-                if (variant === undefined) return acc
-                acc[`padding${upperFirst(dir)}`] = theme.space[variant]
-                return acc
-            }, padding)
-        } else {
-            return { padding: theme.space[firstVariant] }
-        }
+export function getPadding(
+    theme: UnistylesTheme,
+    variant: ThemeItemVariant<SpacingToken>,
+): StyleValues<'padding'> {
+    return {
+        padding: parseBreakpointValues<ThemeItemVariant<SpacingToken>, 'padding'>(
+            variant,
+            v => theme.space[v],
+        ),
     }
-
-    return variants.reduce((acc, variant, i) => {
-        if (typeof variant === 'string') {
-            acc[`padding${upperFirst(directions[i])}`] = theme.space[variant]
-        }
-        return acc
-    }, padding)
 }
 
-export function getPaddingX(theme: UnistylesTheme, ...variants: SpacingToken[]) {
-    const [left, right = left] = variants
-    return getPadding(theme, { left, right })
+export function getPaddingLeft(
+    theme: UnistylesTheme,
+    variant: ThemeItemVariant<SpacingToken>,
+): Pick<$Unistyle.Values, 'paddingLeft'> {
+    return {
+        paddingLeft: parseBreakpointValues<ThemeItemVariant<SpacingToken>, 'paddingLeft'>(
+            variant,
+            v => theme.space[v],
+        ),
+    }
 }
 
-export function getPaddingY(theme: UnistylesTheme, ...variants: SpacingToken[]) {
-    const [top, bottom = top] = variants
-    return getPadding(theme, { top, bottom })
+export function getPaddingRight(
+    theme: UnistylesTheme,
+    variant: ThemeItemVariant<SpacingToken>,
+): Pick<$Unistyle.Values, 'paddingRight'> {
+    return {
+        paddingRight: parseBreakpointValues<ThemeItemVariant<SpacingToken>, 'paddingRight'>(
+            variant,
+            v => theme.space[v],
+        ),
+    }
+}
+
+export function getPaddingTop(
+    theme: UnistylesTheme,
+    variant: ThemeItemVariant<SpacingToken>,
+): Pick<$Unistyle.Values, 'paddingTop'> {
+    return {
+        paddingTop: parseBreakpointValues<ThemeItemVariant<SpacingToken>, 'paddingTop'>(
+            variant,
+            v => theme.space[v],
+        ),
+    }
+}
+
+export function getPaddingBottom(
+    theme: UnistylesTheme,
+    variant: ThemeItemVariant<SpacingToken>,
+): Pick<$Unistyle.Values, 'paddingBottom'> {
+    return {
+        paddingBottom: parseBreakpointValues<ThemeItemVariant<SpacingToken>, 'paddingBottom'>(
+            variant,
+            v => theme.space[v],
+        ),
+    }
+}
+
+export function getPaddingStart(
+    theme: UnistylesTheme,
+    variant: ThemeItemVariant<SpacingToken>,
+): Pick<$Unistyle.Values, 'paddingStart'> {
+    return {
+        paddingStart: parseBreakpointValues<ThemeItemVariant<SpacingToken>, 'paddingStart'>(
+            variant,
+            v => theme.space[v],
+        ),
+    }
+}
+
+export function getPaddingEnd(
+    theme: UnistylesTheme,
+    variant: ThemeItemVariant<SpacingToken>,
+): Pick<$Unistyle.Values, 'paddingEnd'> {
+    return {
+        paddingEnd: parseBreakpointValues<ThemeItemVariant<SpacingToken>, 'paddingEnd'>(
+            variant,
+            v => theme.space[v],
+        ),
+    }
+}
+
+export function getPaddingX(
+    theme: UnistylesTheme,
+    variant: ThemeItemVariant<SpacingToken>,
+): Pick<$Unistyle.Values, 'paddingLeft' | 'paddingRight'> {
+    const value = parseBreakpointValues<
+        ThemeItemVariant<SpacingToken>,
+        'paddingLeft' | 'paddingRight'
+    >(variant, v => theme.space[v])
+    return { paddingLeft: value, paddingRight: value }
+}
+
+export function getPaddingY(
+    theme: UnistylesTheme,
+    variant: ThemeItemVariant<SpacingToken>,
+): Pick<$Unistyle.Values, 'paddingTop' | 'paddingBottom'> {
+    const value = parseBreakpointValues<
+        ThemeItemVariant<SpacingToken>,
+        'paddingTop' | 'paddingBottom'
+    >(variant, v => theme.space[v])
+    return { paddingTop: value, paddingBottom: value }
 }
 
 export function getBorderRadius(
@@ -454,13 +573,13 @@ export function getBorderRadii() {
     )
 }
 
-export function getSizeVariants(_sizes: Theme['sizes'] = sizes) {
-    return sizes.reduce(
-        (acc, size) => {
-            acc[size] = { width: size, height: size }
+export function getSizeVariants() {
+    return getEntries(sizes).reduce(
+        (acc, [key, value]) => {
+            acc[key] = { width: value, height: value }
             return acc
         },
-        {} as { [K in SizeToken]: { width: SizeToken; height: SizeToken } },
+        {} as { [K in SizeToken]: { width: number; height: number } },
     )
 }
 
@@ -470,22 +589,26 @@ export function isEmptyStyle(obj: unknown): obj is EmptyStyleObject {
     return isPlainObject(obj) && Object.keys(obj).length === 0
 }
 
+type StyleValues<Keys extends $Unistyle.StyleKey> = Pick<$Unistyle.Values, Keys>
+
 let sizeVariants = getSizeVariants()
-export function getSizeVariant<TSizes extends Theme['sizes'] = Theme['sizes']>(
-    size: TSizes[number] | number | undefined,
-    _sizes?: TSizes,
-): { width: SizeToken | number | undefined; height: SizeToken | number | undefined } {
-    if (size === undefined) return { width: undefined, height: undefined }
+export function getSizeVariant(
+    variant: ThemeItemVariant<SizeToken>,
+    theme?: Theme,
+): StyleValues<'width' | 'height'> {
+    // let variants = theme?.sizes ?? sizeVariants
 
-    let variants = sizeVariants
-    if (_sizes) {
-        variants = getSizeVariants(_sizes)
-    }
-    if (!(size in variants) && !isNumber(size)) {
-        throw new Error(`Size "${size}" is not a valid configured size.`)
-    }
+    const value = parseBreakpointValues<ThemeItemVariant<SizeToken>, 'width' | 'height'>(
+        variant,
+        v => (theme?.sizes ?? sizeVariants)[v.toString()],
+    )
+    return { width: value, height: value }
 
-    return isSizeToken(size) ? variants[size] : { width: size, height: size }
+    // if (!(size in variants) && !isNumber(size)) {
+    //     throw new Error(`Size "${size}" is not a valid configured size.`)
+    // }
+
+    // return isSizeToken(size) ? variants[size] : { width: size, height: size }
 }
 
 type RNBorderColorProps = Pick<
@@ -514,41 +637,41 @@ const rnBorderDirs = [
 ] as const
 type RNBorderDir = (typeof rnBorderDirs)[number]
 
-type BorderColorKey = keyof Pick<Theme['colors'], 'line1' | 'line2' | 'line3' | 'line4'>
-
 export type BorderOptions = {
     direction?: RNBorderDir
     borderStyle?: ViewStyle['borderStyle']
-    borderColor?:
-        | ViewStyle['borderColor']
-        | BorderColorKey
-        | keyof Get<Theme['colors'], `${ColorVariant}.${BorderColorKey}`>
+    borderColor?: ViewStyle['borderColor'] | ColorToken
 }
+
+type BorderWidthStyleKey =
+    | 'borderWidth'
+    | 'borderBottomWidth'
+    | 'borderEndWidth'
+    | 'borderLeftWidth'
+    | 'borderRightWidth'
+    | 'borderStartWidth'
+    | 'borderTopWidth'
+
+type BorderStyles = Pick<ViewStyle, 'borderStyle' | 'borderColor'> &
+    RNBorderColorProps & { [K in BorderWidthStyleKey]: $Unistyle.Values[K] }
 
 export function getBorder(
     theme: Theme,
-    border: boolean | number = true,
+    border: boolean | StylePropValue<'borderWidth'> = true,
     options: BorderOptions = {},
-) {
-    const borderStyles = {} as Pick<
-        ViewStyle,
-        | 'borderWidth'
-        | 'borderStyle'
-        | 'borderColor'
-        | 'borderBottomWidth'
-        | 'borderEndWidth'
-        | 'borderLeftWidth'
-        | 'borderRightWidth'
-        | 'borderStartWidth'
-        | 'borderTopWidth'
-    > &
-        RNBorderColorProps
+): StyleValues<keyof BorderStyles> {
+    const borderStyles = {} as BorderStyles
 
-    let borderWidth = 0
+    let borderWidth: $Unistyle.Values['borderWidth'] = 0
     if (typeof border === 'boolean' && border === true) {
         borderWidth = 1
-    } else if (typeof border === 'number') {
-        borderWidth = border
+    } else if (isBreakpointValue(border)) {
+        const partialFn = partial(getBorder, theme)
+        borderWidth = parseBreakpointValues<StylePropValue<'borderWidth'>, 'borderWidth'>(
+            border,
+            partialFn,
+            options,
+        )
     }
 
     let { borderColor: borderColorKey = 'line2', borderStyle, direction } = options
@@ -604,23 +727,16 @@ export function getBorder(
     return borderStyles
 }
 
-export function getZIndex<
-    Theme extends UnistylesTheme,
-    ZIndexProp extends ThemeConfigVariant<'zIndices', ZIndicesToken> | undefined,
->(theme: Theme, zIndex: ZIndexProp): { zIndex?: number | { [Key in BreakpointToken]: number } } {
-    if (zIndex === undefined) return { zIndex: undefined }
+export function getZIndex<Theme extends UnistylesTheme>(
+    theme: Theme,
+    variant: ThemeItemVariant<ZIndicesToken>,
+): StyleValues<'zIndex'> {
+    if (variant === undefined) return { zIndex: undefined }
 
-    if (isBreakpointTokenMap(zIndex)) {
-        const responsiveZIndices = zIndex as BreakpointTokenMap<'zIndices'>
-        const values = getEntries(responsiveZIndices).reduce(
-            (acc, [bp, token]) => {
-                acc[bp] = theme.zIndices[token] as ValueOf<Theme['zIndices'], typeof token>
-                return acc
-            },
-            {} as { [Key in BreakpointToken]: number },
-        )
-        return { zIndex: values }
+    return {
+        zIndex: parseBreakpointValues<ThemeItemVariant<ZIndicesToken>, 'zIndex'>(
+            variant,
+            zIndex => theme.zIndices[zIndex],
+        ),
     }
-
-    return { zIndex: theme.zIndices[zIndex as ZIndicesToken] }
 }

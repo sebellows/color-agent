@@ -15,18 +15,18 @@ import {
     getRingOffsetStyles,
     getSizeVariant,
     getZIndex,
-    typography,
 } from '../../design-system/design-system.utils'
 import { RadiiToken } from '../../design-system/design-tokens/radii'
 import { ShadowToken } from '../../design-system/design-tokens/shadows'
+import { $Unistyle } from '../../lib/unistyles/stylesheet'
 import { UnistylesTheme } from '../../theme/theme.types'
-import { RingOffsetStyleProps, themeStyleProps, ThemeStyleProps } from './style.types'
+import { RingOffsetStyleProps, ThemeStyleProps, themeStyleProps } from './style.types'
 
-type _UnistylesValues = Parameters<(typeof StyleSheet)['create']>[0]
-type UnistylesValues<U extends _UnistylesValues = _UnistylesValues> =
-    U extends infer UFn extends (...args: any[]) => _UnistylesValues ? ReturnType<UFn>
-    : _UnistylesValues extends { [styleName: string]: _UnistylesValues } ? _UnistylesValues
-    : never
+// type _UnistylesValues = Parameters<(typeof StyleSheet)['create']>[0]
+// type UnistylesValues<U extends _UnistylesValues = _UnistylesValues> =
+//     U extends infer UFn extends (...args: any[]) => _UnistylesValues ? ReturnType<UFn>
+//     : _UnistylesValues extends { [styleName: string]: _UnistylesValues } ? _UnistylesValues
+//     : never
 
 type RingOffsetProp = keyof RingOffsetStyleProps
 const ringOffsetProps: RingOffsetProp[] = [
@@ -34,18 +34,6 @@ const ringOffsetProps: RingOffsetProp[] = [
     'ringOffsetColor',
     'ringOpacity',
 ] as const
-// backgroundColor?: Color
-// border?: boolean | number
-// borderColor?: Color
-// borderRadius?: Radii
-// boxShadow?: ShadowToken
-// color?: Color
-// height?: SizeToken
-// justifyContent?: ViewStyle['justifyContent']
-// padding?: Space
-// size?: SizeToken
-// width?: SizeToken
-// zIndex?: ZIndicesToken
 
 function isRingOffsetProp(prop: unknown): prop is RingOffsetProp {
     return ringOffsetProps.includes(prop as RingOffsetProp)
@@ -54,9 +42,15 @@ function isRingOffsetProp(prop: unknown): prop is RingOffsetProp {
 export function resolveThemeProps<Theme extends UnistylesTheme, Props extends ThemeStyleProps>(
     theme: Theme,
     props: Props,
-) {
+): $Unistyle.Values {
     let hasRingOffset = false
-    const init: UnistylesValues = {}
+    const init: $Unistyle.Values = {}
+
+    // function assignProp(obj: $Unistyle.Values) {
+    //     return (entry: $Unistyle.Styles) => Object.assign(obj, entry)
+    // }
+
+    // let assign: ReturnType<typeof assignProp>
 
     const filteredProps = themeStyleProps.filter(prop => !isUndefined(props[prop]))
 
@@ -68,12 +62,18 @@ export function resolveThemeProps<Theme extends UnistylesTheme, Props extends Th
                 getRingOffsetStyles(theme, { ringOffsetWidth, ringOffsetColor, ringOpacity }),
             )
         }
-        if (prop in props && props[prop]) {
+        if (typeof props[prop] !== 'undefined') {
             const value = props[prop]
 
             switch (prop) {
-                // case 'absoluteFill':
-                // return
+                case 'absoluteFill':
+                    return Object.assign(acc, theme.utils.absoluteFill)
+                case 'alignItems':
+                    return Object.assign(acc, { alignItems: value })
+                case 'display':
+                    return Object.assign(acc, { display: value })
+                case 'justifyContent':
+                    return Object.assign(acc, { justifyContent: value })
                 case 'backgroundColor':
                     return Object.assign(acc, {
                         backgroundColor: getColor(theme, props.color ?? 'bg'),
@@ -107,16 +107,15 @@ export function resolveThemeProps<Theme extends UnistylesTheme, Props extends Th
                 case 'paddingY':
                     return Object.assign(acc, getPaddingY(theme, props.paddingY ?? 'none'))
                 case 'height':
-                    return Object.assign(acc, getSizeVariant(props.height).height)
+                    return Object.assign(acc, getSizeVariant(props.height!, theme).height)
                 case 'width':
-                    return Object.assign(acc, getSizeVariant(props.width).width)
+                    return Object.assign(acc, getSizeVariant(props.width!, theme).width)
                 case 'size':
-                    return Object.assign(acc, getSizeVariant(props.size))
-                case 'typography':
-                    return Object.assign(acc, typography(theme, props.typography))
+                    return Object.assign(acc, getSizeVariant(props.size!, theme))
                 case 'zIndex':
-                    return Object.assign(acc, getZIndex(theme, props.zIndex))
+                    return Object.assign(acc, getZIndex(theme, props.zIndex!))
                 default:
+                    return acc
             }
         }
         return acc
