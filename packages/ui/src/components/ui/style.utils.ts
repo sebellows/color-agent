@@ -1,5 +1,4 @@
 import { isUndefined } from 'es-toolkit'
-import { StyleSheet } from 'react-native-unistyles'
 
 import {
     getBorder,
@@ -22,12 +21,6 @@ import { $Unistyle } from '../../lib/unistyles/stylesheet'
 import { UnistylesTheme } from '../../theme/theme.types'
 import { RingOffsetStyleProps, ThemeStyleProps, themeStyleProps } from './style.types'
 
-// type _UnistylesValues = Parameters<(typeof StyleSheet)['create']>[0]
-// type UnistylesValues<U extends _UnistylesValues = _UnistylesValues> =
-//     U extends infer UFn extends (...args: any[]) => _UnistylesValues ? ReturnType<UFn>
-//     : _UnistylesValues extends { [styleName: string]: _UnistylesValues } ? _UnistylesValues
-//     : never
-
 type RingOffsetProp = keyof RingOffsetStyleProps
 const ringOffsetProps: RingOffsetProp[] = [
     'ringOffsetWidth',
@@ -45,12 +38,6 @@ export function resolveThemeProps<Theme extends UnistylesTheme, Props extends Th
 ): $Unistyle.Values {
     let hasRingOffset = false
     const init: $Unistyle.Values = {}
-
-    // function assignProp(obj: $Unistyle.Values) {
-    //     return (entry: $Unistyle.Styles) => Object.assign(obj, entry)
-    // }
-
-    // let assign: ReturnType<typeof assignProp>
 
     const filteredProps = themeStyleProps.filter(prop => !isUndefined(props[prop]))
 

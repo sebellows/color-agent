@@ -12,20 +12,22 @@ import {
     getRingOffsetStyles,
     getSizeVariant,
     getSpaceValue,
+    getWebColor,
     typography,
 } from '../../design-system/design-system.utils'
 import { SizeToken } from '../../design-system/design-tokens/sizes'
+import { StyleValue } from '../../lib/unistyles/stylesheet'
 import { Color, Space } from '../../theme/theme.types'
 import { isWeb } from '../../utils'
 import { SlottableTextProps } from '../primitives/types'
-import { WithThemeStyleProps } from './style.types'
-import { resolveThemeProps } from './ui.utils'
+import { ThemeStyleProps, WithThemeStyleProps } from './style.types'
+import { resolveThemeProps } from './style.utils'
 
-const DEFAULT_SIZE = isWeb ? 40 : 48
+const DEFAULT_SIZE = (isWeb ? '40' : '48') as SizeToken
 
 type PseudoClass = '_active' | '_focus' | '_hover'
 
-function applyPseudoStyles<Styles extends CSSProperties>(
+function applyPseudoStyles<Styles extends StyleValue>(
     styles: Styles,
     ...pseudoClasses: ('_active' | '_focus' | '_hover')[]
 ) {
@@ -179,7 +181,7 @@ const subTriggerStyles = StyleSheet.create(theme => ({
         _web: {
             cursor: 'default',
             outline: 'none',
-            ...applyPseudoStyles({ color: getColor(theme, 'accent.bg') }),
+            ...applyPseudoStyles({ color: getWebColor(theme, 'accent.bg') }),
         },
     }),
     textContext: ({ open }) => ({
@@ -263,49 +265,53 @@ const popperStyles = StyleSheet.create(theme => ({
     },
 }))
 
+export type BaseInputProps = WithThemeStyleProps<{
+    type?: HTMLInputTypeAttribute
+    editable?: boolean
+    placeholderTextColor?: TextInputProps['placeholderTextColor']
+    isInvalid?: any
+    isValid?: boolean
+}>
+
+const defaultInputStyles: ThemeStyleProps = {
+    backgroundColor: 'componentBg',
+    border: true,
+    borderRadius: 'md',
+    boxShadow: 'md',
+    color: 'componentFg',
+    display: 'flex',
+    height: DEFAULT_SIZE,
+    paddingX: 'sm',
+    paddingY: 'default',
+    ringOffsetColor: 'primary',
+    width: 'full',
+    zIndex: '50',
+    typography: { xs: 'body', lg: 'bodySmall' },
+}
+
 const inputStyles = StyleSheet.create(theme => ({
-    main: <
-        Props extends AnyRecord,
-        UiProps extends WithThemeStyleProps<Props> = WithThemeStyleProps<Props>,
-    >({
-        border = true,
-        boxShadow = 'md',
-        size = DEFAULT_SIZE,
-        zIndex = '50',
-        ringOffsetColor,
-        ringOffsetWidth,
-        ringOpacity,
-        ...props
-    }: UiProps & {
-        type?: HTMLInputTypeAttribute
-        editable?: boolean
-        placeholderTextColor?: TextInputProps['placeholderTextColor']
-    }) => {
+    main: <Props extends BaseInputProps>(props: Props) => {
+        const styleProps = { ...defaultInputStyles, ...props }
         const isFile = props?.type === 'file'
         const isEditable = !!props?.editable
+        if (styleProps.border && !styleProps.borderColor) {
+            const { isValid, isInvalid } = styleProps
+            styleProps.borderColor =
+                theme.colors[
+                    isInvalid ? 'critical.bg'
+                    : isValid ? 'positive.bg'
+                    : 'line3'
+                ]
+        }
 
         return {
-            display: 'flex',
-            backgroundColor: theme.colors.componentBg,
-            borderRadius: theme.radii.md,
-            ...(isFile ?
-                { borderWidth: 0, backgroundColor: 'transparent' }
-            :   getBorder(theme, border)),
-            color: theme.colors.fg,
-            ...typography(theme, { xs: 'body', lg: 'bodySmall' }),
-            height: getSizeVariant(size).height,
-            width: '100%',
-            ...getPaddingX(theme, 'sm'),
-            ...getPaddingY(theme, 'default'),
+            ...resolveThemeProps(theme, styleProps),
+            ...(isFile ? { borderWidth: 0, backgroundColor: 'transparent' } : {}),
             ...(isFile && { fontWeight: theme.fontWeights.bodyMedium }),
-            opacity: isEditable ? 0.5 : 1,
+            opacity: !isEditable ? 0.5 : 1,
             _web: {
-                ...(isEditable && { cursor: 'not-allowed' }),
-                ...getRingOffsetStyles(theme, {
-                    ringOffsetColor: 'primary',
-                    ringOffsetWidth,
-                    ringOpacity,
-                }),
+                ...(!isEditable && { cursor: 'not-allowed' }),
+                ...getRingOffsetStyles(theme, styleProps),
                 _placeholder: {
                     color: theme.colors.fgMuted,
                 },
@@ -314,16 +320,20 @@ const inputStyles = StyleSheet.create(theme => ({
     },
 }))
 
+const defaultRadioStyles: ThemeStyleProps = {
+    borderRadius: 'sm',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 'lg',
+    paddingRight: 'xs',
+    paddingTop: 'xs',
+}
+
 const radioStyles = StyleSheet.create(theme => ({
-    main: ({ disabled }: { disabled?: null | boolean | undefined } = {}) => ({
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
+    main: ({ disabled }: { disabled?: null | boolean | undefined }) => ({
+        ...resolveThemeProps(theme, defaultRadioStyles),
         position: 'relative',
-        borderRadius: theme.radii.sm,
-        paddingLeft: theme.space.lg,
-        paddingRight: theme.space.xs,
-        paddingTop: theme.space.xs,
         opacity: disabled ? 0.5 : undefined,
         pointerEvents: disabled ? 'none' : undefined,
         _active: {
@@ -337,36 +347,37 @@ const radioStyles = StyleSheet.create(theme => ({
             },
         },
     }),
-    indicator: ({ size = 14 }: { size?: SizeToken } = {}) => ({
+    indicator: ({ size = '3.5' }: { size?: SizeToken } = {}) => ({
         position: 'absolute',
         left: theme.space.xxs,
         ...theme.utils.flexCenter,
         ...getSizeVariant(size),
     }),
-    indicatorInner: ({ color = 'fg', size = 8 }: { color?: Color; size?: SizeToken } = {}) => ({
+    indicatorInner: ({ color = 'fg', size = '2' }: { color?: Color; size?: SizeToken } = {}) => ({
         backgroundColor: getColor(theme, color),
         borderRadius: theme.radii.full,
         ...getSizeVariant(size),
     }),
 }))
 
+const defaultCheckboxStyles: ThemeStyleProps = {
+    borderRadius: 'sm',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingLeft: 'lg',
+    paddingRight: 'xs',
+    paddingY: isWeb ? 'xs' : 'default',
+}
+
 const checkboxStyles = StyleSheet.create(theme => ({
-    main: <Props extends WithThemeStyleProps<{ disabled?: boolean | null | undefined }>>(
-        {
-            disabled,
-            justifyContent = 'center',
-            borderRadius = 'sm',
-            padding = {},
-        }: Props = {} as Props,
-    ) => ({
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
+    main: <Props extends WithThemeStyleProps<{ disabled?: boolean | null | undefined }>>({
+        disabled,
+        ...props
+    }: Props) => ({
+        ...resolveThemeProps(theme, { ...defaultCheckboxStyles, ...props }),
         position: 'relative',
-        borderRadius: theme.radii.sm,
-        paddingLeft: theme.space.lg,
-        paddingRight: theme.space.xs,
-        ...getPaddingY(theme, isWeb ? 'xs' : 'default'),
         opacity: disabled ? 0.5 : undefined,
         pointerEvents: disabled ? 'none' : undefined,
         _active: {

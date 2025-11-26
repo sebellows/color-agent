@@ -10,6 +10,7 @@ type Theme = ReturnType<typeof useUnistyles>['theme']
 export type Typography<T extends TypographyToken> = Record<T, TypographyDefinition>
 export type Color = ColorToken // KeyPathOf<Theme['colors']> // keyof Theme['colors']
 export type Container = KeyPathOf<Theme['containers']>
+export type Size = keyof Theme['sizes']
 export type Space = keyof Theme['space']
 export type Radii = keyof Theme['radii']
 export type Fonts = keyof Theme['fonts']

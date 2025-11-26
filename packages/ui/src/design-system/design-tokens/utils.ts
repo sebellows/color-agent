@@ -5,12 +5,15 @@ import { isDecimal } from '@coloragent/utils'
 import { getEntries } from '../../utils/get-entries'
 import { type TypographyToken } from './typography-token'
 
-export type TypographyDefinition = NonNullable<
-    Pick<
-        TextStyle,
-        'fontFamily' | 'fontWeight' | 'fontSize' | 'lineHeight' | 'letterSpacing' | 'textTransform'
-    >
->
+export type TypographyPropKeys =
+    | 'fontFamily'
+    | 'fontWeight'
+    | 'fontSize'
+    | 'lineHeight'
+    | 'letterSpacing'
+    | 'textTransform'
+
+export type TypographyDefinition = NonNullable<Pick<TextStyle, TypographyPropKeys>>
 
 export type TypographyDefinitions = Record<TypographyToken, TypographyDefinition>
 

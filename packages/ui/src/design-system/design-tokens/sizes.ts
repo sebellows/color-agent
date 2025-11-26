@@ -1,5 +1,6 @@
 import { Multiply } from '@coloragent/utils'
-import { StringToNumber } from 'type-fest/source/internal'
+
+// import { StringToNumber } from 'type-fest/source/internal'
 
 import Config from '../../config'
 
@@ -33,6 +34,7 @@ const sizesConfig = {
     '14': (14 * SPACE) as Multiply<14, typeof SPACE>,
     '32': (32 * SPACE) as Multiply<32, typeof SPACE>,
     '64': (64 * SPACE) as Multiply<64, typeof SPACE>,
+    full: '100%',
 } as const
 
 // const init = {} as { [K in Size as ToString<K>]: Multiply<K, typeof SPACE> }
@@ -43,8 +45,8 @@ const sizesConfig = {
 //     return acc
 // }, init)
 
-// type SizeList = typeof sizesList
-type Size = keyof typeof sizesConfig // SizeList[number]
+export type Sizes = typeof sizesConfig
+type Size = keyof Sizes // SizeList[number]
 
 export const sizes = sizesConfig // sizesList // getNativeSizeVariants()
 

@@ -1,4 +1,4 @@
-import { ColorValue, ViewStyle } from 'react-native'
+import { ViewStyle } from 'react-native'
 
 import { assertUnreachable, getKeys } from '@coloragent/utils'
 import ColorIO, { ColorTypes } from 'colorjs.io'
@@ -11,7 +11,7 @@ import {
     StylePropValue,
     ThemeItemVariant,
 } from '../components/ui/style.types'
-import { $Unistyle } from '../lib/unistyles/stylesheet'
+import { $Unistyle, StyleValues } from '../lib/unistyles/stylesheet'
 import { Theme } from '../theme/theme'
 import { UnistylesTheme } from '../theme/theme.types'
 import { ActionState, KeyPathOf } from '../types/common'
@@ -27,7 +27,7 @@ import {
 } from './design-tokens/colors.native'
 import { radii, RadiiToken } from './design-tokens/radii'
 import { boxShadows, ShadowToken } from './design-tokens/shadows'
-import { sizes, SizeToken } from './design-tokens/sizes'
+import { Sizes, sizes, SizeToken } from './design-tokens/sizes'
 import { NegativeSpacingToken, SpacingToken } from './design-tokens/spacing'
 import { TypographyToken } from './design-tokens/typography-token'
 import { typography as typographyTokens } from './design-tokens/typography.native'
@@ -178,45 +178,26 @@ export function isBreakpointValue<V = any>(value: unknown): value is BreakpointV
 }
 
 function _getColor(color: string, alpha?: number) {
-    // const colorValue = color as Extract<typeof color, string>
-
-    // let c = get(theme.colors, colorValue)
     if (isNumber(alpha)) {
         return setColorAlpha(color, alpha)
     }
 
-    // if (c) return c
-
     return new ColorIO(color).toString()
 }
-export function getColor(
+export function getColor<TColor extends string | ColorToken | ThemeItemVariant<ColorToken>>(
     theme: Theme,
-    color: string | ColorToken | ThemeItemVariant<ColorToken>,
+    color: TColor,
     alpha?: number,
-): StyleValues<'color'>['color'] {
+): $Unistyle.StyleValue<'color'> {
     return parseBreakpointValues(color, c => _getColor(get(theme.colors, c, c), alpha))
-    // if (isBreakpointValue(color)) {
-    //     return getEntries(color).reduce((acc, [bp, c]) => {
-    //         if (!isPlainObject(c)) {
-    //             Object.assign(acc, { [bp]: getColor(theme, c, alpha) })
-    //         }
-    //         return acc
-    //     }, {} as BreakpointStyleProp<'color'>)
-    // }
-
-    // const colorValue = color as Extract<typeof color, string>
-
-    // let c = get(theme.colors, colorValue)
-    // if (isNumber(alpha)) {
-    //     return setColorAlpha(c ?? color, alpha)
-    // }
-
-    // if (c) return c
-
-    // return new ColorIO(colorValue).toString()
 }
-
-// type TypographyVariant = ThemeConfigVariant<'typography', TypographyToken>
+export function getWebColor<TColor extends string | ColorToken | ThemeItemVariant<ColorToken>>(
+    theme: Theme,
+    color: TColor,
+    alpha?: number,
+): $Unistyle.WebValue<'color'> {
+    return parseBreakpointValues(color, c => _getColor(get(theme.colors, c, c), alpha))
+}
 
 export const getTypographyVariants = (theme: UnistylesTheme) => {
     return getKeys(theme.typography).reduce(
@@ -228,27 +209,31 @@ export const getTypographyVariants = (theme: UnistylesTheme) => {
     )
 }
 
-export const typography = (theme: UnistylesTheme, variant: TypographyToken) => {
+type TypographyVariant =
+    | TypographyDefinition
+    | $Unistyle.BreakpointStyleValues<TypographyDefinition>
+
+export const typography = (
+    theme: UnistylesTheme,
+    variant: ThemeItemVariant<TypographyToken>,
+): TypographyVariant => {
     if (isPlainObject(variant)) {
-        return getEntries(variant).reduce(
-            (acc, [bp, token]) => {
-                if (!token) {
-                    // This condition exists only for avoiding TypeScript gymnastics
-                    return acc
-                }
-                acc[bp] = {
-                    fontFamily: theme.fonts[token],
-                    fontSize: theme.fontSizes[token],
-                    fontWeight: theme.fontWeights[token],
-                    letterSpacing: theme.letterSpacings[token],
-                    lineHeight: theme.lineHeights[token],
-                    textTransform: typographyTokens[token]
-                        .textTransform as TypographyDefinition['textTransform'],
-                }
+        return getEntries(variant).reduce((acc, [bp, token]) => {
+            if (!token) {
+                // This condition exists only for avoiding TypeScript gymnastics
                 return acc
-            },
-            {} as Record<BreakpointToken, TypographyDefinition>,
-        )
+            }
+            acc[bp] = {
+                fontFamily: theme.fonts[token],
+                fontSize: theme.fontSizes[token],
+                fontWeight: theme.fontWeights[token],
+                letterSpacing: theme.letterSpacings[token],
+                lineHeight: theme.lineHeights[token],
+                textTransform: typographyTokens[token]
+                    .textTransform as TypographyDefinition['textTransform'],
+            }
+            return acc
+        }, {} as $Unistyle.BreakpointStyleValues<TypographyDefinition>)
     }
 
     const { textTransform } = typographyTokens[variant]
@@ -284,9 +269,9 @@ const defaultRingOffsetProps: RingOffsetStyleProps = {
     ringOpacity: 0.8,
 }
 
-export function getRingOffsetStyles(
+export function getRingOffsetStyles<Props extends RingOffsetStyleProps>(
     theme: Theme,
-    ringOffsetProps: RingOffsetStyleProps = {},
+    props: Props,
     initialRingOffsetProps: RingOffsetStyleProps = {},
 ) {
     const initialProps = Object.assign(
@@ -302,7 +287,7 @@ export function getRingOffsetStyles(
 
     const { ringOffsetColor, ringOffsetWidth, ringOpacity } = {
         ...initialProps,
-        ...ringOffsetProps,
+        ...props,
     }
     const colorKey = ringOffsetColor
     const alpha = ringOpacity < DEFAULT_RING_OPACITY ? ringOpacity : DEFAULT_RING_OPACITY
@@ -574,13 +559,10 @@ export function getBorderRadii() {
 }
 
 export function getSizeVariants() {
-    return getEntries(sizes).reduce(
-        (acc, [key, value]) => {
-            acc[key] = { width: value, height: value }
-            return acc
-        },
-        {} as { [K in SizeToken]: { width: number; height: number } },
-    )
+    return Object.entries(sizes).reduce((acc, [key, value]) => {
+        acc[key] = { width: value, height: value }
+        return acc
+    }, {} as Sizes)
 }
 
 const EMPTY_STYLE_OBJECT = {}
@@ -588,8 +570,6 @@ type EmptyStyleObject = typeof EMPTY_STYLE_OBJECT
 export function isEmptyStyle(obj: unknown): obj is EmptyStyleObject {
     return isPlainObject(obj) && Object.keys(obj).length === 0
 }
-
-type StyleValues<Keys extends $Unistyle.StyleKey> = Pick<$Unistyle.Values, Keys>
 
 let sizeVariants = getSizeVariants()
 export function getSizeVariant(

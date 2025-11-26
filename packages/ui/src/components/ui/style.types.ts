@@ -20,7 +20,7 @@ export type WithPortalHost<Props extends AnyRecord> = Simplify<Props & { portalH
 export type ThemeKey = keyof Exclude<Theme, Function>
 export type ThemeConfigKey<TKey extends ThemeKey> = keyof Theme[TKey]
 
-export type BreakpointStyleProp<V> = { [key in $Unistyle.Breakpoints]: V }
+export type BreakpointStyleProp<V> = Partial<{ [key in $Unistyle.Breakpoints]: V }>
 
 export type BreakpointStyleValues<StyleKey extends $Unistyle.StyleKey> = BreakpointStyleProp<
     $Unistyle.Styles[StyleKey]
@@ -80,6 +80,8 @@ export type ThemeStyleProps = {
     boxShadow?: ThemeItemVariant<ShadowToken>
     color?: ThemeItemVariant<Color>
     display?: StylePropValue<'display'>
+    flexCenter?: boolean
+    flexDirection?: StylePropValue<'flexDirection'>
     height?: ThemeItemVariant<SizeToken>
     justifyContent?: StylePropValue<'justifyContent'>
     padding?: ThemeItemVariant<SpacingToken>
@@ -98,7 +100,7 @@ export type ThemeStyleProps = {
     zIndex?: ThemeItemVariant<ZIndicesToken>
 }
 
-export type WithThemeStyleProps<Props extends AnyRecord> = ThemeStyleProps & Props
+export type WithThemeStyleProps<Props extends AnyRecord = AnyRecord> = ThemeStyleProps & Props
 
 export type RingOffsetStyleProps = Pick<
     ThemeStyleProps,
